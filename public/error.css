@@ -1,0 +1,151 @@
+* {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box
+}
+html,body,div,h1,h2,p,b,i,label {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	vertical-align: baseline;
+	background: transparent
+}
+html {
+	font-size: 12pt;
+	line-height: 1.5rem;
+	width: 100%;
+	height: 100%;
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	-webkit-font-smoothing: subpixel-antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+body {
+	min-height: 100%;
+	font-family: 'Segoe UI Light', 'Segoe UI', sans-serif;
+	background-color: #282828;
+	padding: 0 2rem;
+	position: relative;
+}
+.container {
+	animation: fadein 0.5s;
+	-moz-animation: fadein 0.5s;
+	-webkit-animation: fadein 0.5s;
+	max-width: 25rem;
+	position: absolute;
+	opacity: 1;
+	top: 15%;
+	color: #B2B2B2;
+}
+h1,h2 {
+	font-weight: 300;
+	letter-spacing: -0.0625rem;
+}
+h1 {
+	font-size: 36pt;
+	font-weight: 300;
+	line-height: 3.75rem;
+	margin-bottom: 0.3125rem;
+	color: #2896DC;
+}
+h2 {
+	font-size: 26pt;
+	line-height: 2.875rem;
+}
+hr {
+	height: 0.0625rem;
+	background-color: #777;
+	border: none;
+	width: 100%;
+	margin: 1.5625rem 0;
+	float: left;
+}
+p {
+	font-size: 12pt;
+	line-height: 1.5rem;
+}
+a {
+	display: inline-block;
+	font-size: 10.5pt;
+	text-decoration: none;
+	color: #B2B2B2;
+	padding: 0.5rem 1rem;
+	margin-top: 2.8125rem;
+	margin-right: 1.5625rem;
+	border: 0.125rem solid white;
+	border-width: 0.125rem;
+	border-color: #B2B2B2;
+	-webkit-transition: background-color 0.2s linear;
+	-moz-transition: background-color 0.2s linear;
+	-ms-transition: background-color 0.2s linear;
+	transition: background-color 0.2s linear;
+}
+a:hover {
+	background-color: #313131;
+}
+@media only screen and (max-width: 40em) {
+	body {
+		width: 98%;
+		padding: 0 0.5rem;
+	}
+	.container {
+		top: 5%;
+	}
+	h1 {
+		font-size: 37pt;
+	}
+	h2 {
+		font-size: 18pt;
+		line-height: 2.375rem;
+	}
+	hr {
+		width: 98%;
+	}
+	p {
+		font-size: 12pt;
+	}
+	a {
+		width: 45%;
+		font-size: 10pt;
+		text-align: center;
+		padding: 0.5rem 0;
+		margin-top: 2.1875rem;
+		margin-right: 10%;
+	}
+}
+@keyframes fadein {
+	from {
+		opacity:0;
+		padding-left: 2%;
+		max-width: 26rem;
+	}
+	to {
+		opacity:1;
+		padding-left: 0%;
+	}
+}
+@-moz-keyframes fadein {
+	from {
+		opacity:0;
+		padding-left: 2%;
+		max-width: 26rem;
+	}
+	to {
+		opacity:1;
+		padding-left: 0%;
+	}
+}
+@-webkit-keyframes fadein {
+	from {
+		opacity:0;
+		padding-left: 2%;
+		max-width: 26rem;
+	}
+	to {
+		opacity:1;
+		padding-left: 0%;
+	}
+}

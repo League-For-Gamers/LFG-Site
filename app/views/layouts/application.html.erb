@@ -1,10 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>LeagueForGamers</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <meta charset='UTF-8' />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= @title || "League For Gamers" %></title>
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
+  <link rel="icon" type="image/png" href="/images/favicon-228.png" sizes="228x228">
+  <link rel="icon" type="image/png" href="/images/favicon-195.png" sizes="195x195">
+  <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/images/favicon-152.png">
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/favicon-144.png">
+  <link rel="icon" type="image/png"  sizes="128x128" href="/images/favicon-128.png">
+  <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/images/favicon-120.png">
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/favicon-114.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96.png">
+  <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/images/favicon-76.png">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/favicon-72.png">
+  <link rel="apple-touch-icon-precomposed" href="/images/favicon-57.png">
+  <link rel="icon" href="/images/favicon-32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#c4c4c4">
+  <meta name="msapplication-TileImage" content="/images/favicon-144.png">
 </head>
 <body>
 
