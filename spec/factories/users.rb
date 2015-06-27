@@ -3,8 +3,8 @@ FactoryGirl.define do
     username "bobby_tables"
     password "bobby tables's very secure password"
     display_name "Bobby Tables"
-    quote "It's time to kick ass and chew bubble gum... and I'm all outta gum."
     bio "Wherever I went, computers disliked me :("
+    email "bobby@tables-family.com"
 
     factory :user_with_skill do
       after(:create) do |user|

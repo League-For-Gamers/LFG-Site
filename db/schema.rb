@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150626124947) do
+ActiveRecord::Schema.define(version: 20150627040548) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -65,14 +65,21 @@ ActiveRecord::Schema.define(version: 20150626124947) do
 
   add_index "skills", ["user_id"], name: "index_skills_on_user_id", using: :btree
 
+  create_table "tags", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string   "username"
     t.string   "password_digest"
     t.string   "display_name"
-    t.string   "quote"
     t.text     "bio"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.binary   "email"
+    t.binary   "email_iv"
   end
 
   add_foreign_key "skills", "users"

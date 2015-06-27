@@ -1,1 +1,2 @@
 SECRET_TOKEN: 'secret_KEY_goes_HERE'
+EMAIL_KEY: 'secrey_KEY_goes_HERE'
