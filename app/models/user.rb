@@ -1,18 +1,28 @@
 class User < ActiveRecord::Base
+  attr_accessor :old_password
   has_and_belongs_to_many :roles
   has_and_belongs_to_many :games
   has_many :skills
   has_many :tags
 
-  validates :username, :display_name, length: { maximum: 16 }
+  validates :username, :display_name, length: { maximum: 15 }
+  validates_format_of :username, with: /\A([a-zA-Z](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.
   validates :bio, length: { maximum: 512 }
   validates :decrypted_email, length: {maximum: 325} # A bit over what should be the maximum, just incase.
-  validates :username, :display_name, uniqueness: true, :case_sensitive => false
+  validates :username, uniqueness: true
+  validates :display_name, uniqueness: true, case_sensitive: false, allow_blank: true, allow_nil: true
   validates :username, :password_digest, :email, presence: true
-  validates_format_of :decrypted_email, :with => /\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i
+  validates_format_of :decrypted_email, with: /\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i, on: :create
+  validates :avatar, attachment_content_type: { content_type: "image/png" },
+                     attachment_size: { less_than: 512.kilobytes }
+  validate :validates_old_password
 
   has_secure_password
+
+  has_attached_file :avatar,
+                    :s3_storage_class => :reduced_redundancy
   
+  # Email storage crypto
   before_save do
     crypt = OpenSSL::Cipher::AES256.new(:CBC)
     crypt.encrypt
@@ -34,4 +44,13 @@ class User < ActiveRecord::Base
       self.email
     end
   end
+
+  private
+    # THANKS STACK OVERFLOW! http://stackoverflow.com/questions/12663593/has-secure-password-authenticate-inside-validation-on-password-update
+    def validates_old_password
+      return if password_digest_was.nil? || !password_digest_changed?
+      unless BCrypt::Password.new(password_digest_was) == old_password
+        errors.add(:old_password, "is incorrect")
+      end
+    end
 end

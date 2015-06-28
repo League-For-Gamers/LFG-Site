@@ -1,0 +1,30 @@
+<%= form_tag("/login", method: "post", class: "row large-3") do %>
+  <fieldset>
+    <legend dead-set="true">Login</legend>
+
+    <% if flash[:alert] -%>
+      <div data-alert class="alert-box warning">
+      <%= flash[:alert] %>
+      </div>
+    <% end -%>
+
+    <div class="row collapse">
+      <div class="large-1 columns">
+        <%= content_tag(:span, "User", { class: "prefix" }) %>
+      </div>
+      <div class="large-11 columns">
+        <%= text_field_tag :username, nil, { placeholder: "Username" } %>
+      </div>
+    </div>
+
+    <div class="row collapse">
+      <div class="large-1 columns">
+        <%= content_tag(:span, "Pass", { class: "prefix" }) %>
+      </div>
+      <div class="large-11 columns">
+        <%= password_field_tag :password, nil, { placeholder: "Password" }  %>
+      </div>
+    </div>
+    <%= submit_tag("Submit", class: "button tiny", style: "float: right;") %>
+  </fieldset>
+<% end -%>

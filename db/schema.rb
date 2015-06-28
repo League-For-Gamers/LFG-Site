@@ -79,11 +79,14 @@ ActiveRecord::Schema.define(version: 20150627063214) do
     t.string   "password_digest"
     t.string   "display_name"
     t.text     "bio"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
     t.binary   "email"
     t.binary   "email_iv"
-    t.string   "avatar_url"
+    t.string   "avatar_file_name"
+    t.string   "avatar_content_type"
+    t.integer  "avatar_file_size"
+    t.datetime "avatar_updated_at"
   end
 
   add_foreign_key "skills", "users"

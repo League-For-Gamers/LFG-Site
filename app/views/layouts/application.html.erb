@@ -25,7 +25,39 @@
 </head>
 <body>
 
-<%= yield %>
+<nav class="top-bar" data-topbar role="navigation">
+  <ul class="title-area">
+    <li class="name">
+      <h1><a href="/">LFG</a></h1>
+    </li>
+    <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+  </ul>
+
+  <section class="top-bar-section">
+    <ul class="left">
+      <li><a href="/user">User</a></li>
+    </ul>
+    <ul class="right">
+      <% if !logged_in? %>
+        <li><a href="/signup">Sign up</a></li>
+        <li><a href="/login">Login</a></li>
+      <% else %>
+        <li><a href="/user/account"><%= display_name(@current_user) %></a></li>
+        <li><a href="/logout">Log Out</a></li>
+      <% end %>
+    </ul>
+  </section>
+</nav>
+<br>
+<main class="row">
+  <%= yield %>
+</div>
+<% if flash[:notice] -%>
+  <div data-alert class="alert-box">
+    <%= flash[:notice] %>
+    <a class="close">&times;</a>
+  </div>
+<% end -%>
 
 </body>
 </html>

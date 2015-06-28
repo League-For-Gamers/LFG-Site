@@ -18,6 +18,13 @@ gem 'pg', '0.18.2'
 gem 'figaro'
 gem 'httpclient'
 
+# For S3 access
+gem 'paperclip'
+gem 'aws-sdk'
+
+# Temporary. Blank pages are boring.
+gem 'foundation-rails'
+
 group :staging, :production do
   gem 'puma'
 end
