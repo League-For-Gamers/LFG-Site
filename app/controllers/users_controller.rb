@@ -35,7 +35,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(user_params)
+    @user = User.new(signup_params)
 
     respond_to do |format|
       if @user.save
@@ -51,8 +51,17 @@ class UsersController < ApplicationController
 
   # PATCH /user/account
   def update
+    # Okay this is a wee bit dirty
+    user_params = user_params()
+    game_params = user_params["games"]
+    user_params.delete("games")
+    @current_user.assign_attributes(user_params)
+    # Fill out the game list of the user
+    games = game_params.map { |x| x[1]["name"].strip }.uniq(&:downcase).reject(&:empty?) # I would work on the hash directly but empty strings cause havoc
+    @current_user.games = games.map { |x|  Game.where("lower(name) = ?", x.downcase).first || Game.create(name: x) }
+
     respond_to do |format|
-      if @current_user.update(user_params)
+      if @current_user.valid?
         format.html { render action: 'my_account', notice: 'User was successfully updated.' }
         format.json { head :no_content }
       else
@@ -74,7 +83,12 @@ class UsersController < ApplicationController
       params.permit(:username, :password)
     end
 
+    def signup_params
+      params.require(:user).permit(:username, :password, :password_confirmation, :email)
+    end
+
     def user_params
-      params.require(:user).permit(:username, :old_password, :password, :password_confirmation, :email, :bio, :display_name, :avatar)
+      params.require(:user).permit(:old_password, :password, :password_confirmation, :bio, :display_name, :avatar,
+                                   {games: :name})
     end
 end

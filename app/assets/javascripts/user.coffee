@@ -1,3 +1,7 @@
-# Place all the behaviors and hooks related to the matching controller here.
-# All this logic will automatically be available in application.js.
-# You can use CoffeeScript in this file: http://coffeescript.org/
+$ ->
+  if window.location.pathname.match(/\/user\/account/)
+    $('#new_favourite_game').click ->
+      id = $('#favourite_games').children().length
+      html = $.parseHTML "<input name='user[games][#{id}][name]' type='text' id='user_games_name'>"
+      $('#favourite_games').children().last().after html
+      return
