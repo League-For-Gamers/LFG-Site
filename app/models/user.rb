@@ -21,6 +21,13 @@ class User < ActiveRecord::Base
 
   has_attached_file :avatar,
                     :s3_storage_class => :reduced_redundancy
+
+  # Remove Zalgo from display names.
+  # It's not perfect, but it should do just fine, it's threshold based 
+  # So it shouldn't catch smaller fancy-text things.
+  before_validation do
+    self.display_name = self.display_name.gsub(/[\u0300-\u036f\u0489]/, '') if self.display_name =~ /[\u0300-\u036f\u0489]{3}/
+  end
   
   # Email storage crypto
   before_save do

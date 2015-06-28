@@ -54,6 +54,7 @@ class UsersController < ApplicationController
     # Okay this is a wee bit dirty
     user_params = user_params()
     game_params = user_params["games"]
+    user_params["display_name"] = nil if user_params["display_name"].blank?
     user_params.delete("games")
     @current_user.assign_attributes(user_params)
     # Fill out the game list of the user
