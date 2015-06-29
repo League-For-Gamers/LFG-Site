@@ -29,12 +29,6 @@ class UserController < ApplicationController
     @user = User.new
   end
 
-  # GET /user/account
-  def my_account
-    redirect_to root_url and return unless logged_in?
-    @games = @current_user.games + [Game.new] # We always want there to be one empty field.
-  end
-
   def create
     @user = User.new(signup_params)
 
@@ -50,6 +44,13 @@ class UserController < ApplicationController
     end
   end
 
+  # GET /user/account
+  def my_account
+    redirect_to root_url and return unless logged_in?
+    @games = @current_user.games + [Game.new] # We always want there to be one empty field.
+    @current_user.skills.build if @current_user.skills.empty?
+  end
+
   # PATCH /user/account
   def update
     # Okay this is a wee bit dirty
@@ -57,18 +58,19 @@ class UserController < ApplicationController
     game_params = user_params["games"]
     user_params["display_name"] = nil if user_params["display_name"].blank?
     user_params.delete("games")
+    # Blank skills should be destroyed.
+    user_params["skills_attributes"].each_with_index {|x, i| user_params["skills_attributes"]["#{i}"]["_destroy"] = '1' if x[1]["category"].empty? }
     @current_user.assign_attributes(user_params)
     # Fill out the game list of the user
     games = game_params.map { |x| x[1]["name"].strip }.uniq(&:downcase).reject(&:empty?) # I would work on the hash directly but empty strings cause havoc
     @current_user.games = games.map { |x|  Game.where("lower(name) = ?", x.downcase).first || Game.create(name: x) }
-
     respond_to do |format|
-      @games = @current_user.games + [Game.new] # We always want there to be one empty field.
       if @current_user.valid?
         @current_user.save
-        format.html { render action: 'my_account', notice: 'User was successfully updated.' }
+        format.html { redirect_to '/user/account', notice: 'User was successfully updated.' }
         format.json { head :no_content }
       else
+        @games = @current_user.games + [Game.new]
         format.html { render action: 'my_account' }
         format.json { render json: @current_user.errors, status: :unprocessable_entity }
       end
@@ -93,6 +95,7 @@ class UserController < ApplicationController
 
     def user_params
       params.require(:user).permit(:old_password, :password, :password_confirmation, :bio, :display_name, :avatar,
-                                   {games: :name})
+                                   {games: :name},
+                                   skills_attributes: [:id, :category, :confidence])
     end
 end

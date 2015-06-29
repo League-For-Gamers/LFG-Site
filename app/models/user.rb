@@ -2,13 +2,13 @@ class User < ActiveRecord::Base
   attr_accessor :old_password
   has_and_belongs_to_many :roles
   has_and_belongs_to_many :games
-  has_many :skills
-  has_many :tags
+  has_many :skills, dependent: :destroy
+  has_many :tags, dependent: :destroy
 
   validates :username, :display_name, length: { maximum: 15 }
   validates_format_of :username, with: /\A([a-zA-Z](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.
   validates :bio, length: { maximum: 512 }
-  validates :decrypted_email, length: {maximum: 325} # A bit over what should be the maximum, just incase.
+  validates :decrypted_email, length: {maximum: 325}, on: :create # A bit over what should be the maximum, just incase.
   validates :username, uniqueness: true
   validates :display_name, uniqueness: true, case_sensitive: false, allow_blank: true, allow_nil: true
   validates :username, :password_digest, :email, presence: true
@@ -16,6 +16,8 @@ class User < ActiveRecord::Base
   validates :avatar, attachment_content_type: { content_type: /\Aimage\/.*\Z/ },
                      attachment_size: { less_than: 512.kilobytes }
   validate :validates_old_password
+
+  accepts_nested_attributes_for :skills, allow_destroy: true
 
   has_secure_password
 
