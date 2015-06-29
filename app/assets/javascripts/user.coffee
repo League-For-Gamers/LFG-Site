@@ -1,5 +1,5 @@
 $ ->
-  if window.location.pathname.match(/\/user\/account/)
+  if window.location.pathname.match(/\/account/)
     $('#new_favourite_game').click ->
       id = $('#favourite_games').children().length
       html = $.parseHTML "<input name='user[games][#{id}][name]' type='text' id='user_games_name'>"
