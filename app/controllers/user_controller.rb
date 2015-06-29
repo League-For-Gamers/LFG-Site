@@ -44,14 +44,14 @@ class UserController < ApplicationController
     end
   end
 
-  # GET /user/account
+  # GET /account
   def my_account
     redirect_to root_url and return unless logged_in?
     @games = @current_user.games + [Game.new] # We always want there to be one empty field.
     @current_user.skills.build if @current_user.skills.empty?
   end
 
-  # PATCH /user/account
+  # PATCH /account
   def update
     # Okay this is a wee bit dirty
     user_params = user_params()
@@ -67,7 +67,7 @@ class UserController < ApplicationController
     respond_to do |format|
       if @current_user.valid?
         @current_user.save
-        format.html { redirect_to '/user/account', notice: 'User was successfully updated.' }
+        format.html { redirect_to '/account', notice: 'User was successfully updated.' }
         format.json { head :no_content }
       else
         @games = @current_user.games + [Game.new]
@@ -82,7 +82,11 @@ class UserController < ApplicationController
 
   private
     def set_user
-      @user = User.find(params[:id])
+      begin
+        @user = User.find_by(username: params[:id]) or not_found
+      rescue ActionController::RoutingError
+        render :template => 'shared/not_found', :status => 404
+      end
     end
 
     def login_params

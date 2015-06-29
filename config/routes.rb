@@ -6,10 +6,10 @@ Rails.application.routes.draw do
   get  'signup', to: 'user#signup'
   post 'signup', to: 'user#create'
   get  'logout', to: 'user#logout'
+  get 'account', to: 'user#my_account'
+  patch 'account', to: 'user#update'
 
   namespace :user, path: 'user' do
-    get 'account', action: 'my_account'
-    patch 'account', action: 'update'
     get ':id', action: 'show'
   end
 end

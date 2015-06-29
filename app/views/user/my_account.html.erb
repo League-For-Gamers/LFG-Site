@@ -1,5 +1,5 @@
 <div class="large-6 small-12 center">
-  <%= form_for @current_user, url: '/user/account', multipart: true do |f| %>
+  <%= form_for @current_user, url: '/account', multipart: true do |f| %>
     <% if @current_user.errors.any? %>
       <div data-alert class="alert-box">
         <strong><%= pluralize(@current_user.errors.count, "error") %> prohibited this user from being saved:</strong>
