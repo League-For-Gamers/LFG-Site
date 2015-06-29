@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :skill do
     category :code
-    confidence 10
+    confidence {rand(1..10)}
   end
 
 end

@@ -24,3 +24,5 @@ en:
     attributes:
       user:
         decrypted_email: "E-mail address"
+      tag:
+        name: "Tag"

@@ -1,4 +1,4 @@
-class UsersController < ApplicationController
+class UserController < ApplicationController
   before_action :set_user, only: [:show]
 
   # GET /login
@@ -32,6 +32,7 @@ class UsersController < ApplicationController
   # GET /user/account
   def my_account
     redirect_to root_url and return unless logged_in?
+    @games = @current_user.games + [Game.new] # We always want there to be one empty field.
   end
 
   def create
@@ -62,7 +63,9 @@ class UsersController < ApplicationController
     @current_user.games = games.map { |x|  Game.where("lower(name) = ?", x.downcase).first || Game.create(name: x) }
 
     respond_to do |format|
+      @games = @current_user.games + [Game.new] # We always want there to be one empty field.
       if @current_user.valid?
+        @current_user.save
         format.html { render action: 'my_account', notice: 'User was successfully updated.' }
         format.json { head :no_content }
       else

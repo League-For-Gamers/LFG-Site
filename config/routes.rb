@@ -1,13 +1,13 @@
 Rails.application.routes.draw do
   root 'static#main'
 
-  get  'login', to: 'users#login'
-  post 'login', to: 'users#login_check'
-  get  'signup', to: 'users#signup'
-  post 'signup', to: 'users#create'
-  get  'logout', to: 'users#logout'
+  get  'login', to: 'user#login'
+  post 'login', to: 'user#login_check'
+  get  'signup', to: 'user#signup'
+  post 'signup', to: 'user#create'
+  get  'logout', to: 'user#logout'
 
-  namespace :users, path: 'user' do
+  namespace :user, path: 'user' do
     get 'account', action: 'my_account'
     patch 'account', action: 'update'
     get ':id', action: 'show'

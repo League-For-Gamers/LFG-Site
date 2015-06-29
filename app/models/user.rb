@@ -13,14 +13,19 @@ class User < ActiveRecord::Base
   validates :display_name, uniqueness: true, case_sensitive: false, allow_blank: true, allow_nil: true
   validates :username, :password_digest, :email, presence: true
   validates_format_of :decrypted_email, with: /\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i, on: :create
-  validates :avatar, attachment_content_type: { content_type: "image/png" },
+  validates :avatar, attachment_content_type: { content_type: /\Aimage\/.*\Z/ },
                      attachment_size: { less_than: 512.kilobytes }
   validate :validates_old_password
 
   has_secure_password
 
   has_attached_file :avatar,
-                    :s3_storage_class => :reduced_redundancy
+                    path: "users/avatars/:style/:id.:extension",
+                    styles: {
+                      thumb: '64x64>',
+                      med:   '256x256#',
+                      large: '512x512>'
+                    }
 
   # Remove Zalgo from display names.
   # It's not perfect, but it should do just fine, it's threshold based 

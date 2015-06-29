@@ -67,14 +67,11 @@ ActiveRecord::Schema.define(version: 20150628170001) do
 
   add_index "skills", ["user_id"], name: "index_skills_on_user_id", using: :btree
 
-  create_table "tags", id: false, force: :cascade do |t|
+  create_table "tags", force: :cascade do |t|
     t.string   "name"
-    t.integer  "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
-
-  add_index "tags", ["user_id"], name: "index_tags_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "username"
@@ -92,5 +89,4 @@ ActiveRecord::Schema.define(version: 20150628170001) do
   end
 
   add_foreign_key "skills", "users"
-  add_foreign_key "tags", "users"
 end

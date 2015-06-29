@@ -3,5 +3,6 @@ class Skill < ActiveRecord::Base
   belongs_to :user
 
   validates :category, :user, presence: true
+  validates :confidence, inclusion: { in:  1..10}
 
 end

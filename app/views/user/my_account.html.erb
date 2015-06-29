@@ -78,13 +78,22 @@
 
     <div class="row">
       <div class="small-12 columns" id="favourite_games">
-        <% @current_user.games.each_with_index do |game, i| -%>
+        <% @games.each_with_index do |game, i| -%>
           <%= f.fields_for :games, @current_user.games.find_or_initialize_by(id: game), number: game do |g| -%>
             <%= g.text_field :name, name: "user[games][#{i}][name]" %>
           <% end -%>
         <% end -%>
       </div>
       <h1 id="new_favourite_game" title="Add new game">+</h1>
+    </div>
+
+    <div class="row">
+      <div class="small-12">
+        <%= image_tag @current_user.avatar.url(:med) %>
+        <label>Avatar
+          <%= f.file_field :avatar %>
+        </label>
+      </div>
     </div>
     
 
