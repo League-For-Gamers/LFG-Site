@@ -1,4 +1,5 @@
 class Tag < ActiveRecord::Base
+  belongs_to :user
   # Stolen from twitters hashtag regexes.
   # https://github.com/twitter/twitter-text/blob/master/rb/lib/twitter-text/regex.rb#L107
   TAG_ALPHA = /[\p{L}\p{M}]/
@@ -6,7 +7,6 @@ class Tag < ActiveRecord::Base
 
   validates :name, presence: true
   validates :name, length: {minimum: 3, maximum: 50}
+  validates_uniqueness_of :name, scope: :user_id
   validates_format_of :name, with: /\A#{TAG_ALPHANUMERIC}*#{TAG_ALPHA}#{TAG_ALPHANUMERIC}*\z/io, message: "has invalid structure"
-  # TODO: Work out the specifics of tags. Will they allow spaces, for example?
-
 end

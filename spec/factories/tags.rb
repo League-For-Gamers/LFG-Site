@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :tag do
-    name "MyString"
+    name "VidyaGames"
+    user
   end
 
 end
