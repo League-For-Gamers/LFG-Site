@@ -20,22 +20,25 @@ class UserController < ApplicationController
     end
   end
 
+  # GET /logout
   def logout
     flash[:notice] = "Successfully logged out"
     logout_user and redirect_to root_url
   end
   
+  # GET /signup
   def signup
     @user = User.new
   end
 
+  # POST /signup
   def create
     @user = User.new(signup_params)
 
     respond_to do |format|
       if @user.save
         login_user(@user)
-        format.html { redirect_to "/user/#{@user.id}", notice: 'User was successfully created.' }
+        format.html { redirect_to "/user/#{@user.username}", notice: 'User was successfully created.' }
         format.json { render action: 'show', status: :created, location: @user }
       else
         format.html { render action: 'signup' }
@@ -59,11 +62,13 @@ class UserController < ApplicationController
     user_params["display_name"] = nil if user_params["display_name"].blank?
     user_params.delete("games")
     # Blank skills should be destroyed.
-    user_params["skills_attributes"].each_with_index {|x, i| user_params["skills_attributes"]["#{i}"]["_destroy"] = '1' if x[1]["category"].empty? }
+    user_params["skills_attributes"].each_with_index {|x, i| user_params["skills_attributes"]["#{i}"]["_destroy"] = '1' if x[1]["category"].empty? } unless user_params["skills_attributes"].blank?
     @current_user.assign_attributes(user_params)
     # Fill out the game list of the user
-    games = game_params.map { |x| x[1]["name"].strip }.uniq(&:downcase).reject(&:empty?) # I would work on the hash directly but empty strings cause havoc
-    @current_user.games = games.map { |x|  Game.where("lower(name) = ?", x.downcase).first || Game.create(name: x) }
+    unless game_params.nil?
+      games = game_params.map { |x| x[1]["name"].strip }.uniq(&:downcase).reject(&:empty?) # I would work on the hash directly but empty strings cause havoc
+      @current_user.games = games.map { |x| Game.where("lower(name) = ?", x.downcase).first || Game.create(name: x) }
+    end
     respond_to do |format|
       if @current_user.valid?
         @current_user.save
@@ -77,6 +82,7 @@ class UserController < ApplicationController
     end
   end
 
+  # GET /user/:id
   def show
   end
 

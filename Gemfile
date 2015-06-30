@@ -20,7 +20,7 @@ gem 'httpclient'
 
 # For S3 access
 gem 'paperclip'
-gem 'aws-sdk'
+gem 'aws-sdk', '< 2.0'
 
 # Temporary. Blank pages are boring.
 gem 'foundation-rails'
@@ -33,7 +33,7 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
 
-  gem 'rspec-rails', '~> 3.0.0'
+  gem 'rspec-rails', '~> 3.3.2'
   gem 'factory_girl_rails'
   gem 'simplecov', require: false
 end

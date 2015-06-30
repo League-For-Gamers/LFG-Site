@@ -6,6 +6,13 @@ RSpec.describe User, :type => :model do
     expect(bobby).to be_valid
   end
 
+  it 'should fail when trying to change password with an invalid old password' do # Wow that was long
+    bobby.old_password = "invalid password"
+    newpass = "new password"
+    bobby.password, bobby.password_confirmation = newpass, newpass
+    expect(bobby).to_not be_valid
+  end
+
   context 'when it has a special email' do
     let(:email) { "test@email.com" }
     let(:bobby) { FactoryGirl.create(:user, email: email) }
