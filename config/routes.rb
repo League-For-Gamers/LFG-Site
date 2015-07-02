@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   get 'account', to: 'user#my_account'
   patch 'account', to: 'user#update'
 
+  get 'search', to: 'user#search'
+
   namespace :user, path: 'user' do
     get ':id', action: 'show'
   end

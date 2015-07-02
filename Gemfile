@@ -13,6 +13,7 @@ gem 'bcrypt', '~> 3.1.7'
 
 ## Aftermarket rails
 gem 'pg', '0.18.2'
+gem 'pg_search'
 
 # For env[] management
 gem 'figaro'
@@ -36,6 +37,7 @@ group :development, :test do
   gem 'rspec-rails', '~> 3.3.2'
   gem 'factory_girl_rails'
   gem 'simplecov', require: false
+  gem 'pry-rails'
 end
 
 group :development do

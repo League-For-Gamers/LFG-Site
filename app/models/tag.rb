@@ -1,4 +1,7 @@
 class Tag < ActiveRecord::Base
+  include PgSearch
+  multisearchable against: :name
+
   belongs_to :user
   # Stolen from twitters hashtag regexes.
   # https://github.com/twitter/twitter-text/blob/master/rb/lib/twitter-text/regex.rb#L107

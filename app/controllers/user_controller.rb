@@ -86,6 +86,51 @@ class UserController < ApplicationController
   def show
   end
 
+  # GET /search
+  def search
+    search_params = params.permit(:query, :filter, :page)
+
+    unless search_params["query"].blank? and search_params["filter"].blank?
+      @query = search_params["query"]
+      @filter = search_params["filter"]
+      @query_string = search_params.map{|x|"#{x[0]}=#{x[1]}"}.join("&")
+
+      unless @query.blank?
+        search = PgSearch.multisearch(@query).with_pg_search_rank
+
+        # TODO: This can be optimized. Move the IDs into arrays, mass-search the arrays
+        # Map the tags, merge the arrays, I'll do it later.
+        @results = search.map do |res|
+          case res.searchable_type
+          when "Tag"
+            Tag.includes(user: [:skills]).find(res.searchable_id).user
+          else
+            User.includes(:skills).find(res.searchable_id)
+          end
+        end
+      else
+        @results = User.order("display_name DESC, username DESC")
+      end
+
+      
+      unless @filter.blank?
+        # Oh jesus.
+        @results = @results.map {|x| x if x.skills.map(&:category).include? @filter }.compact.sort do |x,y|
+          # The higher the confidence, the higher the ranking.
+          y.skills.to_a.select {|x| x.category == @filter }[0].confidence <=> x.skills.to_a.select {|x| x.category == @filter }[0].confidence
+        end
+      end
+
+      per_page = 10
+      count = @results.size
+      @page_num = search_params["page"].to_i || 0
+      offset = @page_num * per_page
+      @num_of_pages = count / per_page
+      start_num = 0 + offset
+      @results = @results[start_num...start_num + per_page]
+    end
+  end
+
   private
     def set_user
       begin

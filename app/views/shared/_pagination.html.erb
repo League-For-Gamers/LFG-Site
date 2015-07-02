@@ -1,0 +1,52 @@
+<%# Variables to pass: address_prefix, number_of_pages, current = 0, limit = 10, existing_query = false, num_prefix = "page=" -%>
+<% current = current ||= 0 -%>
+<% existing_query = existing_query ||= false -%>
+<% num_prefix = num_prefix || "page=" %>
+<% edges = edges || 3 %>
+<% last = 0 %>
+<% if number_of_pages > 1 -%>
+  <% address_prefix.gsub!(/&#{num_prefix}\d+/, "") 
+    page_prefix = ""
+    page_prefix << "?" unless existing_query
+    page_prefix << "&" if existing_query
+    page_prefix << num_prefix
+    window_start = []
+    window_end = []
+    window_current = []
+    edges.times do |time|
+      window_start << time
+      window_end << number_of_pages - time
+      window_current << current + time - 1
+    end
+     %>
+  <ul class="pagination">
+    <% if current <= 0 %>
+      <li class="arrow unavailable"><a href="">&laquo;</a></li>
+    <% else %>
+      <li class="arrow"><a href="<%= address_prefix + page_prefix + (current - 1).to_s %>">&laquo;</a></li>
+    <% end -%>
+
+    <% number_of_pages.times do |page| -%>
+      <% if window_start.include? page or window_end.include? page + 1 or window_current.include? page %>
+      <% prefix = address_prefix + page_prefix + page.to_s %>
+        <% if page == current -%>
+          <li class='current'><a href='<%= prefix %>'><%= page + 1 %></a></li>
+        <% else -%>
+          <li><a href='<%= prefix %>'><%= (page + 1).to_s %></a></li>
+        <% end -%>
+        <% last = current %>
+      <% else %>
+        <% unless last == :edged %>
+          <li class="unavailable"><a>...</a></li>
+          <% last = :edged %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% if current < number_of_pages -1  %>
+      <li class="arrow"><a href="<%= address_prefix + page_prefix + (current + 1).to_s %>">&raquo;</a></li>
+    <% else %>
+      <li class="arrow unavailable"><a href="">&raquo;</a></li>
+    <% end -%>
+
+  </ul>
+<% end -%>

@@ -1,4 +1,7 @@
 class User < ActiveRecord::Base
+  include PgSearch
+  multisearchable against: [:username, :display_name]
+
   attr_accessor :old_password
   has_and_belongs_to_many :roles
   has_and_belongs_to_many :games

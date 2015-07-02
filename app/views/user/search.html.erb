@@ -1,0 +1,49 @@
+<div class="large-6 small-12 center">
+  <div class="row">
+    <h2>User Search</h2>
+    <form method="get" action="/search">
+      <div class="small-12 columns">
+        <input type="text" name="query" placeholder="Query" value="<%= @query if @query -%>" >
+        <a class="show_hidden" data-id="1">Show advanced settings</a>
+        <div class="hidden" id="hidden-1">
+          <label>Filter by skill:
+          <%= select_tag "filter", options_for_select(Skill.categories.keys.to_a.map { |x| [x.titleize, x] }, @filter), { include_blank: true } %>
+          </label>
+        </div>
+      </div>
+    </form>
+  </div>
+  <% if @results -%>
+    <div class="row">
+      <% @results.each do |user| -%>
+        <fieldset>
+          <legend><%= link_to display_name(user), "/user/#{user.username}" %></legend>
+          <div class="large-2 small-4 columns">
+            <%= image_tag user.avatar.url(:thumb) %>
+          </div>
+          <div class="large-10 small-8 columns">
+            <% if !user.skills.empty? -%>
+              <span>Skills</span>
+              <ul>
+                <% user.skills.each do |skill| -%>
+                  <li><%= skill.category.titleize %> | <%= skill.confidence %></li>
+                <% end -%>
+              </ul>
+            <% elsif !user.bio.blank? -%>
+              <span>Bio</span>
+              <p><%= user.bio %></p>
+            <% else %>
+              <p>No info to show</p>
+            <% end -%>
+          </div>
+        </fieldset>
+      <% end -%>
+      <% if @results.empty? -%>
+        <h3>No results found!</h3>
+      <% end -%>
+    </div>
+    <div class="row">
+      <%= render(:partial => "shared/pagination", :locals => {:address_prefix => "/search?#{@query_string}", :number_of_pages => @num_of_pages, :current => @page_num, :existing_query => true}) %>
+    </div>
+  <% end %>
+</div>
