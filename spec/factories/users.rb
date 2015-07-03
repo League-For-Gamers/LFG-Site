@@ -6,6 +6,10 @@ FactoryGirl.define do
     bio "Wherever I went, computers disliked me :("
     email "bobby@tables-family.com"
 
+    after(:create) do |user|
+      user.tags << FactoryGirl.create(:tag, user: user)
+    end
+
     factory :user_with_skill do
       after(:create) do |user|
         create(:skill, user: user)

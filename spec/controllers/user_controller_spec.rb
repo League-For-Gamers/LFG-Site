@@ -83,12 +83,23 @@ RSpec.describe UserController, :type => :controller do
       game = "Starcraft III"
       patch :update, user: { games: { "0" => {name: game} }}
       expect(response).to redirect_to("/account")
+      expect(assigns(:current_user).errors).to be_empty
       expect(bobby.games).to include(Game.find_by name: game)
+    end
+
+    it "removes a game from the users list" do
+      bobby.games << FactoryGirl.create(:game, name: "newgame1")
+      bobby.games << FactoryGirl.create(:game, name: "newgame2")
+      patch :update, user: { games: { "0" => {id: Game.find_by(name: "newgame1").id, name: "newgame1"}, "1" => {id: Game.find_by(name: "newgame2").id, name: ""}} }
+      expect(User.find(bobby.id).games).to_not include(Game.find_by(name: "newgame2"))
+      expect(assigns(:current_user).errors).to be_empty
+      expect(response).to redirect_to("/account")
     end
 
     it "adds a skill to the users list" do
       patch :update, user: { skills_attributes: {"0" => {id: nil, category: :code, confidence: 7} }, games: {"0" => {name: "fdsf"}}}
       expect(response).to redirect_to("/account")
+      expect(assigns(:current_user).errors).to be_empty
       expect(bobby.skills.map {|x| [x.category, x.confidence]}).to include(["code", 7])
     end
     it "removes a skill from the users list" do
@@ -113,6 +124,28 @@ RSpec.describe UserController, :type => :controller do
       expect(assigns(:current_user).errors).to be_empty
       expect(response).to redirect_to("/account")
     end
+
+    it "successfully adds a tag" do
+      patch :update, user: {tags: bobby.tags.map(&:name).join(", ") + ", new_tag" }
+      expect(User.find(bobby.id).tags).to include(Tag.find_by(name: "new_tag", user: bobby))
+      expect(assigns(:current_user).errors).to be_empty
+      expect(response).to redirect_to("/account")
+    end
+
+    it "throws an error on an invalid tag entry" do
+      patch :update, user: {tags: "new tag" }
+      expect(assigns(:current_user).errors).to_not be_empty
+      expect(response).to_not redirect_to("/account")
+    end
+
+    it "successfully removes a tag" do
+      old_tags = bobby.tags
+      bobby.tags << FactoryGirl.create(:tag, user: bobby)
+      patch :update, user: {tags: old_tags.map(&:name).join(", ") }
+      expect(User.find(bobby.id).tags).to eq(old_tags)
+      expect(assigns(:current_user).errors).to be_empty
+      expect(response).to redirect_to("/account")
+    end
   end
 
   describe "GET /user/:id" do
@@ -127,13 +160,50 @@ RSpec.describe UserController, :type => :controller do
     end
   end
 
-  # How the fuck am I gonna unit-test fulltext search...
   describe "GET /search" do
-   context "without any queries" do
-     it "should not search for any results" do
-       get :search
-       expect(assigns(:results)).to_not be_present
-     end
-   end 
+    context "without any queries or filter" do
+      it "should not search for any results" do
+        get :search
+        expect(assigns(:results)).to_not be_present
+      end
+    end
+
+    context "with queries but no filter" do
+      it "should return a result with a user when querying for their name" do
+        get :search, query: bobby.display_name
+        expect(assigns(:results)).to include(bobby)
+      end
+      it "should return a result with a user when querying for a tag in their collection" do
+        bobby.tags << FactoryGirl.create(:tag, name: "likes_tables", user: bobby)
+        get :search, query: "likes_tables"
+        expect(assigns(:results)).to include(bobby)
+      end
+    end
+
+    context "with queries and a filter" do
+      it "should return a user when querying for their name and a matching skill" do
+        bobby.skills << FactoryGirl.create(:skill, category: :code, user: bobby)
+        get :search, query: "bobby", filter: "code"
+        expect(assigns(:results)).to include(bobby)
+      end
+      it "should not return a user when querying for their name and a skill they dont have" do
+        bobby.skills << FactoryGirl.create(:skill, category: :code, user: bobby)
+        get :search, query: "bobby", filter: "writing"
+        expect(assigns(:results)).to_not include(bobby)
+      end
+    end
+
+    context "with no queries and a filter" do
+      it "should return a user with a matching skill" do
+        bobby.skills << FactoryGirl.create(:skill, category: :code, user: bobby)
+        get :search, filter: "code"
+        expect(assigns(:results)).to include(bobby)
+      end
+      it "should not return a user with a skill they dont have" do
+        bobby.skills << FactoryGirl.create(:skill, category: :code, user: bobby)
+        get :search, filter: "writing"
+        expect(assigns(:results)).to_not include(bobby)
+      end
+    end
   end
 end

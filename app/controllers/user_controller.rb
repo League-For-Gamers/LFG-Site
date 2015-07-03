@@ -144,10 +144,9 @@ class UserController < ApplicationController
       
       unless @filter.blank?
         # Oh jesus.
-        @results = @results.map {|x| x if x.skills.map(&:category).include? @filter }.compact.sort do |x,y|
-          # The higher the confidence, the higher the ranking.
-          y.skills.to_a.select {|x| x.category == @filter }[0].confidence <=> x.skills.to_a.select {|x| x.category == @filter }[0].confidence
-        end
+        @results = @results.map {|x| x if x.skills.map(&:category).include? @filter }.compact
+        # The higher the confidence, the higher the ranking.
+        @results.sort! { |x,y| y.skills.to_a.select {|x| x.category == @filter }[0].confidence <=> x.skills.to_a.select {|x| x.category == @filter }[0].confidence }
       end
 
       per_page = 10

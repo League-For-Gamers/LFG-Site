@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :tag do
-    name "VidyaGames"
+    sequence(:name) { |n| "VidyaGame_#{n}" }
     user
   end
 
