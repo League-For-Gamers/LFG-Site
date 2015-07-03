@@ -111,6 +111,15 @@
     </div>
 
     <div class="row">
+      <h2>Tags</h2>
+      <div class="small-12 columns">
+        <label>(Comma seperated)
+        <textarea name="user[tags]" id="user_tags"><%= @current_user.tags.map(&:name).join(", ") %></textarea>
+        </label>
+      </div>
+    </div>
+
+    <div class="row">
       <h2>Avatar</h2>
       <div class="small-12">
         <%= image_tag @current_user.avatar.url(:med) %>
@@ -119,7 +128,6 @@
         </label>
       </div>
     </div>
-    
 
     <div class="row">
       <div class="small-12 columns">

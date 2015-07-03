@@ -126,4 +126,14 @@ RSpec.describe UserController, :type => :controller do
       expect(response.status).to eq(404)
     end
   end
+
+  # How the fuck am I gonna unit-test fulltext search...
+  describe "GET /search" do
+   context "without any queries" do
+     it "should not search for any results" do
+       get :search
+       expect(assigns(:results)).to_not be_present
+     end
+   end 
+  end
 end

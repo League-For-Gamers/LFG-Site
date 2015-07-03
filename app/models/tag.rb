@@ -11,5 +11,10 @@ class Tag < ActiveRecord::Base
   validates :name, presence: true
   validates :name, length: {minimum: 3, maximum: 50}
   validates_uniqueness_of :name, scope: :user_id
-  validates_format_of :name, with: /\A#{TAG_ALPHANUMERIC}*#{TAG_ALPHA}#{TAG_ALPHANUMERIC}*\z/io, message: "has invalid structure"
+  validates :name, uniqueness: true
+  validates_format_of :name, with: /\A#{TAG_ALPHANUMERIC}*#{TAG_ALPHA}#{TAG_ALPHANUMERIC}*\z/io, message: "is invalid (Try removing spaces and special characters)"
+
+  before_validation do 
+    self.name.downcase!
+  end
 end

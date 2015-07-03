@@ -21,6 +21,7 @@ class User < ActiveRecord::Base
   validate :validates_old_password
 
   accepts_nested_attributes_for :skills, allow_destroy: true
+  accepts_nested_attributes_for :tags, allow_destroy: true
 
   has_secure_password
 
