@@ -1,5 +1,7 @@
 class UserController < ApplicationController
   before_action :set_user, only: [:show]
+  skip_before_filter :set_current_user, only: [:my_account, :update]
+  before_filter :set_current_user_with_includes, only: [:my_account, :update]
 
   # GET /login
   def login
@@ -119,18 +121,22 @@ class UserController < ApplicationController
       unless @query.blank?
         search = PgSearch.multisearch(@query).with_pg_search_rank
 
-        # TODO: This can be optimized. Move the IDs into arrays, mass-search the arrays
-        # Map the tags, merge the arrays, I'll do it later.
-        @results = search.map do |res|
-          case res.searchable_type
-          when "Tag"
-            Tag.includes(user: [:skills]).find(res.searchable_id).user
-          else
-            User.includes(:skills).find(res.searchable_id)
-          end
+        tag_search = search.map {|x| [x.searchable_id, x.rank] if x.searchable_type == "Tag"}.compact
+        tag_list = Tag.includes(user: [:skills]).where(id: tag_search.map{|x|x[0]}).map{|x|x.user}
+        user_search = search.map {|x| [x.searchable_id, x.rank] if x.searchable_type == "User"}.compact
+        user_list = User.includes(:skills).where(id: user_search.map{|x|x[0]})
+
+        user_list.each_with_index do |u,i|
+          user_search[i][0] = u
         end
+
+        tag_list.each_with_index do |t,i|
+          tag_search[i][0] = t
+        end
+
+        @results = (user_search + tag_search).sort {|x,y| x[1] <=> y[1]}.map{|x|x[0]}.uniq
       else
-        @results = User.order("display_name DESC, username DESC")
+        @results = User.includes(:skills).order("display_name DESC, username DESC")
       end
 
       
@@ -153,6 +159,10 @@ class UserController < ApplicationController
   end
 
   private
+    def set_current_user_with_includes
+      @current_user = User.includes(:skills, :games, :tags).find session[:user]
+    end
+
     def set_user
       begin
         @user = User.find_by(username: params[:id]) or not_found
