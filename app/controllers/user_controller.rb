@@ -1,7 +1,7 @@
 class UserController < ApplicationController
   before_action :set_user, only: [:show]
   skip_before_filter :set_current_user, only: [:my_account, :update]
-  before_filter :set_current_user_with_includes, only: [:my_account, :update]
+  before_filter :set_current_user_with_includes, only: [:my_account, :update], if: :logged_in?
 
   # GET /login
   def login
@@ -67,21 +67,23 @@ class UserController < ApplicationController
     user_params.delete("tags")
 
     # Could probably be better.
-    tags = tag_params.split(", ")
-    tags.each do |tag|
-      t = Tag.find_or_create_by(name: tag, user: @current_user)
-      unless t.valid?
-        t.errors.messages.each {|e| @current_user.errors.add("Tag", e[1][0]) }
+    unless tag_params.blank?
+      tags = tag_params.split(", ")
+      tags.each do |tag|
+        t = Tag.find_or_create_by(name: tag, user: @current_user)
+        unless t.valid?
+          t.errors.messages.each {|e| @current_user.errors.add("Tag", e[1][0]) }
+        end
       end
-    end
-    
-    user_params["tags_attributes"] = {}
-    @current_user.tags.each do |tag|
-      tmp = {}
-      tmp["id"] = tag.id
-      tmp["name"] = tag.name
-      tmp["_destroy"] = '1' unless tags.include? tag.name
-      user_params["tags_attributes"]["#{user_params["tags_attributes"].length}"] = tmp
+      
+      user_params["tags_attributes"] = {}
+      @current_user.tags.each do |tag|
+        tmp = {}
+        tmp["id"] = tag.id
+        tmp["name"] = tag.name
+        tmp["_destroy"] = '1' unless tags.include? tag.name
+        user_params["tags_attributes"]["#{user_params["tags_attributes"].length}"] = tmp
+      end
     end
 
     # Blank skills should be destroyed.
