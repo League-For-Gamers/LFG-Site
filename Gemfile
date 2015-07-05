@@ -15,8 +15,9 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'pg', '0.18.2'
 gem 'pg_search'
 gem 'redcarpet'
-gem "fog", "~> 1.32", require: "fog/aws"
+gem 'fog', '~> 1.32', require: 'fog/aws'
 gem 'asset_sync'
+gem 'redis-rails'
 
 # For env[] management
 gem 'figaro'

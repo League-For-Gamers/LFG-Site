@@ -5,3 +5,6 @@ AWS_ACCESS_KEY_ID: 'access_key'
 AWS_SECRET_ACCESS_KEY: 'secret_access_key'
 FOG_DIRECTORY: *bucket
 FOG_PROVIDER: 'AWS'
+production: 
+  REDIS_CACHE_ADDRESS: 'redis://:password@hostname:6379/0/cache'
+  REDIS_SESSION_ADDRESS: 'redis://:password@hostname:6379/1/sessions'

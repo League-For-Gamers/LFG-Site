@@ -22,5 +22,12 @@ module LeagueForGamers
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+    config.autoload_paths += %W(#{config.root}/lib)
+
+    if Rails.env.production?
+      config.cache_store = :redis_store, ENV['REDIS_CACHE_ADDRESS'], { :expires_in => 3.days }
+    else
+      config.cache_store = :null_store
+    end
   end
 end
