@@ -14,6 +14,7 @@ gem 'bcrypt', '~> 3.1.7'
 ## Aftermarket rails
 gem 'pg', '0.18.2'
 gem 'pg_search'
+gem 'redcarpet'
 gem "fog", "~> 1.32", require: "fog/aws"
 gem 'asset_sync'
 
@@ -46,9 +47,10 @@ group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'quiet_assets'
-  gem 'capistrano', '3.2.1', require: false
-  gem 'capistrano-bundler', '1.1.2', require: false
-  gem 'capistrano-rails', '1.1.1', require: false
+  gem 'capistrano', '3.4.0', require: false
+  gem 'capistrano-bundler', '1.1.4', require: false
+  gem 'capistrano-rails', '1.1.3', require: false
+  gem 'capistrano3-puma', require: false
   gem 'ruby-prof'
 end
 

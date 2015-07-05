@@ -17,7 +17,9 @@
 /tmp
 # Ignore application configuration
 /config/application.yml
+/config/application.production.yml
 /config/database.yml
+/config/database.production.yml
 
 /coverage
 /public/assets
