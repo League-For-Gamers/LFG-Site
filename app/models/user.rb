@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :games
   has_many :skills, dependent: :destroy
   has_many :tags, dependent: :destroy
+  has_many :posts, -> { order 'created_at ASC' }, dependent: :destroy
 
   validates :username, :display_name, length: { maximum: 15 }
   validates_format_of :username, with: /\A([a-zA-Z](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.

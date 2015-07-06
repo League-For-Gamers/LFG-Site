@@ -47,10 +47,18 @@ RSpec.describe UserController, :type => :controller do
       end
     end
     context "when logged in" do
-      it "shows the main template" do
+      before do
         session[:user] = bobby.id
+      end
+      it "shows the main template" do
         get :main
         expect(response).to render_template(:main)
+      end
+      it "populates the @posts variable" do
+        5.times { FactoryGirl.create(:post, user: bobby)}
+        FactoryGirl.create(:post, user: bobby, official: true)
+        get :main
+        expect(assigns(:posts)).to include(bobby.posts.last)
       end
     end 
   end
@@ -217,6 +225,28 @@ RSpec.describe UserController, :type => :controller do
         bobby.skills << FactoryGirl.create(:skill, category: :code, user: bobby)
         get :search, filter: "writing"
         expect(assigns(:results)).to_not include(bobby)
+      end
+    end
+  end
+
+  describe "POST /new_post" do
+    context "while not logged in" do
+      it "should redirect to root_url" do
+        post :create_post
+        expect(response).to redirect_to(root_url)
+      end
+    end
+    context "while logged in" do
+      before do
+        session[:user] = bobby.id
+      end
+      context "while passing arguments" do
+        it "creates a new post" do
+          body = "Test post body"
+          post :create_post, {body: body}
+          expect(response).to redirect_to(root_url)
+          expect(bobby.posts.last.body).to eq(body)
+        end
       end
     end
   end

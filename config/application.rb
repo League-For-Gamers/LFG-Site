@@ -23,6 +23,7 @@ module LeagueForGamers
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
     config.autoload_paths += %W(#{config.root}/lib)
+    config.filter_parameters += [:email, :decrypted_email]
 
     if Rails.env.production? or Rails.env.staging?
       config.cache_store = :redis_store, ENV['REDIS_CACHE_ADDRESS'], { :expires_in => 3.days }

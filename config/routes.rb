@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   get  'logout', to: 'user#logout'
   get 'account', to: 'user#my_account'
   patch 'account', to: 'user#update'
+  post 'new_post', to: 'user#create_post'
 
   get 'search', to: 'user#search'
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150706014922) do
+ActiveRecord::Schema.define(version: 20150706030659) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,6 +53,16 @@ ActiveRecord::Schema.define(version: 20150706014922) do
   end
 
   add_index "pg_search_documents", ["searchable_type", "searchable_id"], name: "index_pg_search_documents_on_searchable_type_and_searchable_id", using: :btree
+
+  create_table "posts", force: :cascade do |t|
+    t.text     "body"
+    t.integer  "user_id"
+    t.boolean  "official"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "posts", ["user_id"], name: "index_posts_on_user_id", using: :btree
 
   create_table "roles", force: :cascade do |t|
     t.string   "name"
@@ -102,6 +112,7 @@ ActiveRecord::Schema.define(version: 20150706014922) do
     t.string   "hashed_email"
   end
 
+  add_foreign_key "posts", "users"
   add_foreign_key "skills", "users"
   add_foreign_key "tags", "users"
 end

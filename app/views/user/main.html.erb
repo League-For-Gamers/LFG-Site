@@ -1,0 +1,32 @@
+<div class="row">
+  <div class="row">
+    <div class="large-12">
+      <%= form_tag '/new_post' do -%>
+        <label>New post
+          <%= text_area_tag "body" %>
+        </label>
+        <input type="submit" class="button right" value="Post" />
+      <% end -%>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-12">
+      <% @posts.reverse.each do |post| -%>
+        <fieldset <%= 'class="official"'.html_safe if post.official -%>>
+          <div class="large-1 columns">
+            <a href="/user/<%= post.user.username %>">
+              <%= display_name post.user %>
+              <%= image_tag post.user.avatar.url(:thumb) %>
+            </a>
+          </div>
+          <div class="large-11 columns">
+            <%= post.body %>
+          </div>
+          <div class="large-3 right">
+            <%= post.created_at %>
+          </div>
+        </fieldset>
+      <% end -%>
+    </div>
+  </div>
+</div>

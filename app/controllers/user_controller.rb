@@ -6,6 +6,9 @@ class UserController < ApplicationController
   # GET /
   def main
     @user = User.new and set_title("Signup") and return render "signup" unless logged_in?
+    set_title("Feed")
+    query = Post.connection.unprepared_statement { "((SELECT * FROM posts WHERE official) UNION DISTINCT (SELECT * FROM posts WHERE user_id = 8)) as posts" }
+    @posts = Post.includes(:user).from(query).order("created_at ASC")
   end
 
   # GET /login
@@ -116,6 +119,14 @@ class UserController < ApplicationController
     set_title @user.display_name || @user.username.titleize
   end
 
+  # POST /new_post
+  def create_post
+    redirect_to root_url and return unless logged_in?
+    body = params.permit(:body)["body"]
+    Post.create(body: body, user: @current_user)
+    redirect_to request.referrer || root_url
+  end
+
   # GET /search
   def search
     set_title "Search"
@@ -172,7 +183,7 @@ class UserController < ApplicationController
 
     def set_user
       begin
-        @user = User.includes(:skills, :games).find_by(username: params[:id]) or not_found
+        @user = User.includes(:skills, :games, :posts).find_by(username: params[:id]) or not_found
       rescue ActionController::RoutingError
         render :template => 'shared/not_found', :status => 404
       end

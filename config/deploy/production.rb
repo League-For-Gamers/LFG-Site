@@ -18,6 +18,7 @@ servers = ec2.instances.tagged('web').map(&:ip_address)
 
 role :app, servers, user: 'deploy'
 role :web, servers, user: 'deploy'
+role :db, servers.first, user: 'deploy' # Migration only needs to run once.
 set :rails_env, :production
 
 # Configuration
