@@ -1,4 +1,4 @@
-<div class="large-6 small-12 center">
+<div class="large-4 small-12 right">
   <%= form_for @user, url: "", multipart: true, method: "post" do |f| %>
     <% if @user.errors.any? %>
       <div data-alert class="alert-box">
@@ -15,10 +15,10 @@
       <div class="row">
         <div class="small-12 columns">
           <div class="row collapse">
-            <div class="small-2 columns">
+            <div class="small-3 columns">
               <span class="prefix">Username</span>
             </div>
-            <div class="small-10 columns">
+            <div class="small-9 columns">
               <div class="input-text">
                 <%= f.text_field :username, placeholder: "Username", required: true %>
               </div>
@@ -58,10 +58,10 @@
 
         <div class="small-6 columns">
           <div class="row collapse">
-            <div class="small-3 columns">
+            <div class="small-4 columns">
               <span class="prefix">Confirm</span>
             </div>
-            <div class="small-9 columns">
+            <div class="small-8 columns">
               <div class="input-text">
                 <%= f.password_field :password_confirmation, placeholder: "Confirmation", required: true %>
               </div>

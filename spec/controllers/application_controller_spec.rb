@@ -39,4 +39,11 @@ RSpec.describe ApplicationController, :type => :controller do
       expect { controller.send(:not_found) }.to raise_error("Not Found")
     end
   end
+
+  describe "set_title" do
+    it "should set the @title variable" do
+      controller.send(:set_title, "Test")
+      expect(assigns(:title)).to eq("Test — League For Gamers")
+    end
+  end
 end

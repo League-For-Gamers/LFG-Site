@@ -1,9 +1,8 @@
 Rails.application.routes.draw do
-  root 'static#main'
+  root 'user#main'
 
   get  'login', to: 'user#login'
   post 'login', to: 'user#login_check'
-  get  'signup', to: 'user#signup'
   post 'signup', to: 'user#create'
   get  'logout', to: 'user#logout'
   get 'account', to: 'user#my_account'

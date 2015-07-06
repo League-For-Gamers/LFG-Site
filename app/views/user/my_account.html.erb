@@ -102,7 +102,7 @@
       <h2>Favourite Games</h2>
       <div class="small-12 columns" id="favourite_games">
         <% @games.each_with_index do |game, i| -%>
-          <%= f.fields_for :games, @current_user.games.find_or_initialize_by(id: game), number: game do |g| -%>
+          <%= f.fields_for :games, game, number: game do |g| -%>
             <%= g.text_field :name, name: "user[games][#{i}][name]" %>
           <% end -%>
         <% end -%>

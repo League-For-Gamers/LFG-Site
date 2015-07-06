@@ -9,6 +9,11 @@ RSpec.describe UserController, :type => :controller do
       get :login
       expect(response).to redirect_to(root_url)
     end
+
+    it "renders the login template when not logged in" do
+      get :login
+      expect(response).to render_template(:login)
+    end
   end
 
   describe "POST /login" do
@@ -34,11 +39,20 @@ RSpec.describe UserController, :type => :controller do
     end
   end
 
-  describe "GET /signup" do
-    it "creates @user for view" do
-      get :signup
-      expect(assigns(:user)).to be_present
+  describe "GET /" do
+    context "when not logged in" do
+      it "shows the signup page" do
+        get :main
+        expect(response).to render_template(:signup)
+      end
     end
+    context "when logged in" do
+      it "shows the main template" do
+        session[:user] = bobby.id
+        get :main
+        expect(response).to render_template(:main)
+      end
+    end 
   end
 
   describe "POST /signup" do
@@ -47,7 +61,7 @@ RSpec.describe UserController, :type => :controller do
       post :create, user: FactoryGirl.attributes_for(:user, username: "new_user", password: pass, password_confirmation: pass, email: "an_exciting@user.com")
       expect(session[:user]).to be_present
       expect(flash[:notice]).to be_present
-      expect(response).to redirect_to("/user/new_user")
+      expect(response).to redirect_to("/account")
     end
 
     it "returns an error on an invalid entry" do

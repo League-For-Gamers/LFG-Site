@@ -40,7 +40,6 @@
 
     <ul class="right">
       <% if !logged_in? %>
-        <li><a href="/signup">Sign up</a></li>
         <li><a href="/login">Login</a></li>
       <% else %>
         <li><a href="/user/<%= @current_user.username %>"><%= display_name(@current_user) %></a></li>

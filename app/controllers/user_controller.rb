@@ -3,9 +3,15 @@ class UserController < ApplicationController
   skip_before_filter :set_current_user, only: [:my_account, :update]
   before_filter :set_current_user_with_includes, only: [:my_account, :update], if: :logged_in?
 
+  # GET /
+  def main
+    @user = User.new and set_title("Signup") and return render "signup" unless logged_in?
+  end
+
   # GET /login
   def login
     flash[:notice] = "Already logged in." and redirect_to root_url and return if logged_in?
+    set_title "Login"
   end
 
   # POST /login
@@ -18,6 +24,7 @@ class UserController < ApplicationController
       redirect_to root_url
     else
       flash[:alert] = "Invalid username or password."
+      set_title "Login"
       render "login"
     end
   end
@@ -27,11 +34,6 @@ class UserController < ApplicationController
     flash[:notice] = "Successfully logged out"
     logout_user and redirect_to root_url
   end
-  
-  # GET /signup
-  def signup
-    @user = User.new
-  end
 
   # POST /signup
   def create
@@ -40,7 +42,7 @@ class UserController < ApplicationController
     respond_to do |format|
       if @user.save
         login_user(@user)
-        format.html { redirect_to "/user/#{@user.username}", notice: 'User was successfully created.' }
+        format.html { redirect_to "/account", notice: 'User was successfully created.' }
         format.json { render action: 'show', status: :created, location: @user }
       else
         format.html { render action: 'signup' }
@@ -52,6 +54,7 @@ class UserController < ApplicationController
   # GET /account
   def my_account
     redirect_to root_url and return unless logged_in?
+    set_title "Account Settings"
     @games = @current_user.games + [Game.new] # We always want there to be one empty field.
     @current_user.skills.build if @current_user.skills.empty?
   end
@@ -100,6 +103,7 @@ class UserController < ApplicationController
         format.html { redirect_to '/account', notice: 'User was successfully updated.' }
         format.json { head :no_content }
       else
+        set_title "Account Settings"
         @games = @current_user.games + [Game.new]
         format.html { render action: 'my_account' }
         format.json { render json: @current_user.errors, status: :unprocessable_entity }
@@ -109,10 +113,12 @@ class UserController < ApplicationController
 
   # GET /user/:id
   def show
+    set_title @user.display_name || @user.username.titleize
   end
 
   # GET /search
   def search
+    set_title "Search"
     search_params = params.permit(:query, :filter, :page)
 
     unless search_params["query"].blank? and search_params["filter"].blank?
@@ -166,7 +172,7 @@ class UserController < ApplicationController
 
     def set_user
       begin
-        @user = User.find_by(username: params[:id]) or not_found
+        @user = User.includes(:skills, :games).find_by(username: params[:id]) or not_found
       rescue ActionController::RoutingError
         render :template => 'shared/not_found', :status => 404
       end
