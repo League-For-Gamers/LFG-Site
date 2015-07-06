@@ -182,6 +182,19 @@ RSpec.describe UserController, :type => :controller do
     end
   end
 
+  describe "GET /user/:user_id/:post_id" do
+    let(:post) { FactoryGirl.create(:post, user: bobby) }
+    it "sets @post" do
+      get :show_post, user_id: bobby.username, post_id: post.id
+      expect(assigns(:post)).to eq(post)
+    end
+    it "renders an error for an invalid id" do
+      get :show_post, user_id: bobby.username, post_id: 9953259
+      expect(response).to render_template('shared/not_found')
+      expect(response.status).to eq(404)
+    end
+  end
+
   describe "GET /search" do
     context "without any queries or filter" do
       it "should not search for any results" do

@@ -197,7 +197,7 @@ class UserController < ApplicationController
 
     def set_post
       begin
-        @post = Post.includes(:user).find(params[:post_id]) or not_found
+        @post = Post.includes(:user).find_by(id: params[:post_id]) or not_found
       rescue ActionController::RoutingError 
         render :template => 'shared/not_found', :status => 404
       end

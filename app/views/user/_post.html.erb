@@ -9,6 +9,6 @@
     <p class="streamPost"><%= post.body %></p>
   </div>
   <div class="large-3 right">
-    <%= link_to post.created_at, "/user/#{post.user.username}/#{post.id}" %>
+    <%= link_to time_ago_in_words(post.created_at), "/user/#{post.user.username}/#{post.id}" %>
   </div>
 </fieldset>
