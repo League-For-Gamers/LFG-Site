@@ -1,5 +1,6 @@
 SECRET_TOKEN: 'secret_KEY_goes_HERE'
 EMAIL_KEY: 'secrey_KEY_goes_HERE'
+EMAIL_SALT: 'secrey_KEY_goes_HERE'
 S3_BUCKET_NAME: &bucket 'bucket_name'
 AWS_ACCESS_KEY_ID: 'access_key'
 AWS_SECRET_ACCESS_KEY: 'secret_access_key'

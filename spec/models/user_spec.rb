@@ -13,19 +13,6 @@ RSpec.describe User, :type => :model do
     expect(bobby).to_not be_valid
   end
 
-  context 'when it has a special email' do
-    let(:email) { "test@email.com" }
-    let(:bobby) { FactoryGirl.create(:user, email: email) }
-
-    it "has an encrypted email" do
-      expect(bobby.email).to_not be email
-    end
-
-    it "has a valid decrypted email" do
-      expect(bobby.decrypted_email).to eq(email)
-    end
-  end
-
   context 'when it has a skill' do
     let(:bobby) { FactoryGirl.create(:user_with_skill)}
     it "has a coding skill" do
@@ -63,6 +50,20 @@ RSpec.describe User, :type => :model do
     let(:bobby) { FactoryGirl.build(:user, password: nil) }
     it "is not valid" do
       expect(bobby).to_not be_valid
+    end
+  end
+
+  context 'when entering an email' do
+    let(:email) { "test@email.com" }
+    let(:bobby) { FactoryGirl.create(:user, email: email) }
+    it 'is encrypted' do
+      expect(bobby.email).to_not be email
+    end
+    it 'is hashed' do
+      expect(bobby.hashed_email).to_not eq(email)
+    end
+    it 'has a valid decrypted email' do
+      expect(bobby.decrypted_email).to eq(email)
     end
   end
 end

@@ -12,6 +12,7 @@ class User < ActiveRecord::Base
   validates_format_of :username, with: /\A([a-zA-Z](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.
   validates :bio, length: { maximum: 512 }
   validates :decrypted_email, length: {maximum: 325}, on: :create # A bit over what should be the maximum, just incase.
+  validates :hashed_email, uniqueness: true
   validates :username, uniqueness: true
   validates :display_name, uniqueness: true, case_sensitive: false, allow_blank: true, allow_nil: true
   validates :username, :password_digest, :email, presence: true
@@ -38,6 +39,12 @@ class User < ActiveRecord::Base
   # So it shouldn't catch smaller fancy-text things.
   before_validation do
     self.display_name = self.display_name.gsub(/[\u0300-\u036f\u0489]/, '') if self.display_name =~ /[\u0300-\u036f\u0489]{3}/
+  end
+
+  before_validation do
+    sha = Digest::SHA384.new
+    sha.update self.decrypted_email + ENV['EMAIL_SALT']
+    self.hashed_email = sha.hexdigest
   end
   
   # Email storage crypto
