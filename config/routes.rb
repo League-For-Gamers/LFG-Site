@@ -13,5 +13,6 @@ Rails.application.routes.draw do
 
   namespace :user, path: 'user' do
     get ':id', action: 'show'
+    get ':user_id/:post_id', action: 'show_post'
   end
 end

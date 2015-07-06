@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  include Postable
   include PgSearch
   multisearchable against: [:username, :display_name]
 
@@ -32,20 +33,15 @@ class User < ActiveRecord::Base
                     styles: {
                       thumb: '64x64>',
                       med:   '256x256#',
-                      large: '512x512>'
+                      large: '512x512#'
                     }
 
-  # Remove Zalgo from display names.
-  # It's not perfect, but it should do just fine, it's threshold based 
-  # So it shouldn't catch smaller fancy-text things.
   before_validation do
-    self.display_name = self.display_name.gsub(/[\u0300-\u036f\u0489]/, '') if self.display_name =~ /[\u0300-\u036f\u0489]{3}/
-  end
+    remove_zalgo! self.display_name
+    remove_zalgo! self.bio
 
-  before_validation do
-    sha = Digest::SHA384.new
-    sha.update self.decrypted_email + ENV['EMAIL_SALT']
-    self.hashed_email = sha.hexdigest
+    # I feel like we should do more than just a SHA-2 of Email... hrm.
+    self.hashed_email = Digest::SHA384.hexdigest(self.decrypted_email + ENV['EMAIL_SALT'])
   end
   
   # Email storage crypto

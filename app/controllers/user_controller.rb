@@ -1,5 +1,6 @@
 class UserController < ApplicationController
   before_action :set_user, only: [:show]
+  before_action :set_post, only: [:show_post]
   skip_before_filter :set_current_user, only: [:my_account, :update]
   before_filter :set_current_user_with_includes, only: [:my_account, :update], if: :logged_in?
 
@@ -119,6 +120,11 @@ class UserController < ApplicationController
     set_title @user.display_name || @user.username.titleize
   end
 
+  # GET /user/:user_id/:post_id
+  def show_post
+    set_title @post.user.display_name || @post.user.username.titleize
+  end
+
   # POST /new_post
   def create_post
     redirect_to root_url and return unless logged_in?
@@ -185,6 +191,14 @@ class UserController < ApplicationController
       begin
         @user = User.includes(:skills, :games, :posts).find_by(username: params[:id]) or not_found
       rescue ActionController::RoutingError
+        render :template => 'shared/not_found', :status => 404
+      end
+    end
+
+    def set_post
+      begin
+        @post = Post.includes(:user).find(params[:post_id]) or not_found
+      rescue ActionController::RoutingError 
         render :template => 'shared/not_found', :status => 404
       end
     end

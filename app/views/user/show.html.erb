@@ -50,20 +50,7 @@
   <div class="row">
     <div class="large-12">
       <% @user.posts.reverse.each do |post| -%>
-        <fieldset <%= 'class="official"'.html_safe if post.official -%>>
-          <div class="large-1 columns">
-            <a href="/user/<%= post.user.username %>">
-              <%= display_name post.user %>
-              <%= image_tag post.user.avatar.url(:thumb) %>
-            </a>
-          </div>
-          <div class="large-11 columns">
-            <p class="streamPost"><%= post.body %></p>
-          </div>
-          <div class="large-1 right">
-            <%= post.created_at %>
-          </div>
-        </fieldset>
+        <%= render partial: "post", locals: {post: post} %>
       <% end -%>
     </div>
   </div>
