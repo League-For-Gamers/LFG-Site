@@ -55,7 +55,7 @@ RSpec.describe User, :type => :model do
 
   context 'when entering an email' do
     let(:email) { "test@email.com" }
-    let(:bobby) { FactoryGirl.create(:user, email: email) }
+    let(:bobby) { FactoryGirl.create(:user, email: email, email_confirm: email) }
     it 'is encrypted' do
       expect(bobby.email).to_not be email
     end
@@ -66,7 +66,7 @@ RSpec.describe User, :type => :model do
       expect(bobby.decrypted_email).to eq(email)
     end
     it 'cannot have a duplicate' do
-      new_user = FactoryGirl.build(:user, username: "NotBobby", display_name: "Not Bobby", email: bobby.decrypted_email)
+      new_user = FactoryGirl.build(:user, username: "NotBobby", display_name: "Not Bobby", email: bobby.decrypted_email, email_confirm: email)
       expect(new_user).to_not be_valid
     end
   end

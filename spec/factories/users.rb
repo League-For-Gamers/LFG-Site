@@ -5,6 +5,7 @@ FactoryGirl.define do
     display_name "Bobby Tables"
     bio "Wherever I went, computers disliked me :("
     email "bobby@tables-family.com"
+    email_confirm "bobby@tables-family.com"
 
     after(:create) do |user|
       user.tags << FactoryGirl.create(:tag, user: user)

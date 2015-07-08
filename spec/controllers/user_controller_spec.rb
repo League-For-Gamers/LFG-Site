@@ -66,7 +66,8 @@ RSpec.describe UserController, :type => :controller do
   describe "POST /signup" do
     it "creates a new user" do
       pass = "a really great password!"
-      post :create, user: FactoryGirl.attributes_for(:user, username: "new_user", password: pass, password_confirmation: pass, email: "an_exciting@user.com")
+      email = "an_exciting@user.com"
+      post :create, user: FactoryGirl.attributes_for(:user, username: "new_user", password: pass, email: email, email_confirm: email)
       expect(session[:user]).to be_present
       expect(flash[:notice]).to be_present
       expect(response).to redirect_to("/account")
