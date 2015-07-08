@@ -12,24 +12,24 @@
       </div>
     <% end %>
 
-    <div class="large-12">
+    <div class="small-12">
       <h2>Register Now</h2>
     </div>
 
-    <div class="large-12">
+    <div class="small-12">
       <%= f.text_field :username, placeholder: "Username", required: true %>
     </div>
-    <div class="large-12">
+    <div class="small-12-12">
       <%= f.password_field :password, placeholder: "Password", required: true %>
     </div>
-    <div class="large-12">
+    <div class="small-12">
       <%= f.text_field :email, placeholder: "E-mail", required: true %>
     </div>
-    <div class="large-12">
+    <div class="small-12">
       <%= f.text_field :email_confirm, placeholder: "Re-enter E-Mail", required: true %>
     </div>
 
-    <div class="large-4 right">
+    <div class="small-4 right">
       <%= f.submit 'Sign up', class: "btn right" %>
     </div>
   <% end %>

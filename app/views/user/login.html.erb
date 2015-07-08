@@ -1,30 +1,25 @@
-<%= form_tag("/login", method: "post", class: "row large-3") do %>
-  <fieldset>
-    <legend dead-set="true">Login</legend>
-
+<div class="large-3 center lfg-form">
+  <%= form_tag("/login", method: "post") do %>
     <% if flash[:alert] -%>
       <div data-alert class="alert-box warning">
       <%= flash[:alert] %>
       </div>
     <% end -%>
-
-    <div class="row collapse">
-      <div class="large-1 columns">
-        <%= content_tag(:span, "User", { class: "prefix" }) %>
-      </div>
-      <div class="large-11 columns">
-        <%= text_field_tag :username, nil, { placeholder: "Username" } %>
-      </div>
+    
+    <div class="small-12">
+      <h2>Login</h2>
     </div>
 
-    <div class="row collapse">
-      <div class="large-1 columns">
-        <%= content_tag(:span, "Pass", { class: "prefix" }) %>
-      </div>
-      <div class="large-11 columns">
-        <%= password_field_tag :password, nil, { placeholder: "Password" }  %>
-      </div>
+    <div class="small-12">
+      <%= text_field_tag :username, nil, { placeholder: "Username" } %>
     </div>
-    <%= submit_tag("Submit", class: "button tiny", style: "float: right;") %>
-  </fieldset>
-<% end -%>
+    <div class="small-12">
+      <%= password_field_tag :password, nil, { placeholder: "Password" }  %>
+    </div>
+
+    <div class="small-12">
+      <%= submit_tag "Log In", class: "btn" %>
+    </div>
+
+  <% end -%>
+</div>
