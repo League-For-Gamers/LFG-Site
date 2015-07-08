@@ -1,3 +1,49 @@
-// Place all the styles related to the static controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+@import "foundation/functions";
+@import "mixins";
+
+.sidebar-nav {
+	height: 100%;
+	width: rem-calc(240);
+	ul {
+		height: 100%;
+		list-style: none;
+		margin: 0;
+		li {
+			padding-left: rem-calc(14);
+			a {
+				font-weight: 600;
+				font-size: 10pt;
+				text-transform: uppercase;
+				color: $primary-text;
+			}
+			&.active {
+				background-color: #aaa9a7;
+			}
+			&:after {
+				font-weight: 700;
+				line-height: 1.45;
+				float: right;
+				padding-right: rem-calc(6);
+				color: #536e93;
+				content: ">";
+			}
+		}
+	}
+}
+@media only screen and (max-width: 64em) {
+	.sidebar-nav {
+		width: 100%;
+		margin-bottom: rem-calc(10);
+		ul {
+			li {
+				float: left;
+				padding-left: rem-calc(10);
+				display: inline-block;
+				width: 33.3333333%;
+				&:after {
+					content: "";
+				}
+			}
+		}
+	}
+}

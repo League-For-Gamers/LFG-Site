@@ -9,8 +9,6 @@ p.streamPost {
 }
 
 #join-the-league {
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAHCAYAAAArkDztAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAsSAAALEgHS3X78AAAAVUlEQVQI10WOwQ3AIAwDzyn771kqJBiAuA+g9SeybF2s0ZslYZslQ0JBx+7ARhEUT0OATmOfAHD+mHo/Kx+9+UMZIi7SkzhPtWHpuQqSqHc9exAgBS9VRSseqf2IuwAAAABJRU5ErkJggg==);
-	background-repeat: repeat;
 	padding: rem-calc(12) rem-calc(33);
 	text-align: center;
 	.logo {
@@ -19,5 +17,14 @@ p.streamPost {
 	}
 	p {
 		text-align: justify;
+		font-style: italic;
+	}
+}
+@media only screen and (max-width: 24em) {
+	#join-the-league {
+		padding: rem-calc(6) rem-calc(16);
+		p {
+			font-size: 11pt;
+		}
 	}
 }

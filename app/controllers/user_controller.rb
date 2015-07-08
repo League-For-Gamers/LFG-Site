@@ -39,6 +39,13 @@ class UserController < ApplicationController
     logout_user and redirect_to root_url
   end
 
+  # GET /signup
+  def signup
+    redirect_to root_url if logged_in?
+    @user = User.new 
+    set_title("Signup")
+  end
+
   # POST /signup
   def create
     @user = User.new(signup_params)

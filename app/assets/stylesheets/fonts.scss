@@ -1,9 +1,22 @@
 @font-face {
   font-family: 'Oswald';
   font-style: normal;
+  font-weight: 300;
+  src: font_url('Oswald-Light.eot');
+  src: font_url('Oswald-Light.eot?#iefix') format('embedded-opentype'),
+       font_url('Oswald-Light.woff') format('woff'),
+       font_url('Oswald-Light.woff2') format('woff2'),
+       font_url('Oswald-Light.ttf') format('truetype'),
+       font_url('Oswald-Light.svg') format('svg');
+}
+
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
   font-weight: 400;
   src: font_url('Oswald-Regular.eot');
   src: font_url('Oswald-Regular.eot?#iefix') format('embedded-opentype'),
+       font_url('Oswald-Regular.woff') format('woff'),
        font_url('Oswald-Regular.woff2') format('woff2'),
        font_url('Oswald-Regular.ttf') format('truetype'),
        font_url('Oswald-Regular.svg') format('svg');
@@ -14,6 +27,7 @@
   font-weight: 400;
   src: font_url('Oswald-RegularItalic.eot');
   src: font_url('Oswald-RegularItalic.eot?#iefix') format('embedded-opentype'),
+       font_url('Oswald-RegularItalic.woff') format('woff'),
        font_url('Oswald-RegularItalic.woff2') format('woff2'),
        font_url('Oswald-RegularItalic.ttf') format('truetype'),
        font_url('Oswald-RegularItalic.svg') format('svg');
@@ -25,6 +39,7 @@
   font-weight: 500;
   src: font_url('Oswald-Medium.eot');
   src: font_url('Oswald-Medium.eot?#iefix') format('embedded-opentype'),
+       font_url('Oswald-Medium.woff') format('woff'),
        font_url('Oswald-Medium.woff2') format('woff2'),
        font_url('Oswald-Medium.ttf') format('truetype'),
        font_url('Oswald-Medium.svg') format('svg');
@@ -36,7 +51,20 @@
   font-weight: 600;
   src: font_url('Oswald-DemiBold.eot');
   src: font_url('Oswald-DemiBold.eot?#iefix') format('embedded-opentype'),
+       font_url('Oswald-DemiBold.woff') format('woff'),
        font_url('Oswald-DemiBold.woff2') format('woff2'),
        font_url('Oswald-DemiBold.ttf') format('truetype'),
        font_url('Oswald-DemiBold.svg') format('svg');
+}
+
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 700;
+  src: font_url('Oswald-Bold.eot');
+  src: font_url('Oswald-Bold.eot?#iefix') format('embedded-opentype'),
+       font_url('Oswald-Bold.woff') format('woff'),
+       font_url('Oswald-Bold.woff2') format('woff2'),
+       font_url('Oswald-Bold.ttf') format('truetype'),
+       font_url('Oswald-Bold.svg') format('svg');
 }

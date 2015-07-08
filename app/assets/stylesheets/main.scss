@@ -3,7 +3,6 @@
 
 body {
 	font-family: $font;
-	font-style: italic;
 	color: $primary-text;
 	background-image: asset-url('ui/background.png');
 	background-repeat: repeat-x;
@@ -25,6 +24,31 @@ h1,h2,h3,h4,h5,h6 {
 	margin: 0 auto;
 	top: rem-calc(50);
 	z-index: 99999;
+}
+
+.text-box {
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAHCAYAAAArkDztAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAsSAAALEgHS3X78AAAAVUlEQVQI10WOwQ3AIAwDzyn771kqJBiAuA+g9SeybF2s0ZslYZslQ0JBx+7ARhEUT0OATmOfAHD+mHo/Kx+9+UMZIi7SkzhPtWHpuQqSqHc9exAgBS9VRSseqf2IuwAAAABJRU5ErkJggg==);
+	background-repeat: repeat;
+	h1,h2,h3,h4,h5,h6 {
+		color: $primary-text;
+		text-transform: none;
+	}
+	&.pad {
+		padding: 0 rem-calc(10);
+	}
+	h2 {
+		font-weight: 700;
+		font-size: 24pt;
+	}
+	h6 {
+		font-weight: 500;
+		font-size: 13pt;
+	}
+	p {
+		font-weight: 300;
+		line-height: 1.4;
+		font-size: 12pt;
+	}
 }
 
 .main-logo {
@@ -54,7 +78,7 @@ h1,h2,h3,h4,h5,h6 {
 			list-style: none;
 			padding: 0 rem-calc(5);
 			a {
-				color: white;
+				color: $primary-cream;
 			}
 		}
 	}
@@ -67,8 +91,26 @@ h1,h2,h3,h4,h5,h6 {
 	width: 100%;
 	background-color: $primary-red;
 	ul {
-		line-height: 2.6;
-		font-size: 24pt !important;
+		line-height: 2.7;
+		font-size: 24pt;
+	}
+}
+
+@media only screen and (max-width: 37.5em) {
+	.main-logo {
+		width: rem-calc(160);
+	}
+	.top-nav-bar, .bottom-nav-bar {
+		padding: 0 rem-calc(15);
+	}
+}
+
+@media only screen and (max-width: 24em) {
+	.top-nav-bar {
+		ul {
+			line-height: 3.3;
+			font-size: 18pt;
+		}
 	}
 }
 
