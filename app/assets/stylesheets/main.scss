@@ -1,0 +1,136 @@
+@import "foundation/functions";
+@import "mixins";
+
+body {
+	font-family: $font;
+	font-style: italic;
+	color: $primary-text;
+	background-image: asset-url('ui/background.png');
+	background-repeat: repeat-x;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-family: $font;
+	font-weight: 500;
+	color: white;
+	text-transform: uppercase;
+}
+
+.alert-box {
+	position: absolute;
+	border-color: $primary-darker-red;
+	background-color: $primary-red;
+	width: 50%;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	top: rem-calc(50);
+	z-index: 99999;
+}
+
+.main-logo {
+	position: absolute;
+	width: rem-calc(360);
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	padding-top: rem-calc(20);
+	text-align: center;
+	z-index: 999;
+	a img {
+		-webkit-filter: drop-shadow(0 0 rem-calc(32) rgba(0,0,0,0.8));
+		filter: drop-shadow(0 0 rem-calc(32) rgba(0,0,0,0.8));
+	}
+}
+
+.top-nav-bar, .bottom-nav-bar {
+	padding: 0 rem-calc(25);
+	ul {
+		line-height: 1.95;
+		font-size: 12pt;
+		font-style: italic;
+		text-transform: uppercase;
+		li {
+			display: inline-block;
+			list-style: none;
+			padding: 0 rem-calc(5);
+			a {
+				color: white;
+			}
+		}
+	}
+}
+
+.top-nav-bar {
+	position: absolute;
+	margin-top: rem-calc(83);
+	height: rem-calc(86);
+	width: 100%;
+	background-color: $primary-red;
+	ul {
+		line-height: 2.6;
+		font-size: 24pt !important;
+	}
+}
+
+.bottom-nav-bar {
+	position: fixed;
+	bottom: 0;
+	height: rem-calc(32);
+	width: 100%;
+	background-color: $primary-red;
+}
+@media only screen and (max-width: 90em) {
+	main {
+		padding: 0 rem-calc(25);
+	}
+}
+
+main {
+	padding-top: rem-calc(200);
+	margin-bottom: rem-calc(40) !important;
+}
+
+.lfg-form {
+	form {
+		h1,h2,h3 {
+			margin-bottom: rem-calc(3);
+		}
+		input {
+			font-family: $font;
+			font-style: italic;
+			font-size: 14pt;
+			margin-bottom: rem-calc(10);
+			background-color: $primary-cream;
+			border-color: white;
+			box-shadow: none;
+			&[type="text"], &[type="password"] {
+				color: $primary-text;
+				padding-left: rem-calc(18)
+			}
+			&:-ms-input-placeholder {
+				color: $primary-text;
+			}
+			&::-moz-placeholder {
+				color: $primary-text;
+				opacity: 1
+			}
+			&:-moz-placeholder {
+				color: $primary-text;
+				opacity: 1
+			}
+			&::-webkit-input-placeholder {
+				color: $primary-text;
+			}
+			&.btn {
+				font-size: 24pt;
+				font-style: normal;
+				font-weight: 600;
+				text-transform: uppercase;
+				background-color: $primary-red;
+				border: none;
+				color: white;
+				padding: rem-calc(2) rem-calc(24);
+			}
+		}
+	}
+}

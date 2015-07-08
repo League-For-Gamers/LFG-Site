@@ -24,21 +24,11 @@
   <meta name="msapplication-TileImage" content="/images/favicon-144.png">
   <link rel="shortcut icon" href="/favicon.ico?v2" />
 </head>
-<body>
-
-<nav class="top-bar" data-topbar role="navigation">
-  <ul class="title-area">
-    <li class="name">
-      <h1><a href="/">LFG</a></h1>
-    </li>
-    <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
-  </ul>
-
-  <section class="top-bar-section">
-    <ul class="left">
-      <li><a href="/search">User Search</a></li>
-    </ul>
-
+<body class="antialiased">
+  <div class="main-logo">
+    <%= link_to image_tag("ui/logo.png"), root_url%>
+  </div>
+  <nav class="top-nav-bar">
     <ul class="right">
       <% if !logged_in? %>
         <li><a href="/login">Login</a></li>
@@ -48,18 +38,17 @@
         <li><a href="/logout">Log Out</a></li>
       <% end %>
     </ul>
-  </section>
-</nav>
-<br>
-<main class="row">
-  <%= yield %>
-</div>
-<% if flash[:notice] -%>
-  <div data-alert class="alert-box">
-    <%= flash[:notice] %>
-    <a class="close">&times;</a>
-  </div>
-<% end -%>
+  </nav>
+
+  <main class="row">
+    <%= yield %>
+  </main>
+
+  <nav class="bottom-nav-bar">
+    <ul class="right">
+      <li><a href="/terms">Terms</a></li>
+    </ul>
+  </nav>
 
 </body>
 </html>

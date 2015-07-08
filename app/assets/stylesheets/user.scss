@@ -1,10 +1,23 @@
-// Place all the styles related to the user controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+@import "foundation/functions";
+
 fieldset.official {
-  border: 1px solid #D03A3A;
+  border: rem-calc(1) solid #D03A3A;
   background-color: #F4D5D5;
 }
 p.streamPost {
 	white-space: pre-wrap;
+}
+
+#join-the-league {
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAHCAYAAAArkDztAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAsSAAALEgHS3X78AAAAVUlEQVQI10WOwQ3AIAwDzyn771kqJBiAuA+g9SeybF2s0ZslYZslQ0JBx+7ARhEUT0OATmOfAHD+mHo/Kx+9+UMZIi7SkzhPtWHpuQqSqHc9exAgBS9VRSseqf2IuwAAAABJRU5ErkJggg==);
+	background-repeat: repeat;
+	padding: rem-calc(12) rem-calc(33);
+	text-align: center;
+	.logo {
+		margin: 0 auto;
+		margin-bottom: rem-calc(15);
+	}
+	p {
+		text-align: justify;
+	}
 }

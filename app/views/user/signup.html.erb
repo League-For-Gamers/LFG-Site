@@ -1,8 +1,8 @@
-<div class="large-4 small-12 right">
+<div class="large-5 small-12 right lfg-form">
   <%= form_for @user, url: "/signup", multipart: true, method: "post" do |f| %>
     <% if @user.errors.any? %>
       <div data-alert class="alert-box">
-        <strong><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</strong>
+        <strong><%= pluralize(@user.errors.count, "error") %> prohibited this account from being created:</strong>
         <ul style="margin-bottom: 0;">
           <% @user.errors.full_messages.each do |msg| %>
             <li><%= msg %></li>
@@ -12,67 +12,29 @@
       </div>
     <% end %>
 
-      <div class="row">
-        <div class="small-12 columns">
-          <div class="row collapse">
-            <div class="small-3 columns">
-              <span class="prefix">Username</span>
-            </div>
-            <div class="small-9 columns">
-              <div class="input-text">
-                <%= f.text_field :username, placeholder: "Username", required: true %>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="large-12">
+      <h2>Register Now</h2>
+    </div>
 
-      <div class="row">
-        <div class="small-12 columns">
-          <div class="row collapse">
-            <div class="small-2 columns">
-              <span class="prefix">Email</span>
-            </div>
-            <div class="small-10 columns">
-              <div class="input-text">
-                <%= f.text_field :email, placeholder: "Email", required: true %>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="large-12">
+      <%= f.text_field :username, placeholder: "Username", required: true %>
+    </div>
+    <div class="large-12">
+      <%= f.password_field :password, placeholder: "Password", required: true %>
+    </div>
+    <div class="large-12">
+      <%= f.text_field :email, placeholder: "E-mail", required: true %>
+    </div>
+    <div class="large-12">
+      <%= f.text_field :email_confirm, placeholder: "Re-enter E-Mail", required: true %>
+    </div>
 
-      <div class="row">
-        <div class="small-6 columns">
-          <div class="row collapse">
-            <div class="small-3 columns">
-              <span class="prefix">Pass</span>
-            </div>
-            <div class="small-9 columns">
-              <div class="input-text">
-                <%= f.password_field :password, placeholder: "Password", required: true %>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="small-6 columns">
-          <div class="row collapse">
-            <div class="small-4 columns">
-              <span class="prefix">Confirm</span>
-            </div>
-            <div class="small-8 columns">
-              <div class="input-text">
-                <%= f.password_field :password_confirmation, placeholder: "Confirmation", required: true %>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <%= f.submit 'Submit', class: "button" %>
-      </div>
+    <div class="large-4 right">
+      <%= f.submit 'Sign up', class: "btn right" %>
     </div>
   <% end %>
+</div>
+<div class="large-5 small-12 left" id="join-the-league">
+  <%= image_tag "ui/signup/join-the-league.png", class: "logo" %>
+  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo in</p>
 </div>

@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   include PgSearch
   multisearchable against: [:username, :display_name]
 
-  attr_accessor :old_password
+  attr_accessor :old_password, :email_confirm
   has_and_belongs_to_many :roles
   has_and_belongs_to_many :games
   has_many :skills, dependent: :destroy
@@ -22,6 +22,7 @@ class User < ActiveRecord::Base
   validates :avatar, attachment_content_type: { content_type: /\Aimage\/.*\Z/ },
                      attachment_size: { less_than: 512.kilobytes }
   validate :validates_old_password
+  validate :validates_email_equality, on: :create
 
   accepts_nested_attributes_for :skills, allow_destroy: true
   accepts_nested_attributes_for :tags, allow_destroy: true
@@ -73,6 +74,12 @@ class User < ActiveRecord::Base
       return if password_digest_was.nil? || !password_digest_changed?
       unless BCrypt::Password.new(password_digest_was) == old_password
         errors.add(:old_password, "is incorrect")
+      end
+    end
+
+    def validates_email_equality
+      unless decrypted_email == email_confirm
+        errors.add(:email, "does not match")
       end
     end
 end
