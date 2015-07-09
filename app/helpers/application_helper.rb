@@ -4,6 +4,6 @@ module ApplicationHelper
   end
 
   def display_name(user)
-    user.display_name || user.username.titleize
+    user.display_name || "@#{user.username.titleize.tr(' ', '_')}"
   end
 end

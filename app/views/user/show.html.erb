@@ -1,57 +1,37 @@
-<div class="row">
-  <div class="large-3 small-12 columns right">
-    <h1><%= display_name @user %></h1>
-    <%= image_tag @user.avatar.url(:med) %>
-  </div>
-  <div class="large-6 small-12 columns left">
-    <% unless @user.bio.blank? -%>
-      <div class="row">
-        <h2>Bio</h2>
-        <p><%= @user.bio %></p>
-      </div>
-    <% end -%>
-
-    <% unless @user.games.empty? -%>
-      <div class="row">
-        <h2>Favourite Games</h2>
-        <ul>
-          <% @user.games.each do |game| -%>
-          <li><%= game.name %></li>
-          <% end -%>
-        </ul>
-      </div>
-    <% end %>
-
-    <% unless @user.skills.empty? -%>
-      <div class="row">
-        <h2>Skills</h2>
-        <ul>
-          <% @user.skills.each do |skill| -%>
-          <li><%= skill.category.titleize %> | <%= skill.confidence %></li>
-          <% end -%>
-        </ul>
-      </div>
-    <% end %>
+<div class="large-4 small-12 columns left">
+  <div class="pad text-card profile-card bio-card">
+    <%= image_tag @user.avatar.url(:med), class: "avatar" %>
+    <span class="title <%= "long" if display_name(@user).length > 18 %>"><%= display_name(@user) %></span>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque</p>
   </div>
 </div>
-<div class="row">
-  <% if @current_user == @user -%>
-    <div class="row">
-      <div class="large-12">
-        <%= form_tag '/new_post' do -%>
-          <label>New post
-            <%= text_area_tag "body" %>
-          </label>
-          <input type="submit" class="button right" value="Post" />
-        <% end -%>
+
+<div class="large-4 small-12 columns left">
+  <div class="pad text-card profile-card skills-card">
+    <span class="title">Skills</span>
+    <% @user.skills.each do |skill| %>
+      <div class="skill">
+        <span class="category"><%= skill.category.titleize %></span>
+        <span class="note"><%= skill.note %></span>
+        <div class="bar">
+          <div class="inlet size-<%= skill.confidence %>">
+            <%= skill.confidence %>
+          </div>
+        </div>
       </div>
+    <% end %>
+    <div class="bottom">
+      <% unless @user.skill_notes.blank? %>
+        <div class="notes">
+          <h5>Notes:</h5>
+          <p><%= @user.skill_notes %></p>
+        </div>
+      <% end %>
     </div>
-  <% end -%>
-  <div class="row">
-    <div class="large-12">
-      <% @user.posts.reverse.each do |post| -%>
-        <%= render partial: "post", locals: {post: post} %>
-      <% end -%>
-    </div>
+  </div>
+</div>
+
+<div class="large-4 small-12 columns left">
+  <div class="pad text-card profile-card">
   </div>
 </div>

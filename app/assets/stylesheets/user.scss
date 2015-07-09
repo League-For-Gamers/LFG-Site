@@ -1,4 +1,5 @@
 @import "foundation/functions";
+@import "mixins";
 
 fieldset.official {
   border: rem-calc(1) solid #D03A3A;
@@ -20,6 +21,94 @@ p.streamPost {
 		font-style: italic;
 	}
 }
+
+.profile-card {
+	min-height: rem-calc(500);
+	margin: rem-calc(15) auto;
+	max-width: rem-calc(500);
+	&.pad {
+		padding: 0 rem-calc(18);
+	}
+	.title {
+		display: inline-block;
+		vertical-align: top;
+		font-size: 16pt;
+		font-weight: 700;
+		text-transform: uppercase;
+		&.long {
+			font-size: 12pt;
+		}
+	}
+
+	&.bio-card {
+		.avatar {
+			margin-top: rem-calc(-20);
+			$shadow: rem-calc(5) rem-calc(4) rem-calc(10) 0 rgba(0, 0, 0, 0.4);
+			-webkit-box-shadow: $shadow;
+			-moz-box-shadow: $shadow;
+			box-shadow: $shadow;
+			float: left;
+			margin-right: rem-calc(15);
+			border: rem-calc(1) solid $primary-darker-red;
+		}
+		p {
+			text-align: justify;
+			font-style: italic;
+			font-weight: 400;
+			font-size: 11pt;
+			margin-top: rem-calc(10);
+			text-transform: uppercase;
+			overflow-wrap: break-word;
+			white-space: pre-wrap;
+			hyphens: auto;
+		}
+	}
+	&.skills-card {
+		.skill {
+			text-transform: uppercase;
+			font-weight: 500;
+			margin-top: rem-calc(5);
+			.note {
+				float: right;
+			}
+			.bar {
+				width: 100%;
+				border: rem-calc(1) solid $primary-darker-red;
+				.inlet {
+					background-color: #8a0505;
+					color: white;
+					padding-left: rem-calc(8);
+					&.size-1 { width: 10% }
+					&.size-2 { width: 20% }
+					&.size-3 { width: 30% }
+					&.size-4 { width: 40% }
+					&.size-5 { width: 50% }
+					&.size-6 { width: 60% }
+					&.size-7 { width: 70% }
+					&.size-8 { width: 80% }
+					&.size-9 { width: 90% }
+					&.size-10 { width: 100% }
+				}
+			}
+		}
+		.bottom {
+			position: absolute;
+			bottom: 0;
+		}
+		.notes {
+			vertical-align: bottom;
+			h5 {
+				font-weight: 600;
+				text-transform: uppercase;
+				margin-bottom: 0;
+			}
+			p {
+				text-align: justify
+			}
+		}
+	}
+}
+
 @media only screen and (max-width: 24em) {
 	#join-the-league {
 		padding: rem-calc(6) rem-calc(16);

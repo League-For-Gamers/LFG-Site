@@ -1,7 +1,7 @@
 <div class="large-3 center lfg-form">
   <%= form_tag("/login", method: "post") do %>
     <% if flash[:alert] -%>
-      <div data-alert class="alert-box warning">
+      <div data-alert class="alert-box">
       <%= flash[:alert] %>
       </div>
     <% end -%>

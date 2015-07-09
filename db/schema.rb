@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150706030659) do
+ActiveRecord::Schema.define(version: 20150709104008) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "hstore"
 
   create_table "games", force: :cascade do |t|
     t.string   "name"
@@ -83,6 +84,7 @@ ActiveRecord::Schema.define(version: 20150706030659) do
     t.integer  "confidence"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string   "note"
   end
 
   add_index "skills", ["user_id"], name: "index_skills_on_user_id", using: :btree
@@ -101,8 +103,8 @@ ActiveRecord::Schema.define(version: 20150706030659) do
     t.string   "password_digest"
     t.string   "display_name"
     t.text     "bio"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.binary   "email"
     t.binary   "email_iv"
     t.string   "avatar_file_name"
@@ -110,6 +112,9 @@ ActiveRecord::Schema.define(version: 20150706030659) do
     t.integer  "avatar_file_size"
     t.datetime "avatar_updated_at"
     t.string   "hashed_email"
+    t.hstore   "social",              default: {}, null: false
+    t.text     "skill_notes"
+    t.integer  "skill_status"
   end
 
   add_foreign_key "posts", "users"

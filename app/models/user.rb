@@ -3,14 +3,16 @@ class User < ActiveRecord::Base
   include PgSearch
   multisearchable against: [:username, :display_name]
 
+  enum skill_status: [:empty, :looking_for_group, :looking_for_more]
+
   attr_accessor :old_password, :email_confirm
   has_and_belongs_to_many :roles
   has_and_belongs_to_many :games
-  has_many :skills, dependent: :destroy
+  has_many :skills, -> { order 'confidence DESC' }, dependent: :destroy
   has_many :tags, dependent: :destroy
   has_many :posts, -> { order 'created_at ASC' }, dependent: :destroy
 
-  validates :username, :display_name, length: { maximum: 15 }
+  validates :username, :display_name, length: { maximum: 25 }
   validates_format_of :username, with: /\A([a-zA-Z](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.
   validates :bio, length: { maximum: 512 }
   validates :decrypted_email, length: {maximum: 325}, on: :create # A bit over what should be the maximum, just incase.
@@ -21,6 +23,7 @@ class User < ActiveRecord::Base
   validates_format_of :decrypted_email, with: /\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i, on: :create
   validates :avatar, attachment_content_type: { content_type: /\Aimage\/.*\Z/ },
                      attachment_size: { less_than: 512.kilobytes }
+  validates :skill_notes, length: {maximum: 325}
   validate :validates_old_password
   validate :validates_email_equality, on: :create
 
@@ -33,8 +36,8 @@ class User < ActiveRecord::Base
                     path: "users/avatars/:style/:id.:extension",
                     styles: {
                       thumb: '64x64>',
-                      med:   '256x256#',
-                      large: '512x512#'
+                      med:   '150x150#',
+                      large: '256x256#'
                     }
 
   before_validation do

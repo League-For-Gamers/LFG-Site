@@ -34,7 +34,7 @@
         <li><a href="/login">Login</a></li>
       <% else %>
         <li><a href="/user/<%= @current_user.username %>"><%= display_name(@current_user) %></a></li>
-        <li><a href="/account">Settings</a></li>
+        <li><a href="/account" title="Settings" class="settings-button"></a></li>
         <li><a href="/logout">Log Out</a></li>
       <% end %>
     </ul>
