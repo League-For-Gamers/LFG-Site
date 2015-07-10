@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   validates_format_of :decrypted_email, with: /\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i, on: :create
   validates :avatar, attachment_content_type: { content_type: /\Aimage\/.*\Z/ },
                      attachment_size: { less_than: 512.kilobytes }
-  validates :skill_notes, length: {maximum: 325}
+  validates :skill_notes, length: {maximum: 256}
   validate :validates_old_password
   validate :validates_email_equality, on: :create
 

@@ -1,5 +1,6 @@
 class Skill < ActiveRecord::Base
-  enum category: {writing: 0, design: 1, sound: 2, art: 3, programming: 4}
+  enum category: [:game_programming, :web_programming, :'2d_art', :'3d_art', :animation, :production, 
+                  :writing, :community, :music, :sound_effects, :'pr_&_marketting', :biz_dev]
   belongs_to :user
 
   validates :category, :user, presence: true

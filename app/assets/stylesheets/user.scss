@@ -39,6 +39,12 @@ p.streamPost {
 			font-size: 12pt;
 		}
 	}
+	.bottom {
+		padding-right: rem-calc(36);
+		padding-bottom: rem-calc(20);
+		position: absolute;
+		bottom: 0;
+	}
 
 	&.bio-card {
 		.avatar {
@@ -49,51 +55,85 @@ p.streamPost {
 			box-shadow: $shadow;
 			float: left;
 			margin-right: rem-calc(15);
-			border: rem-calc(1) solid $primary-darker-red;
 		}
 		p {
 			text-align: justify;
 			font-style: italic;
 			font-weight: 400;
-			font-size: 11pt;
+			font-size: 12pt;
 			margin-top: rem-calc(10);
 			text-transform: uppercase;
 			overflow-wrap: break-word;
 			white-space: pre-wrap;
 			hyphens: auto;
 		}
-	}
-	&.skills-card {
-		.skill {
+		.website {
+			font-weight: 600;
+			font-size: 14pt;
 			text-transform: uppercase;
-			font-weight: 500;
-			margin-top: rem-calc(5);
-			.note {
-				float: right;
-			}
-			.bar {
-				width: 100%;
-				border: rem-calc(1) solid $primary-darker-red;
-				.inlet {
-					background-color: #8a0505;
-					color: white;
-					padding-left: rem-calc(8);
-					&.size-1 { width: 10% }
-					&.size-2 { width: 20% }
-					&.size-3 { width: 30% }
-					&.size-4 { width: 40% }
-					&.size-5 { width: 50% }
-					&.size-6 { width: 60% }
-					&.size-7 { width: 70% }
-					&.size-8 { width: 80% }
-					&.size-9 { width: 90% }
-					&.size-10 { width: 100% }
+		}
+		.social-links {
+			list-style: none;
+			margin: 0;
+			li {
+				display: inline-block;
+				a {
+					display: block;
+					width: rem-calc(45);
+					height: rem-calc(45);
+					&.facebook {
+						background: image-url('ui/social-sprite.png') no-repeat 0 0;
+					}
+					&.googleplus {
+						background: image-url('ui/social-sprite.png') no-repeat -45px 0;
+					}
+					&.instagram {
+						background: image-url('ui/social-sprite.png') no-repeat -90px 0;
+					}
+					&.linkedin {
+						background: image-url('ui/social-sprite.png') no-repeat 0 -45px;
+					}
+					&.twitter {
+						background: image-url('ui/social-sprite.png') no-repeat -45px -45px;
+					}
+					&.youtube {
+						background: image-url('ui/social-sprite.png') no-repeat -90px -45px;
+					}
 				}
 			}
 		}
-		.bottom {
-			position: absolute;
-			bottom: 0;
+	}
+	&.skills-card {
+		.skills {
+			max-height: rem-calc(280);
+			overflow-y: scroll;
+			.skill {
+				text-transform: uppercase;
+				font-weight: 500;
+				margin-top: rem-calc(5);
+				.note {
+					float: right;
+				}
+				.bar {
+					width: 100%;
+					border: rem-calc(1) solid $primary-darker-red;
+					.inlet {
+						background-color: #8a0505;
+						color: white;
+						padding-left: rem-calc(8);
+						&.size-1 { width: 10% }
+						&.size-2 { width: 20% }
+						&.size-3 { width: 30% }
+						&.size-4 { width: 40% }
+						&.size-5 { width: 50% }
+						&.size-6 { width: 60% }
+						&.size-7 { width: 70% }
+						&.size-8 { width: 80% }
+						&.size-9 { width: 90% }
+						&.size-10 { width: 100% }
+					}
+				}
+			}
 		}
 		.notes {
 			vertical-align: bottom;
@@ -104,6 +144,28 @@ p.streamPost {
 			}
 			p {
 				text-align: justify
+			}
+		}
+		.portfolio {
+			font-weight: 600;
+			font-size: 14pt;
+			text-transform: uppercase;
+		}
+	}
+	&.games-card {
+		.games-list {
+			max-height: rem-calc(460);
+			overflow-y: scroll;
+			height: 100%;
+			.game {
+				width: 32%;
+				display: inline-block;
+				text-align: center;
+				margin-bottom: rem-calc(5);
+				padding: 0 rem-calc(2);
+				img {
+					display: block;
+				}
 			}
 		}
 	}

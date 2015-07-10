@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150709104008) do
+ActiveRecord::Schema.define(version: 20150710142446) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -19,8 +19,12 @@ ActiveRecord::Schema.define(version: 20150709104008) do
 
   create_table "games", force: :cascade do |t|
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+    t.string   "boxart_file_name"
+    t.string   "boxart_content_type"
+    t.integer  "boxart_file_size"
+    t.datetime "boxart_updated_at"
   end
 
   add_index "games", ["name"], name: "index_games_on_name", unique: true, using: :btree
