@@ -201,11 +201,11 @@ p.streamPost {
 		}
 	}
 	&.settings-card {
+		padding-bottom: rem-calc(10);
 		input[type="text"], input[type="password"], textarea, select {
 			background-color: white;
 			border-color: $primary-darker-red
 		}
-		padding-bottom: rem-calc(10);
 		.avatar-upload {
 			display: inline-block;
 			vertical-align: top;
@@ -218,7 +218,7 @@ p.streamPost {
 		}
 		.skills {
 			overflow-y: scroll;
-			max-height: rem-calc(250);
+			max-height: rem-calc(390);
 			.skill {
 				.skill-title {
 					text-align: left;
@@ -234,7 +234,7 @@ p.streamPost {
 			}
 		}
 		.favourite-games {
-			max-height: rem-calc(390);
+			max-height: rem-calc(545);
 			overflow-y: scroll;
 		}
 		.new-item-button {

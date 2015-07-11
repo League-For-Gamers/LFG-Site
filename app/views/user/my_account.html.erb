@@ -81,20 +81,18 @@
             </div>
           <% end %>
         </div>
-        <div class="bottom">
-          <a class="new-item-button" id="new_skill" title="Add new skill">+</a>
-          <div class="small-12">
-            <label>Notes
-              <%= f.text_area :skill_notes, placeholder: "Notes" %>
+        <a class="new-item-button" id="new_skill" title="Add new skill">+</a>
+        <div class="small-12">
+          <label>Notes
+            <%= f.text_area :skill_notes, placeholder: "Notes" %>
+          </label>
+        </div>
+        <div class="small-12">
+          <%= f.fields_for :social do |s| %>
+            <label>Portfolio URL
+              <%= s.text_field :portfolio, placeholder: "Portfolio" %>
             </label>
-          </div>
-          <div class="small-12">
-            <%= f.fields_for :social do |s| %>
-              <label>Portfolio URL
-                <%= s.text_field :portfolio, placeholder: "Portfolio" %>
-              </label>
-            <% end %>
-          </div>
+          <% end %>
         </div>
       </div>
     </div>
@@ -109,9 +107,7 @@
             <% end -%>
           <% end -%>
         </div>
-        <div class="bottom">
-          <a class="new-item-button" id="new_favourite_game" title="Add new game">+</a>
-        </div>
+        <a class="new-item-button" id="new_favourite_game" title="Add new game">+</a>
       </div>
     </div>
 
