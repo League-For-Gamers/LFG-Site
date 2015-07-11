@@ -77,7 +77,7 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.action_controller.asset_host = "dev-static.leagueforgamers.com.s3-website-us-east-1.amazonaws.com"
+  config.action_controller.asset_host = "static.leagueforgamers.com"
 
   config.paperclip_defaults = {
     :storage => :s3,
