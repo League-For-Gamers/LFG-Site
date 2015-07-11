@@ -102,6 +102,22 @@ a {
 	height: rem-calc(86);
 	width: 100%;
 	background-color: $primary-red;
+	.search {
+		margin-left: rem-calc(330);
+		margin-top: rem-calc(25);
+		input[type="text"] {
+			background-image: image-url('ui/search-icon.png');
+			background-position: 98% 50%;
+			background-repeat: no-repeat;
+			background-color: #390202;
+			border: none;
+			font-style: italic;
+			font-size: 14pt;
+			text-transform: uppercase;
+			width: rem-calc(250);
+			color: #bfbfbf;
+		}
+	}
 	ul {
 		line-height: 2.7;
 		font-size: 24pt;
