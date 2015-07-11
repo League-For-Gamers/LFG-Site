@@ -81,6 +81,7 @@ Rails.application.configure do
 
   config.paperclip_defaults = {
     :storage => :s3,
+    :url => ":s3_alias_url",
     :s3_host_alias => ENV['ASSET_HOST'],
     :s3_credentials => {
       :bucket => ENV['S3_BUCKET_NAME'],
