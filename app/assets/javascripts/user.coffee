@@ -13,3 +13,18 @@ $ ->
       html = html.replace /type="hidden" value="\d+"/, 'type="hidden"'
       $('#skills').append html
       return
+  if window.location.pathname.match(/\/user\/([\d\w]*)/i)
+    $('.edit-section .hide').click -> 
+      section = $(this).data('section')
+      t = this
+      $.ajax
+        url: '/ajax/user/hide'
+        type: 'POST'
+        dataType: 'application/json'
+        data: {'section': section}
+        beforeSend: (xhr) ->
+          xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+        complete: (data) ->
+          $(t).toggleClass('disabled')
+          console.log $(".#{section}-card .hidden-section")
+          $(".#{section}-card .hidden-section").toggleClass("active")

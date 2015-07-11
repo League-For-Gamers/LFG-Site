@@ -8,7 +8,8 @@ module ApplicationHelper
   end
 
   def full_urlify(url)
-    "http://#{url}" unless url =~ /\Ahttp[s]?:\/\//i
+    url = "http://#{url}" unless url =~ /\Ahttp[s]?:\/\//i
+    url
   end
 
   def reverse_urlify(url)

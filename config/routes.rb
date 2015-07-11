@@ -17,6 +17,12 @@ Rails.application.routes.draw do
     get ':user_id/:post_id', action: 'show_post'
   end
 
+  scope :ajax do
+    namespace :user, path: 'user' do
+      post 'hide', action: 'profile_hide'
+    end
+  end
+
   get 'terms', to: 'static#terms'
   get 'faq', to: 'static#faq'
   get 'privacy', to: 'static#privacy'

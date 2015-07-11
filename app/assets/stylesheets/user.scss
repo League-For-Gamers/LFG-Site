@@ -45,10 +45,40 @@ p.streamPost {
 		position: absolute;
 		bottom: 0;
 	}
+	.hidden-section {
+		display: none;
+		&.active {
+			display: block;
+			width: 93%;
+			height: 95%;
+			background-color: rgba(0, 0, 0, 0.30);
+			z-index: 2;
+			position: absolute;
+			margin-left: rem-calc(-18);
+		}
+	}
+	.edit-section {
+		float: right;
+		margin-top: rem-calc(-22);
+		margin-right: rem-calc(-18);
+		.hide {
+			display: block;
+			width: rem-calc(20);
+			height: rem-calc(20);
+			background-color: $primary-red;
+			background-image: image-url('ui/eye-icon-sprite.png');
+			background-repeat: no-repeat;
+			background-position: 0 2px;
+			&.disabled {
+				background-color: #474747;
+				background-position-x: -20px;
+			}
+		}
+	}
 
 	&.bio-card {
 		.avatar {
-			margin-top: rem-calc(-20);
+			margin-top: rem-calc(-22);
 			$shadow: rem-calc(5) rem-calc(4) rem-calc(10) 0 rgba(0, 0, 0, 0.4);
 			-webkit-box-shadow: $shadow;
 			-moz-box-shadow: $shadow;

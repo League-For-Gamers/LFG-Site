@@ -4,7 +4,7 @@ class Skill < ActiveRecord::Base
   belongs_to :user
 
   validates :category, :user, presence: true
-  validates :confidence, inclusion: { in:  1..10}
+  validates :confidence, inclusion: {in:  1..10}
   validates :note, length: {maximum: 65}
   validates_uniqueness_of :category, scope: :user_id
 end

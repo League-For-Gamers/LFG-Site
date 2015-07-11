@@ -1,5 +1,9 @@
 <div class="large-4 small-12 columns left">
   <div class="pad text-card profile-card bio-card">
+    <% if @user == @current_user %>
+      <div class="edit-section">
+      </div>
+    <% end %>
     <%= image_tag @user.avatar.url(:med), class: "avatar" %>
     <span class="title <%= "long" if display_name(@user).length > 18 %>"><%= display_name(@user) %></span>
     <% unless @user.bio.blank? %><p><%= @user.bio %></p><% end %>
@@ -18,46 +22,62 @@
   </div>
 </div>
 
-<div class="large-4 small-12 columns left">
-  <div class="pad text-card profile-card skills-card">
-    <span class="title">Skills</span>
-    <div class="skills">
-      <% @user.skills.each do |skill| %>
-        <div class="skill">
-          <span class="category"><%= skill.category.titleize %></span>
-          <span class="note"><%= skill.note %></span>
-          <div class="bar">
-            <div class="inlet size-<%= skill.confidence %>">
-              <%= skill.confidence %>
+<% if !(to_b @user.hidden["skills"]) or @user == @current_user %>
+  <div class="large-4 small-12 columns left">
+    <div class="pad text-card profile-card skills-card">
+      <% if @user == @current_user %>
+        <div class="hidden-section <%= "active" if to_b @user.hidden["skills"] %>"></div>
+        <div class="edit-section">
+          <a class="hide <%= "disabled" if to_b  @user.hidden["skills"] %>" data-section="skills"></a>
+        </div>
+      <% end %>
+      <span class="title">Skills</span>
+      <div class="skills">
+        <% @user.skills.each do |skill| %>
+          <div class="skill">
+            <span class="category"><%= skill.category.titleize %></span>
+            <span class="note"><%= skill.note %></span>
+            <div class="bar">
+              <div class="inlet size-<%= skill.confidence %>">
+                <%= skill.confidence %>
+              </div>
             </div>
           </div>
-        </div>
-      <% end %>
-    </div>
-    <div class="bottom">
-      <% unless @user.skill_notes.blank? %>
-        <div class="notes">
-          <h5>Notes:</h5>
-          <p><%= @user.skill_notes %></p>
-        </div>
-      <% end %>
-      <% unless @user.social["portfolio"].blank? %>
-        <span class="portfolio">Portfolio/Resume: <%= link_to truncate(reverse_urlify(@user.social["portfolio"]), length: 21), full_urlify(@user.social["portfolio"]) %></span>
-      <% end %>
+        <% end %>
+      </div>
+      <div class="bottom">
+        <% unless @user.skill_notes.blank? %>
+          <div class="notes">
+            <h5>Notes:</h5>
+            <p><%= @user.skill_notes %></p>
+          </div>
+        <% end %>
+        <% unless @user.social["portfolio"].blank? %>
+          <span class="portfolio">Portfolio/Resume: <%= link_to truncate(reverse_urlify(@user.social["portfolio"]), length: 21), full_urlify(@user.social["portfolio"]) %></span>
+        <% end %>
+      </div>
     </div>
   </div>
-</div>
+<% end %>
 
-<div class="large-4 small-12 columns left">
-  <div class="pad text-card profile-card games-card">
-    <span class="title"><span title="Favourite">Favorite</span> Games</span>
-    <div class="games-list">
-      <% @user.games.each do |game| %>
-        <div class="game">
-          <%= image_tag game.boxart.url(:small) %>
-          <span class="game-title"><%= game.name %></span>
+<% if !(to_b @user.hidden["games"]) or @user == @current_user %>
+  <div class="large-4 small-12 columns left">
+    <div class="pad text-card profile-card games-card">
+      <% if @user == @current_user %>
+        <div class="hidden-section <%= "active" if to_b @user.hidden["games"] %>"></div>
+        <div class="edit-section">
+          <a class="hide <%= "disabled" if to_b  @user.hidden["games"] %>" data-section="games"></a>
         </div>
       <% end %>
+      <span class="title"><span title="Favourite">Favorite</span> Games</span>
+      <div class="games-list">
+        <% @user.games.each do |game| %>
+          <div class="game">
+            <%= image_tag game.boxart.url(:small) %>
+            <span class="game-title"><%= game.name %></span>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
-</div>
+<% end %>

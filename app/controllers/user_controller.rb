@@ -189,6 +189,14 @@ class UserController < ApplicationController
     end
   end
 
+  def profile_hide
+    render status: 403, plain: "Must be logged in" and return if @current_user.nil?
+    p = params.permit(:section)
+    @current_user.hidden[p["section"]] = !(@current_user.hidden[p["section"]] == 'true')
+    @current_user.save
+    render plain: "OK"
+  end
+
   private
     def set_current_user_with_includes
       @current_user = User.includes(:skills, :games, :tags).find session[:user]

@@ -63,6 +63,25 @@ RSpec.describe UserController, :type => :controller do
     end 
   end
 
+  describe "GET /signup" do
+    context "when not logged in" do
+      it "shows the signup page" do
+        get :signup
+        expect(response).to render_template(:signup)
+      end
+    end
+    context "when logged in" do
+      before do
+        session[:user] = bobby.id
+      end
+
+      it "redirects to root_url" do
+        get :signup
+        expect(response).to redirect_to(root_url)
+      end
+    end
+  end
+
   describe "POST /signup" do
     it "creates a new user" do
       pass = "a really great password!"
@@ -120,13 +139,13 @@ RSpec.describe UserController, :type => :controller do
     end
 
     it "adds a skill to the users list" do
-      patch :update, user: { skills_attributes: {"0" => {id: nil, category: :code, confidence: 7} }, games: {"0" => {name: "fdsf"}}}
+      patch :update, user: { skills_attributes: {"0" => {id: nil, category: :writing, confidence: 7} }, games: {"0" => {name: "fdsf"}}}
       expect(response).to redirect_to("/account")
       expect(assigns(:current_user).errors).to be_empty
-      expect(bobby.skills.map {|x| [x.category, x.confidence]}).to include(["code", 7])
+      expect(bobby.skills.map {|x| [x.category, x.confidence]}).to include(["writing", 7])
     end
     it "removes a skill from the users list" do
-      skill = Skill.new(category: :code, confidence: 7) # Should probably use factory girl
+      skill = Skill.new(category: :writing, confidence: 7) # Should probably use factory girl
       bobby.skills << skill
       patch :update, user: { skills_attributes: {"0" => {id: skill.id, category: "", confidence: skill.confidence} }}
       expect(response).to redirect_to("/account")
@@ -218,26 +237,26 @@ RSpec.describe UserController, :type => :controller do
 
     context "with queries and a filter" do
       it "should return a user when querying for their name and a matching skill" do
-        bobby.skills << FactoryGirl.create(:skill, category: :code, user: bobby)
-        get :search, query: "bobby", filter: "code"
+        bobby.skills << FactoryGirl.create(:skill, category: :writing, user: bobby)
+        get :search, query: "bobby", filter: "writing"
         expect(assigns(:results)).to include(bobby)
       end
       it "should not return a user when querying for their name and a skill they dont have" do
-        bobby.skills << FactoryGirl.create(:skill, category: :code, user: bobby)
-        get :search, query: "bobby", filter: "writing"
+        bobby.skills << FactoryGirl.create(:skill, category: :writing, user: bobby)
+        get :search, query: "bobby", filter: "music"
         expect(assigns(:results)).to_not include(bobby)
       end
     end
 
     context "with no queries and a filter" do
       it "should return a user with a matching skill" do
-        bobby.skills << FactoryGirl.create(:skill, category: :code, user: bobby)
-        get :search, filter: "code"
+        bobby.skills << FactoryGirl.create(:skill, category: :writing, user: bobby)
+        get :search, filter: "writing"
         expect(assigns(:results)).to include(bobby)
       end
       it "should not return a user with a skill they dont have" do
-        bobby.skills << FactoryGirl.create(:skill, category: :code, user: bobby)
-        get :search, filter: "writing"
+        bobby.skills << FactoryGirl.create(:skill, category: :writing, user: bobby)
+        get :search, filter: "music"
         expect(assigns(:results)).to_not include(bobby)
       end
     end
@@ -260,6 +279,27 @@ RSpec.describe UserController, :type => :controller do
           post :create_post, {body: body}
           expect(response).to redirect_to(root_url)
           expect(bobby.posts.last.body).to eq(body)
+        end
+      end
+    end
+  end
+
+  describe "GET /ajax/user/hide" do
+    context "while not logged in" do
+      it "should gracefully fail" do
+        post :profile_hide
+        expect(response.status).to eq(403)
+      end
+    end
+    context "while logged in" do
+      before do
+        session[:user] = bobby.id
+      end
+      context "" do
+        it "should toggle boolean of a hidden field" do
+          post :profile_hide, section: "skills"
+          expect(response.status).to eq(200)
+          expect(User.find(bobby.id).hidden["skills"]).to eq("true")
         end
       end
     end

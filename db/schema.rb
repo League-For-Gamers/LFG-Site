@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150710142446) do
+ActiveRecord::Schema.define(version: 20150711074148) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -119,6 +119,7 @@ ActiveRecord::Schema.define(version: 20150710142446) do
     t.hstore   "social",              default: {}, null: false
     t.text     "skill_notes"
     t.integer  "skill_status"
+    t.hstore   "hidden",              default: {}, null: false
   end
 
   add_foreign_key "posts", "users"

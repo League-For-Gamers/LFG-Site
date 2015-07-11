@@ -13,6 +13,12 @@ module UserHelper
       "https://www.youtube.com/user/#{social[1]}"
     when "link_instagram"
       "https://instagram.com/#{social[1]}"
+    else
+      social[1]
     end
+  end
+
+  def to_b(b)
+    b == "true"
   end
 end
