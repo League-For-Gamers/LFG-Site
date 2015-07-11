@@ -1,10 +1,10 @@
-<div class="large-6 small-12 center">
+<div class="lfg-form">
   <%= form_for @current_user, url: '/account', multipart: true do |f| %>
     <% if @current_user.errors.any? %>
       <div data-alert class="alert-box">
-        <strong><%= pluralize(@current_user.errors.count, "error") %> prohibited this user from being saved:</strong>
+        <strong><%= pluralize(@user.errors.count, "error") %> prohibited this account from being created:</strong>
         <ul style="margin-bottom: 0;">
-          <% @current_user.errors.full_messages.each do |msg| %>
+          <% @user.errors.full_messages.each do |msg| %>
             <li><%= msg %></li>
           <% end %>
         </ul>
@@ -12,127 +12,111 @@
       </div>
     <% end %>
 
-    <div class="row">
-      <h2>Basic Info</h2>
-      <div class="small-12 columns">
+    <div class="large-4 small-12 columns left">
+      <div class="pad text-card profile-card settings-card bio-card">
+        <span class="title">Basic Info</span>
+        <%= image_tag @current_user.avatar.url(:med), class: "avatar" %>
+
+        <div class="avatar-upload">
+          <label>Avatar
+            <%= f.file_field :avatar %>
+          </label>
+        </div>
+
+        <div class="small-12">
+          <label>Display Name
+            <%= f.text_field :display_name, placeholder: "Display Name" %>
+          </label>
+        </div>
+
+        <div class="small-12">
+          <label>Bio
+            <%= f.text_area :bio, placeholder: "Bio", rows: 8 %>
+          </label>
+        </div>
+
+        <span class="title">Change Password</span>
+        <div class="small-12">
+          <%= f.password_field :old_password, placeholder: "Old Password" %>
+        </div>
         <div class="row collapse">
-          <div class="small-3 columns">
-            <span class="prefix">Display Name</span>
+          <div class="small-6 columns new-pass">
+            <%= f.password_field :password, placeholder: "New Password" %>
           </div>
-          <div class="small-9 columns">
-            <div class="input-text">
-              <%= f.text_field :display_name %>
-            </div>
+          <div class="small-6 columns confirm-pass">
+            <%= f.password_field :password_confirmation, placeholder: "Confirmation" %>
           </div>
         </div>
-      </div>
 
-      <div class="small-12 columns">
-        <label>Bio
-        <%= f.text_area :bio %>
-        </label>
-      </div>
-    </div>
-
-    <div class="row">
-      <h2>Change Password</h2>
-      <div class="small-12 columns">
-        <div class="row collapse">
-          <div class="small-1 columns">
-            <span class="prefix">Old</span>
-          </div>
-          <div class="small-11 columns">
-            <div class="input-text">
-              <%= f.password_field :old_password, placeholder: "Old Password" %>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="small-6 columns">
-        <div class="row collapse">
-          <div class="small-3 columns">
-            <span class="prefix">New</span>
-          </div>
-          <div class="small-9 columns">
-            <div class="input-text">
-              <%= f.password_field :password, placeholder: "Password" %>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="small-6 columns">
-        <div class="row collapse">
-          <div class="small-3 columns">
-            <span class="prefix">Confirm</span>
-          </div>
-          <div class="small-9 columns">
-            <div class="input-text">
-              <%= f.password_field :password_confirmation, placeholder: "Confirmation" %>
-            </div>
-          </div>
+        <span class="title">Search Tags</span>
+        <div class="small-12">
+          <label>(Comma seperated)
+            <textarea name="user[tags]" id="user_tags"><%= @current_user.tags.map(&:name).join(", ") %></textarea>
+          </label>
         </div>
       </div>
     </div>
 
-    <div class="row">
-      <h2>Skills</h2>
-      <div id="skills">
-        <%= f.fields_for :skills  do |s| -%>
-          <div class="skill">
-            <%= s.hidden_field :id %>
-            <div class="small-9 columns" id="skills">
-              <label>Skill
-              <%= s.select :category, Skill.categories.keys.to_a.map { |x| [x.titleize, x] }, { include_blank: true } %>
+    <div class="large-4 small-12 columns left">
+      <div class="pad text-card profile-card settings-card">
+        <span class="title">Skills</span>
+
+        <div class="skills" id="skills">
+          <%= f.fields_for :skills  do |s| -%>
+            <div class="skill row collapse">
+              <%= s.hidden_field :id %>
+              <span class="skill-title">Skill</span>
+              <div class="small-7 columns category">
+                <%= s.select :category, Skill.categories.keys.to_a.map { |x| [x.titleize, x] }, { include_blank: true } %>
+              </div>
+              <div class="small-5 columns confidence">
+                <label>
+                  <%= s.select :confidence, (1..10).to_a %>
+                  Confidence
+                </label>
+              </div>
+              <div class="small-12">
+                <%= s.text_field :note, placeholder: "Note" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div class="bottom">
+          <a class="new-item-button" id="new_skill" title="Add new skill">+</a>
+          <div class="small-12">
+            <label>Notes
+              <%= f.text_area :skill_notes, placeholder: "Notes" %>
+            </label>
+          </div>
+          <div class="small-12">
+            <%= f.fields_for :social do |s| %>
+              <label>Portfolio URL
+                <%= s.text_field :portfolio, placeholder: "Portfolio" %>
               </label>
-            </div>
-            <div class="small-3 columns" id="skills">
-              <label>Confidence
-                <%= s.select :confidence, (1..10).to_a %>
-              </label>
-            </div>
+            <% end %>
           </div>
-        <% end -%>
+        </div>
       </div>
-      <h1 id="new_skill" title="Add new skill">+</h1>
     </div>
 
-    <div class="row">
-      <h2>Favourite Games</h2>
-      <div class="small-12 columns" id="favourite_games">
-        <% @games.each_with_index do |game, i| -%>
-          <%= f.fields_for :games, game, number: game do |g| -%>
-            <%= g.text_field :name, name: "user[games][#{i}][name]" %>
+    <div class="large-4 small-12 columns left">
+      <div class="pad text-card profile-card settings-card">
+        <span class="title"><span title="Favourite">Favorite</span> Games</span>
+        <div class="favourite-games" id="favourite_games">
+          <% @games.each_with_index do |game, i| -%>
+            <%= f.fields_for :games, game, number: game do |g| -%>
+              <%= g.text_field :name, name: "user[games][#{i}][name]" %>
+            <% end -%>
           <% end -%>
-        <% end -%>
-      </div>
-      <h1 id="new_favourite_game" title="Add new game">+</h1>
-    </div>
-
-    <div class="row">
-      <h2>Tags</h2>
-      <div class="small-12 columns">
-        <label>(Comma seperated)
-        <textarea name="user[tags]" id="user_tags"><%= @current_user.tags.map(&:name).join(", ") %></textarea>
-        </label>
+        </div>
+        <div class="bottom">
+          <a class="new-item-button" id="new_favourite_game" title="Add new game">+</a>
+        </div>
       </div>
     </div>
 
-    <div class="row">
-      <h2>Avatar</h2>
-      <div class="small-12">
-        <%= image_tag @current_user.avatar.url(:med) %>
-        <label>Avatar
-          <%= f.file_field :avatar %>
-        </label>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="small-12 columns">
-        <%= f.submit 'Submit', class: "button" %>
-      </div>
+    <div class="small-4 right">
+      <%= f.submit 'Submit', class: "btn right" %>
     </div>
   <% end %>
 </div>

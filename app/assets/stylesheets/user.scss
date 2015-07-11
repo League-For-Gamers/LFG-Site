@@ -44,6 +44,7 @@ p.streamPost {
 		padding-bottom: rem-calc(20);
 		position: absolute;
 		bottom: 0;
+		width: rem-calc(360);
 	}
 	.hidden-section {
 		display: none;
@@ -197,6 +198,55 @@ p.streamPost {
 					display: block;
 				}
 			}
+		}
+	}
+	&.settings-card {
+		input[type="text"], input[type="password"], textarea, select {
+			background-color: white;
+			border-color: $primary-darker-red
+		}
+		padding-bottom: rem-calc(10);
+		.avatar-upload {
+			display: inline-block;
+			vertical-align: top;
+			width: rem-calc(178);
+			margin-bottom: rem-calc(50);
+			input[type="file"] {
+				width: rem-calc(175);
+				font-size: 10pt;
+			}
+		}
+		.skills {
+			overflow-y: scroll;
+			max-height: rem-calc(250);
+			.skill {
+				.skill-title {
+					text-align: left;
+					width: 100%;
+					display: block;
+				}
+				.confidence {
+					text-align: right;
+					select {
+						width: rem-calc(50)
+					}
+				}
+			}
+		}
+		.favourite-games {
+			max-height: rem-calc(390);
+			overflow-y: scroll;
+		}
+		.new-item-button {
+			display: block;
+			text-align: right;
+			font-size: 38pt;
+		}
+		.new-pass {
+			padding-right: rem-calc(5)
+		}
+		.confirm-pass {
+			padding-left: rem-calc(5)
 		}
 	}
 }
