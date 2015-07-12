@@ -66,6 +66,18 @@ namespace :deploy do
   after :publishing, :symlink_nginx
 
   before "deploy:check:linked_files", :transfer_config
+
+  desc "Invoke rake task"
+  task :invoke_task do
+    ask :task, nil
+    on roles(:app) do
+      within release_path do
+        with rails_env: fetch(:rails_env) do
+          execute :rake, fetch(:task)
+        end
+      end 
+    end
+  end
 end
 
 namespace :bundler do

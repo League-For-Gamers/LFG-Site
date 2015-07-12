@@ -6,6 +6,7 @@ body {
 	color: $primary-text;
 	background-image: asset-url('ui/background.png');
 	background-repeat: repeat;
+	overflow: auto;
 }
 h1,h2,h3,h4,h5,h6 {
 	font-family: $font;
@@ -68,10 +69,15 @@ a {
 .main-logo {
 	position: absolute;
 	width: rem-calc(360);
-	float: left;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
 	padding-top: rem-calc(20);
 	text-align: center;
 	z-index: 999;
+	&.left {
+		margin: 0;
+	}
 	a img {
 		-webkit-filter: drop-shadow(0 0 rem-calc(32) rgba(0,0,0,0.8));
 		filter: drop-shadow(0 0 rem-calc(32) rgba(0,0,0,0.8));
@@ -161,10 +167,16 @@ a {
 		padding: 0 rem-calc(25);
 	}
 }
-
+@media only screen and (max-width: 40em) {
+	.bottom-nav-bar {
+		position: relative;
+		display: block;
+	}
+}
 main {
 	padding-top: rem-calc(200);
 	margin-bottom: rem-calc(40) !important;
+	overflow: auto;
 }
 
 .lfg-form {

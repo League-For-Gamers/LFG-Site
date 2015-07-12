@@ -1,14 +1,14 @@
 <fieldset class="streamPost <%= 'official' if post.official -%>" id="post-<%= post.id %>">
-  <div class="large-2 columns">
+  <div class="large-2 small-4 columns user">
     <a href="/user/<%= post.user.username %>">
       <%= display_name post.user %>
       <%= image_tag post.user.avatar.url(:med) %>
     </a>
   </div>
-  <div class="large-10 columns">
+  <div class="large-10 small-8 columns">
     <p><%= post.body %></p>
   </div>
-  <div class="large-12 right bottom-section">
+  <div class="small-12 right bottom-section">
     <% if post.user == @current_user %>
       <div class="user-controls">
         <div class="edit-controls">
