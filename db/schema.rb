@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150711074148) do
+ActiveRecord::Schema.define(version: 20150712101255) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -75,13 +75,6 @@ ActiveRecord::Schema.define(version: 20150711074148) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "roles_users", id: false, force: :cascade do |t|
-    t.integer "role_id", null: false
-    t.integer "user_id", null: false
-  end
-
-  add_index "roles_users", ["role_id", "user_id"], name: "index_roles_users_on_role_id_and_user_id", unique: true, using: :btree
-
   create_table "skills", force: :cascade do |t|
     t.integer  "category"
     t.integer  "user_id"
@@ -120,9 +113,13 @@ ActiveRecord::Schema.define(version: 20150711074148) do
     t.text     "skill_notes"
     t.integer  "skill_status"
     t.hstore   "hidden",              default: {}, null: false
+    t.integer  "role_id"
   end
+
+  add_index "users", ["role_id"], name: "index_users_on_role_id", using: :btree
 
   add_foreign_key "posts", "users"
   add_foreign_key "skills", "users"
   add_foreign_key "tags", "users"
+  add_foreign_key "users", "roles"
 end

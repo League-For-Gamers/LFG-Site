@@ -1,18 +1,13 @@
+<div class="large-6 small-12 center text-card pad">
+  <h2>User Search</h2>
+  <form id="filtered-search-form" method="get" action="/search">
+    <input type="hidden" name="query" id="hidden-search-field" value="<%= @query if @query -%>" >
+    <label>Filter by skill:
+    <%= select_tag "filter", options_for_select(Skill.categories.keys.to_a.map { |x| [x.titleize, x] }, @filter), { include_blank: true, id: "search-filter" } %>
+    </label>
+  </form>
+</div>
 <div class="large-6 small-12 center">
-  <div class="row">
-    <h2>User Search</h2>
-    <form method="get" action="/search">
-      <div class="small-12 columns">
-        <input type="text" name="query" placeholder="Query" value="<%= @query if @query -%>" >
-        <a class="show_hidden" data-id="1">Show advanced settings</a>
-        <div class="hidden" id="hidden-1">
-          <label>Filter by skill:
-          <%= select_tag "filter", options_for_select(Skill.categories.keys.to_a.map { |x| [x.titleize, x] }, @filter), { include_blank: true } %>
-          </label>
-        </div>
-      </div>
-    </form>
-  </div>
   <% if @results -%>
     <div class="row">
       <% @results.each do |user| -%>

@@ -5,6 +5,11 @@
         <label>New post
           <%= text_area_tag "body" %>
         </label>
+        <% if @current_user.has_permission? "can_create_official_posts" %>
+          <label>Official?
+            <%= check_box_tag "official" %>
+          </label>
+        <% end %>
         <input type="submit" class="button right" value="Post" />
       <% end -%>
     </div>

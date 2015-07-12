@@ -6,8 +6,8 @@ class User < ActiveRecord::Base
   enum skill_status: [:empty, :looking_for_group, :looking_for_more]
 
   attr_accessor :old_password, :email_confirm
-  has_and_belongs_to_many :roles
   has_and_belongs_to_many :games
+  belongs_to :role
   has_many :skills, -> { order 'confidence DESC' }, dependent: :destroy
   has_many :tags, dependent: :destroy
   has_many :posts, -> { order 'created_at ASC' }, dependent: :destroy
@@ -69,6 +69,11 @@ class User < ActiveRecord::Base
     rescue # I should have specific cases here but it'll be a lot...
       self.email
     end
+  end
+
+  def has_permission?(permission)
+    return false if self.role.nil?
+    self.role.permissions.map(&:name).include? permission
   end
 
   private

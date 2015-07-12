@@ -5,3 +5,8 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+admin = Role.create(id: 1, name: "administrator")
+Permission.create(name: "can_create_official_posts")
+
+admin.permissions << Permission.all
+admin.save

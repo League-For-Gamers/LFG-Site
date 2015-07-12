@@ -28,3 +28,8 @@ $ ->
           $(t).toggleClass('disabled')
           console.log $(".#{section}-card .hidden-section")
           $(".#{section}-card .hidden-section").toggleClass("active")
+  if window.location.pathname.match(/\/search/i)
+    $('#search-filter').change ->
+      $('#filtered-search-form').submit()
+    $('#search-bar').on 'propertychange change keyup paste input', ->
+      $('#hidden-search-field').val($(this).val())

@@ -135,8 +135,13 @@ class UserController < ApplicationController
   # POST /new_post
   def create_post
     redirect_to root_url and return unless logged_in?
-    body = params.permit(:body)["body"]
-    Post.create(body: body, user: @current_user)
+    if @current_user.has_permission? "can_create_official_posts"
+      post_params = params.permit(:body, :official)
+    else
+      post_params = params.permit(:body)
+    end
+    post_params["user"] = @current_user
+    Post.create(post_params)
     redirect_to request.referrer || root_url
   end
 
