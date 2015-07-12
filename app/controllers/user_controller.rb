@@ -169,6 +169,7 @@ class UserController < ApplicationController
 
   # GET /search
   def search
+    redirect_to root_url and return unless logged_in?
     set_title "Search"
     search_params = params.permit(:query, :filter, :page)
 

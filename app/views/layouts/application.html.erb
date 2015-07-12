@@ -29,11 +29,13 @@
     <%= link_to image_tag("ui/logo.png"), root_url%>
   </div>
   <nav class="top-nav-bar">
-    <div class="left search">
-      <form method="get" action="/search">
-        <input type="text" id="search-bar" name="query" placeholder="Search" value="<%= @query if @query -%>">
-      </form>
-    </div>
+    <% if !logged_in? %>
+      <div class="left search">
+        <form method="get" action="/search">
+          <input type="text" id="search-bar" name="query" placeholder="Search" value="<%= @query if @query -%>">
+        </form>
+      </div>
+    <% end %>
     <ul class="right">
       <% if !logged_in? %>
         <li><a href="/login">Login</a></li>
