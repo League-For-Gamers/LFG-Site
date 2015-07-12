@@ -1,12 +1,29 @@
 @import "foundation/functions";
 @import "mixins";
 
-fieldset.official {
-  border: rem-calc(1) solid #D03A3A;
-  background-color: #F4D5D5;
-}
-p.streamPost {
-	white-space: pre-wrap;
+.streamPost {
+	background: white;
+	padding-bottom: rem-calc(10);
+	.bottom-section {
+		text-align: right;
+		.user-controls {
+			display: inline-block;
+			margin-right: rem-calc(10);
+			.edit-controls {
+				display: none;
+				&.show {
+					display: inline-block;
+				}
+			}
+		}
+	}
+	p {
+		white-space: pre-wrap;
+	}
+	&.official {
+		border: rem-calc(1) solid #D03A3A;
+		background-color: #F4D5D5;
+	}
 }
 
 #join-the-league {

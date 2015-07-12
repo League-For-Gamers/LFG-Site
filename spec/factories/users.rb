@@ -22,6 +22,16 @@ FactoryGirl.define do
         user.games << FactoryGirl.create(:game)
       end
     end
+    factory :administrator_user do
+      username "admin_bobby"
+      password "admin bobby tables's very secure password"
+      display_name "Administrator Bobby"
+      bio "Wherever I went, computers disliked me, now I manage them :D"
+      email "admin_bobby@tables-family.com"
+      email_confirm "admin_bobby@tables-family.com"
+      role Role.find_by(name: "administrator")
+    end
   end
+
 
 end

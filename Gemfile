@@ -40,6 +40,7 @@ group :development, :test do
 
   gem 'rspec-rails', '~> 3.3.2'
   gem 'factory_girl_rails'
+  gem 'database_cleaner'
   gem 'simplecov', require: false
   gem 'pry-rails'
 end

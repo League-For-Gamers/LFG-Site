@@ -1,24 +1,22 @@
 <div class="row">
-  <div class="row">
-    <div class="large-12">
-      <%= form_tag '/new_post' do -%>
-        <label>New post
-          <%= text_area_tag "body" %>
+  <div class="large-6 small-12 text-card pad lfg-form center">
+    <%= form_tag '/new_post' do -%>
+      <label>New post
+        <%= text_area_tag "body" %>
+      </label>
+      <% if @current_user.has_permission? "can_create_official_posts" %>
+        <label style="float: right;">Official?
+          <%= check_box_tag "official" %>
         </label>
-        <% if @current_user.has_permission? "can_create_official_posts" %>
-          <label>Official?
-            <%= check_box_tag "official" %>
-          </label>
-        <% end %>
-        <input type="submit" class="button right" value="Post" />
-      <% end -%>
-    </div>
+      <% end %>
+      <input type="submit" class="btn" value="Post" />
+    <% end -%>
   </div>
-  <div class="row">
-    <div class="large-12">
-      <% @posts.reverse.each do |post| -%>
-        <%= render partial: "post", locals: {post: post} %>
-      <% end -%>
-    </div>
+</div>
+<div class="row">
+  <div class="large-8 small-12 center">
+    <% @posts.reverse.each do |post| -%>
+      <%= render partial: "post", locals: {post: post} %>
+    <% end -%>
   </div>
 </div>

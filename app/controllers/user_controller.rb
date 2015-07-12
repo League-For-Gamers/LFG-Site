@@ -132,6 +132,28 @@ class UserController < ApplicationController
     set_title @post.user.display_name || @post.user.username.titleize
   end
 
+  # POST /user/post/delete
+  def delete_post
+    render plain: "You do not have permission to delete this post", status: 403 and return unless logged_in?
+    post = Post.find(params["id"])
+    render plain: "You do not have permission to delete this post", status: 403 and return if post.user_id != @current_user.id
+    post.delete
+    render plain: "OK"
+  end
+
+  def update_post
+    render json: {errors: {'0' => 'You do not have permission to delete this post'}}, status: 403 and return unless logged_in?
+    post = Post.find(params["id"])
+    render json: {errors: {'0' => 'You do not have permission to delete this post'}}, status: 403 and return if post.user_id != @current_user.id
+    post.body = params["body"]
+    if post.valid?
+      post.save
+      render json: {body: post.body}
+    else
+      render json: {errors: post.errors.full_messages}, status: :unprocessable_entity
+    end
+  end
+
   # POST /new_post
   def create_post
     redirect_to root_url and return unless logged_in?

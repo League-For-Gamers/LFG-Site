@@ -124,20 +124,26 @@ a {
 	}
 }
 
-@media only screen and (max-width: 37.5em) {
+@media only screen and (max-width: 64em) {
 	.main-logo {
 		width: rem-calc(160);
+	}
+	.settings-button {
+		vertical-align: middle;
 	}
 	.top-nav-bar, .bottom-nav-bar {
 		padding: 0 rem-calc(15);
 	}
-}
-
-@media only screen and (max-width: 24em) {
 	.top-nav-bar {
 		ul {
 			line-height: 3.3;
 			font-size: 18pt;
+		}
+	}
+	.search {
+		margin-left: 0 !important;
+		input[type="text"] {
+			width: rem-calc(180) !important;
 		}
 	}
 }

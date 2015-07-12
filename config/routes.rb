@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   get 'search', to: 'user#search'
 
   namespace :user, path: 'user' do
+    post '/post/update', action: 'update_post'
+    post '/post/delete', action: 'delete_post'
     get ':id', action: 'show'
     get ':user_id/:post_id', action: 'show_post'
   end

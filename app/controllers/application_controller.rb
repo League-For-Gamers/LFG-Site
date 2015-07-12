@@ -28,8 +28,4 @@ class ApplicationController < ActionController::Base
     def not_found
       raise ActionController::RoutingError.new('Not Found')
     end
-
-    def has_permission?(user, permission)
-      user.role.permissions.map(&:name).include? permission
-    end
 end
