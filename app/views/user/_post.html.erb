@@ -20,6 +20,6 @@
       </div>
     <% end %>
 
-    <%= link_to time_ago_in_words(post.created_at) + " ago", "/user/#{post.user.username}/#{post.id}" %><% if post.created_at != post.updated_at -%><span title="Last Edited at <%= time_ago_in_words post.updated_at %>">*</span><% end -%>
+    <%= link_to time_ago_in_words(post.created_at) + " ago", "/user/#{post.user.username}/#{post.id}" %><% if post.created_at != post.updated_at -%><span title="Last Edited <%= time_ago_in_words post.updated_at %>">*</span><% end -%>
   </div>
 </fieldset>

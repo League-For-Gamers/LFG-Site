@@ -9,3 +9,6 @@ One all these are done, run `rake db:seed` to seed the DB with the current roles
 
 ## Contributing
 All pull requests are welcome, however it's greatly appreciated if your tests pass 100% and you write tests for all new code. We use RSpec, so tests can be run via `rake spec`
+
+## License
+See LICENSE file.
