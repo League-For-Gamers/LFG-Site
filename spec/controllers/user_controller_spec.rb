@@ -39,6 +39,68 @@ RSpec.describe UserController, :type => :controller do
     end
   end
 
+  describe "GET /user/forgot_password" do
+    context "when logged in" do
+      before do
+        session[:user] = bobby.id
+      end
+      it "should redirect to root_url" do
+        get :forgot_password
+        expect(response).to redirect_to(root_url)
+      end
+    end
+  end
+
+  describe "POST /user/forgot_password" do
+    context "when logged in" do
+      before do
+        session[:user] = bobby.id
+      end
+      it "should redirect to root_url" do
+        post :forgot_password_check
+        expect(response).to redirect_to(root_url)
+      end
+    end
+    context "when not logged in" do
+      it "should generate a verification_digest if user is found" do
+        post :forgot_password_check, email: bobby.decrypted_email
+        expect(User.find(bobby.id).verification_digest).to be_present
+      end
+      it "should not generate a verification_digest when a user is not found" do
+        post :forgot_password_check, email: "blah@blah.blah"
+        expect(User.find(bobby.id).verification_digest).to_not be_present
+      end
+    end
+  end
+
+  describe "GET /user/forgot_password/:activation_id" do
+    it "should gracefully fail when passed an invalid activation id" do
+      get :reset_password, activation_id: "junk"
+      expect(response).to render_template(:reset_password_invalid)
+    end
+    it "should render the main template when passed a valid activation id" do
+      bobby.generate_verification_digest
+      get :reset_password, activation_id: bobby.verification_digest
+      expect(response).to render_template(:reset_password)
+      expect(assigns(:user)).to be_present
+    end
+  end
+
+  describe "POST /user/forgot_password/:activation_id" do
+    it "should fail gracefully when passed an invalid activation id" do
+      post :reset_password_check, activation_id: "junk"
+      expect(User.find(bobby.id).password_digest).to eq(bobby.password_digest)
+      expect(response).to redirect_to(root_url)
+      expect(flash[:notice]).to be_present
+    end
+    it "should change the users password and set the verification_digest to invalid" do
+      bobby.generate_verification_digest
+      post :reset_password_check, activation_id: bobby.verification_digest, password: 'new password'
+      expect(User.find(bobby.id).password_digest).to_not eq(bobby.password_digest)
+      expect(User.find(bobby.id).verification_active.to_i).to be < Time.now.to_i
+    end
+  end
+
   describe "GET /" do
     context "when not logged in" do
       it "shows the signup page" do
@@ -286,6 +348,9 @@ RSpec.describe UserController, :type => :controller do
   end
 
   describe "GET /search" do
+    before do
+      session[:user] = bobby.id
+    end
     context "without any queries or filter" do
       it "should not search for any results" do
         get :search

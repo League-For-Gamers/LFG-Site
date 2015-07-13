@@ -29,7 +29,7 @@ FactoryGirl.define do
       bio "Wherever I went, computers disliked me, now I manage them :D"
       email "admin_bobby@tables-family.com"
       email_confirm "admin_bobby@tables-family.com"
-      role Role.find_by(name: "administrator")
+      role_id 1
     end
   end
 

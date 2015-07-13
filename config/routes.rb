@@ -13,6 +13,10 @@ Rails.application.routes.draw do
   get 'search', to: 'user#search'
 
   namespace :user, path: 'user' do
+    get '/forgot_password', action: 'forgot_password'
+    post '/forgot_password', action: 'forgot_password_check'
+    get '/forgot_password/:activation_id', action: 'reset_password'
+    post '/forgot_password/:activation_id', action: 'reset_password_check'
     post '/post/update', action: 'update_post'
     post '/post/delete', action: 'delete_post'
     get ':id', action: 'show'

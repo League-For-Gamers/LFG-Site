@@ -6,7 +6,6 @@ body {
 	color: $primary-text;
 	background-image: asset-url('ui/background.png');
 	background-repeat: repeat;
-	overflow: auto;
 }
 h1,h2,h3,h4,h5,h6 {
 	font-family: $font;
@@ -176,7 +175,6 @@ a {
 main {
 	padding-top: rem-calc(200);
 	margin-bottom: rem-calc(40) !important;
-	overflow: auto;
 }
 
 .lfg-form {

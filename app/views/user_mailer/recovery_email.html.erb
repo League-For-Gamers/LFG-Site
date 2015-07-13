@@ -1,0 +1,8 @@
+<h1>Password reset request</h1>
+<p>You requested a password reset on the <%= Time.now.strftime("%-m").to_i.ordinalize -%> of <%= Time.now.strftime("%B") %>, <%= Time.now.strftime("%Y") %>.</p>
+<p>You can reset your password at this <a href="<%= @recovery_link %>">link.</a><br>
+This link will remain active for 24 hours</p>
+
+<p>League for Gamers, Inc.<br>
+65 Enterprise<br>
+Aliso Viejo, California 92656</p>

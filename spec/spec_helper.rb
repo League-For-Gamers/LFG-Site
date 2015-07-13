@@ -18,7 +18,8 @@ SimpleCov.start 'rails'
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   config.before(:suite) do
-    DatabaseCleaner.clean_with(:truncation)
+    DatabaseCleaner.strategy = :truncation, {:only => %w[roles permissions permissions_roles]}
+    DatabaseCleaner.clean
     Rails.application.load_seed
   end
 # The settings below are suggested to provide a good initial experience

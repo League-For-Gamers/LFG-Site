@@ -25,6 +25,12 @@
   <link rel="shortcut icon" href="/favicon.ico?v2" />
 </head>
 <body class="antialiased">
+  <% if flash[:notice] %>
+    <div data-alert class="alert-box">
+      <%= flash[:notice] %>
+      <a href="#" class="close">&times;</a>
+    </div>
+  <% end %>
   <div class="main-logo <%= "left" if logged_in? %>">
     <%= link_to image_tag("ui/logo.png"), root_url%>
   </div>

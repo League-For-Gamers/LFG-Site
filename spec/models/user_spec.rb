@@ -72,7 +72,6 @@ RSpec.describe User, :type => :model do
   end
 
   context 'when entering zalgo in a displayed field' do
-    let(:bobby) { FactoryGirl.create(:user) }
     it 'is removed from display_name' do
       bobby.display_name = "Z̉̌͌̿̓́҉̛̪̠̜̗̺͎̬̻̪̻͇̭͜ͅa̛͒̾̄ͦ̄̓͐̆ͨ̂ͦ͠͠҉̭͙͎̳ḽ̵̶̸̱͎͖̰͙̤͙̩̠̹͈̻̽͒̓ͧͨ͊̏͛ͩ̎̍̚͟ͅg̡̩͎̘̣̫̠͂͋̋̃̅͑̆ͭ̑̄̂͛͟͜ö̥̱͍̳̣̬̭͍̯̬̯̣͍̩͉̠͎̑̈ͤͪ̏̋͋̀ͦͦͥ̕͟ͅS̶̵̴̱͙̦̝̱͎͇̹͓̙̺̠̱̣̖͒͒̍̈́̆̐̈͛ͫ͗ͮt̺̦̙̱̫̘̱̹̭͎͚͖̫̼́͂ͣ̊̋̒̍͟͜r̷̨̡̭͙̘͇̳̦̼̭̥͙͈̭̬͖̳ͯ̅̇̄̂̈͆̎͑ͤ̋̕͜ì̡̬͎͇͎̤̜̝̮̠͙̘͍̊͋̿ͥ̚͢͞n̠͔͔̠̱̦͓̲͔̫̯͕̤̒̒͌ͤ̓ͬͥ̄̾͌͟͡ͅg̵ͪͩ̈͋ͨ̓̈̋̅ͨ͊̈͗ͫ͐ͫ͢͏̡̛̜̖̟̝͓͔̦̙͎̬̜͉̥͉̠̤̱̩̝"
       bobby.valid? # Run it thought the validators
@@ -98,6 +97,28 @@ RSpec.describe User, :type => :model do
 
     it 'should return false for when the user does not have a permission' do
       expect(bobby.has_permission?("fake_permission")).to be(false)
+    end
+  end
+
+  describe '#generate_verification_digest' do
+    it 'should generate a new verification digest' do
+      bobby.generate_verification_digest
+      expect(bobby.verification_digest).to be_present
+      expect(bobby.verification_active).to be_present
+    end
+
+    it 'should not generate a new digest over an active one' do
+      bobby.generate_verification_digest
+      old_digest = bobby.verification_digest
+      bobby.generate_verification_digest
+      expect(bobby.verification_digest).to eq(old_digest)
+    end
+  end
+
+  describe '#generate_password_reset_link' do
+    it 'should return a valid url' do
+      bobby.generate_verification_digest
+      expect(bobby.generate_password_reset_link).to match(URI::regexp)
     end
   end
 end

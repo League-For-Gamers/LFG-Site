@@ -39,6 +39,48 @@ class UserController < ApplicationController
     logout_user and redirect_to root_url
   end
 
+  # GET /user/forgot_password
+  def forgot_password
+    redirect_to root_url and return if logged_in?
+  end
+
+  # POST /user/forgot_password
+  def forgot_password_check
+    redirect_to root_url and return if logged_in?
+    user = User.find_by(hashed_email: Digest::SHA384.hexdigest(params["email"] + ENV['EMAIL_SALT']))
+    unless user.blank?
+      user.generate_verification_digest
+      UserMailer.recovery_email(user).deliver_now
+    end
+  end
+
+  # GET /user/forgot_password/:activation_id
+  def reset_password
+    # This could probably be done in a single query but ehhhhhh
+    @user = User.find_by(verification_digest: params[:activation_id])
+    @user = nil if @user.nil? or @user.verification_active < Time.now 
+    render "reset_password_invalid" and return if @user.nil?
+  end
+
+  # POST /user/forgot_password/:activation_id
+  def reset_password_check
+    user = User.find_by(verification_digest: params[:activation_id])
+    user = nil if user.nil? or user.verification_active < Time.now
+    unless user.nil?
+      digest = user.password_digest
+      user.password = params["password"][0]
+      user.password_confirmation = params["password"][0]
+      user.skip_old_password = true
+      user.verification_active = 1.hour.ago
+      user.save
+      flash[:notice] = "Password has been changed. You can log in now."
+      redirect_to root_url and return
+    else
+      flash[:notice] = "The token you have provided is invalid or out of date."
+      redirect_to root_url and return
+    end
+  end
+
   # GET /signup
   def signup
     redirect_to root_url if logged_in?
