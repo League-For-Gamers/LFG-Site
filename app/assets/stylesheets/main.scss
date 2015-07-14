@@ -257,3 +257,13 @@ a {
 		}
 	}
 }
+@media only screen and (max-width: 26em) {
+	.lfg-form {
+		input {
+			&.btn {
+				font-size: 16pt !important;
+				padding: rem-calc(2) rem-calc(16) !important;
+			}
+		}
+	}
+}

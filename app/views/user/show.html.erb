@@ -45,13 +45,13 @@
           </div>
         <% end %>
       </div>
+      <% unless @user.skill_notes.blank? %>
+        <div class="notes">
+          <h5>Notes:</h5>
+          <p><%= @user.skill_notes %></p>
+        </div>
+      <% end %>
       <div class="bottom">
-        <% unless @user.skill_notes.blank? %>
-          <div class="notes">
-            <h5>Notes:</h5>
-            <p><%= @user.skill_notes %></p>
-          </div>
-        <% end %>
         <% unless @user.social["portfolio"].blank? %>
           <span class="portfolio">Portfolio/Resume: <%= link_to truncate(reverse_urlify(@user.social["portfolio"]), length: 21), full_urlify(@user.social["portfolio"]) %></span>
         <% end %>

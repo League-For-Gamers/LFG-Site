@@ -88,6 +88,28 @@
 		}
 	}
 }
+@media only screen and (max-width: 26em) {
+	.streamPost {
+		.user-controls {
+			a {
+				font-size: 12pt;
+				&.delete-post {
+					background-position: 50% rem-calc(2);
+					width: rem-calc(25);
+					height: rem-calc(26);
+				}
+			}
+		}
+		.edit-controls {
+			a {
+				width: 100%;
+				margin-bottom: rem-calc(2);
+				text-align: center;
+				font-size: 12pt !important;
+			}
+		}
+	}
+}
 
 #join-the-league {
 	padding: rem-calc(12) rem-calc(33);
@@ -121,8 +143,7 @@
 	}
 	.bottom {
 		padding-right: rem-calc(36);
-		padding-bottom: rem-calc(20);
-		position: absolute;
+		position: relative;
 		bottom: 0;
 		width: rem-calc(360);
 	}
@@ -177,6 +198,7 @@
 			overflow-wrap: break-word;
 			white-space: pre-wrap;
 			hyphens: auto;
+			min-height: rem-calc(360)
 		}
 		.website {
 			font-weight: 600;
@@ -216,7 +238,7 @@
 	}
 	&.skills-card {
 		.skills {
-			max-height: rem-calc(280);
+			max-height: rem-calc(320);
 			overflow-y: scroll;
 			.skill {
 				text-transform: uppercase;
@@ -247,6 +269,7 @@
 			}
 		}
 		.notes {
+			min-height: rem-calc(88);
 			vertical-align: bottom;
 			h5 {
 				font-weight: 600;
@@ -254,6 +277,7 @@
 				margin-bottom: 0;
 			}
 			p {
+				margin-bottom: 0;
 				text-align: justify
 			}
 		}
@@ -328,11 +352,37 @@
 	}
 }
 
-@media only screen and (max-width: 24em) {
+@media only screen and (max-width: 26em) {
 	#join-the-league {
 		padding: rem-calc(6) rem-calc(16);
 		p {
 			font-size: 11pt;
+		}
+	}
+	.profile-card {
+		&.settings-card {
+			&.bio-card {
+				.avatar {
+					margin-top: 0;
+				}
+				.avatar-upload {
+					margin-bottom: 0;
+				}
+			}
+		}
+		&.skills-card {
+			.portfolio {
+				font-size: 10pt;
+			}
+		}
+		&.games-card {
+			.games-list {
+				.game {
+					.game-title {
+						font-size: 11pt;
+					}
+				}
+			}
 		}
 	}
 }

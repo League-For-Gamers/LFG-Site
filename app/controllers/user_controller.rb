@@ -117,6 +117,7 @@ class UserController < ApplicationController
     # Okay this is a wee bit dirty
     user_params = user_params()
     game_params = user_params["games"]
+    puts user_params[:skill_notes].length
     tag_params = user_params["tags"]
     user_params["display_name"] = nil if user_params["display_name"].blank?
     user_params.delete("games")
@@ -296,7 +297,7 @@ class UserController < ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:old_password, :password, :password_confirmation, :bio, :display_name, :avatar, :tags,
+      params.require(:user).permit(:old_password, :password, :password_confirmation, :bio, :display_name, :avatar, :tags, :skill_notes,
                                    {games: :name}, 
                                    social: [:portfolio, :website, :link_facebook, :link_googleplus, :link_instagram, :link_linkedin, :link_twitter, :link_youtube],
                                    skills_attributes: [:id, :category, :confidence, :note])
