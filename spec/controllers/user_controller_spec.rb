@@ -250,6 +250,19 @@ RSpec.describe UserController, :type => :controller do
       expect(assigns(:current_user).errors).to be_empty
       expect(response).to redirect_to("/account")
     end
+    context "when changing the name of an entered game" do
+      it "does not change the name of the game globally but creates a new entry" do
+        bobby.games << FactoryGirl.create(:game, name: "newgame1")
+        bobby.games << FactoryGirl.create(:game, name: "newgame2")
+        game2 = Game.find_by(name: "newgame2")
+
+        patch :update, user: { games: { "0" => {id: Game.find_by(name: "newgame1").id, name: "newgame1"}, "1" => {id: game2.id, name: "newgame3"}} }
+        expect(User.find(bobby.id).games).to_not include(Game.find_by(name: "newgame2"))
+        expect(game2.id).to_not eq(Game.find_by(name: "newgame3").id)
+        expect(assigns(:current_user).errors).to be_empty
+        expect(response).to redirect_to("/account")
+      end
+    end
   end
 
   describe "GET /user/:id" do

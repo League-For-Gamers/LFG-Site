@@ -1,25 +1,25 @@
-<fieldset class="streamPost <%= 'official' if post.official -%>" id="post-<%= post.id %>">
-  <div class="large-2 small-4 columns user">
-    <a href="/user/<%= post.user.username %>">
-      <%= display_name post.user %>
-      <%= image_tag post.user.avatar.url(:med) %>
-    </a>
-  </div>
-  <div class="large-10 small-8 columns">
-    <p><%= post.body %></p>
-  </div>
-  <div class="small-12 right bottom-section">
-    <% if post.user == @current_user %>
+<div class="streamPost text-card <%= 'official' if post.official -%>" id="post-<%= post.id %>">
+  <div class="large-2 small-3 columns user">
+    <%= image_tag post.user.avatar(:med), class: "avatar" %>
+    <% if post.user == @current_user -%>
       <div class="user-controls">
         <div class="edit-controls">
-          <a class="submit-post" data-id="<%= post.id %>">Submit</a> |
+          <a class="submit-post" data-id="<%= post.id %>">Submit</a>
           <a class="cancel-post" data-id="<%= post.id %>">Cancel</a>
         </div>
-        <a class="edit-post" data-id="<%= post.id %>">Edit</a> |
-        <a class="delete-post" data-id="<%= post.id %>">Delete</a>
+        <div class="default-controls">
+          <a class="edit-post" data-id="<%= post.id %>">Edit</a>
+          <a class="delete-post" data-id="<%= post.id %>"></a>
+        </div>
       </div>
-    <% end %>
-
-    <%= link_to time_ago_in_words(post.created_at) + " ago", "/user/#{post.user.username}/#{post.id}" %><% if post.created_at != post.updated_at -%><span title="Last Edited <%= time_ago_in_words post.updated_at %>">*</span><% end -%>
+    <% end -%>
+    <% if post.official -%>
+      <%= image_tag 'ui/official-shield.png', class: 'official-shield' %>
+    <% end -%>
   </div>
-</fieldset>
+  <div class="large-10 small-9 columns body">
+    <span class="title"><%= display_name post.user -%></span>
+    <p><%= post.body -%></p>
+    <span class="time-ago"><%= link_to post_time_ago(post), "/user/#{post.user.username}/#{post.id}" -%></span>
+  </div>
+</div>

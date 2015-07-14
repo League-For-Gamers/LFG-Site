@@ -39,6 +39,7 @@ $ ->
     $('.edit-post').click ->
       # This is fucking terrible.
       id = $(this).data("id")
+      default_controls = $(this).parent()
       edit_post = $(this)
       cancel_post = $("#post-#{id} .cancel-post")
       submit_post = $("#post-#{id} .submit-post")
@@ -47,13 +48,13 @@ $ ->
       text_height = $("#post-#{id} p").height()
       $("#post-#{id} p").replaceWith $("<textarea class='edit-box'>#{$("#post-#{id} p").text()}</textarea>")
       $("#post-#{id} textarea").height text_height
-      edit_post.hide()
+      default_controls.hide()
       edit_controls.toggleClass("show")
       cancel_post.click ->
         id = $(this).data("id")
         $("#post-#{id} textarea").replaceWith $("<p>#{original_text}</p>")
         edit_controls.toggleClass("show")
-        edit_post.show()
+        default_controls.show()
       submit_post.click ->
         id = $(this).data("id")
         text = $("#post-#{id} textarea").val()
@@ -67,7 +68,7 @@ $ ->
           success: (data) ->
             $("#post-#{id} textarea").replaceWith $("<p>#{data.body}</p>")
             edit_controls.toggleClass("show")
-            edit_post.show()
+            default_controls.show()
           error: (data) ->
             console.log data.responseJSON.errors.join("\n")
             alert("An error occured editing your post:\n#{data.responseJSON.errors.join("\n")}")

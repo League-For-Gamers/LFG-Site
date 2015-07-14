@@ -21,4 +21,12 @@ module UserHelper
   def to_b(b)
     b == "true"
   end
+
+  def post_time_ago(post)
+    if post.created_at != post.updated_at
+      "Edited about #{time_ago_in_words(post.updated_at)} ago<span title=\"#{"Created about #{time_ago_in_words(post.created_at)} ago"}\">*</span>".html_safe
+    else
+      "#{time_ago_in_words(post.created_at)} ago"
+    end
+  end
 end
