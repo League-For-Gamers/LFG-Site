@@ -9,14 +9,14 @@
 </div>
 <div class="large-6 small-12 center">
   <% if @results -%>
-    <div class="row">
       <% @results.each do |user| -%>
-        <fieldset>
-          <legend><%= link_to display_name(user), "/user/#{user.username}" %></legend>
-          <div class="large-2 small-4 columns">
-            <%= image_tag user.avatar.url(:thumb) %>
+        <div class="small-12 center text-card pad search-entry">
+          
+          <div class="small-3 columns">
+            <%= link_to image_tag(user.avatar.url(:med), class: "avatar"), "/user/#{user.username}" %>
+            <span class="title"><%= link_to display_name(user), "/user/#{user.username}" %></span>
           </div>
-          <div class="large-10 small-8 columns">
+          <div class="small-9 columns">
             <% if !user.skills.empty? -%>
               <span>Skills</span>
               <ul>
@@ -31,12 +31,11 @@
               <p>No info to show</p>
             <% end -%>
           </div>
-        </fieldset>
+        </div>
       <% end -%>
       <% if @results.empty? -%>
         <h3>No results found!</h3>
       <% end -%>
-    </div>
     <div class="row">
       <%= render(:partial => "shared/pagination", :locals => {:address_prefix => "/search?#{@query_string}", :number_of_pages => @num_of_pages, :current => @page_num, :existing_query => true}) %>
     </div>
