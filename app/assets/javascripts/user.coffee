@@ -11,7 +11,7 @@ $ ->
       html = $('#skills').children()[0].outerHTML.replace(/selected=\"selected\" /g, "")
       html = html.replace(/\[(\d)\]/g, "[#{id}]").replace(/_\d_/g, "_#{id}_")
       html = html.replace /type="hidden" value="\d+"/, 'type="hidden"'
-      id = html.match(/id=\"(user_skills_attributes_\d_note)\"/)[1]
+      id = html.match(/id=\"(user_skills_attributes_\d+_note)\"/)[1]
       $('#skills').append html
       $("##{id}").val("")
       return
