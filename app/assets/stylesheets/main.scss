@@ -166,7 +166,7 @@ a {
 	background-color: $primary-red;
 }
 @media only screen and (max-width: 90em) {
-	main {
+	.main {
 		padding: 0 rem-calc(25);
 	}
 }
@@ -208,7 +208,7 @@ a {
 		}
 	}
 }
-main {
+.main {
 	padding-top: rem-calc(200);
 	margin-bottom: rem-calc(40) !important;
 }
