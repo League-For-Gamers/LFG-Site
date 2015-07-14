@@ -76,6 +76,7 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+  config.action_mailer.logger = nil # We do NOT want emails to be logged, this would reveal decrypted email addresses in the log.
 
   config.action_controller.asset_host = ENV['ASSET_HOST']
 
@@ -91,7 +92,6 @@ Rails.application.configure do
   }
 
   config.action_mailer.perform_deliveries = true
-  config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     :address => ENV['SMTP_ADDRESS'],

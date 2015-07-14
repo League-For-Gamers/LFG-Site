@@ -1,6 +1,6 @@
 <div class="streamPost text-card <%= 'official' if post.official -%>" id="post-<%= post.id %>">
   <div class="large-2 small-3 columns user">
-    <%= image_tag post.user.avatar(:med), class: "avatar" %>
+    <%= link_to image_tag(post.user.avatar(:med), class: "avatar"), "/user/#{post.user.username}" %>
     <% if post.user == @current_user -%>
       <div class="user-controls">
         <div class="edit-controls">
@@ -18,7 +18,7 @@
     <% end -%>
   </div>
   <div class="large-10 small-9 columns body">
-    <span class="title"><%= display_name post.user -%></span>
+    <span class="title"><%= link_to display_name(post.user), "/user/#{post.user.username}" -%></span>
     <p><%= post.body -%></p>
     <span class="time-ago"><%= link_to post_time_ago(post), "/user/#{post.user.username}/#{post.id}" -%></span>
   </div>
