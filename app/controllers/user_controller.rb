@@ -47,7 +47,7 @@ class UserController < ApplicationController
   # POST /user/forgot_password
   def forgot_password_check
     redirect_to root_url and return if logged_in?
-    user = User.find_by(hashed_email: Digest::SHA384.hexdigest(params["email"] + ENV['EMAIL_SALT']))
+    user = User.find_by(hashed_email: Digest::SHA384.hexdigest(params["email"].downcase + ENV['EMAIL_SALT']))
     unless user.blank?
       user.generate_verification_digest
       UserMailer.recovery_email(user).deliver_now

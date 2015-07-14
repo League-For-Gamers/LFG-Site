@@ -51,7 +51,7 @@ class User < ActiveRecord::Base
 
   def hash_email
     # I feel like we should do more than just a SHA-2 of Email... hrm.
-    self.hashed_email = Digest::SHA384.hexdigest(self.decrypted_email + ENV['EMAIL_SALT'])
+    self.hashed_email = Digest::SHA384.hexdigest(self.decrypted_email.downcase + ENV['EMAIL_SALT'])
   end
   
   # Email storage crypto
