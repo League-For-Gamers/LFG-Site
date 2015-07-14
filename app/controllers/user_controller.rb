@@ -117,7 +117,6 @@ class UserController < ApplicationController
     # Okay this is a wee bit dirty
     user_params = user_params()
     game_params = user_params["games"]
-    puts user_params[:skill_notes].length
     tag_params = user_params["tags"]
     user_params["display_name"] = nil if user_params["display_name"].blank?
     user_params.delete("games")
