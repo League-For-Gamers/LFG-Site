@@ -8,10 +8,12 @@ $ ->
     $('#new_skill').click ->
       # this is so dirtyyyyy
       id = $('#skills').children().length
-      html = $('#skills').children()[0].outerHTML.replace(/selected=\"selected\" /g, "").replace(/value=\".*\"/g, "")
+      html = $('#skills').children()[0].outerHTML.replace(/selected=\"selected\" /g, "")
       html = html.replace(/\[(\d)\]/g, "[#{id}]").replace(/_\d_/g, "_#{id}_")
       html = html.replace /type="hidden" value="\d+"/, 'type="hidden"'
+      id = html.match(/id=\"(user_skills_attributes_\d_note)\"/)[1]
       $('#skills').append html
+      $("##{id}").val("")
       return
   if window.location.pathname.match(/\/user\/([\d\w]*)/i)
     $('.edit-section .hide').click -> 

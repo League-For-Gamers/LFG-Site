@@ -2,9 +2,9 @@
   <%= form_for @current_user, url: '/account', multipart: true do |f| %>
     <% if @current_user.errors.any? %>
       <div data-alert class="alert-box">
-        <strong><%= pluralize(@user.errors.count, "error") %> prohibited this account from being created:</strong>
+        <strong><%= pluralize(@current_user.errors.count, "error") %> prohibited this account from being created:</strong>
         <ul style="margin-bottom: 0;">
-          <% @user.errors.full_messages.each do |msg| %>
+          <% @current_user.errors.full_messages.each do |msg| %>
             <li><%= msg %></li>
           <% end %>
         </ul>

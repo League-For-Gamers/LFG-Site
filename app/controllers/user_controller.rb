@@ -141,7 +141,6 @@ class UserController < ApplicationController
         user_params["tags_attributes"]["#{user_params["tags_attributes"].length}"] = tmp
       end
     end
-
     # Blank skills should be destroyed.
     user_params["skills_attributes"].each_with_index {|x, i| user_params["skills_attributes"]["#{i}"]["_destroy"] = '1' if x[1]["category"].empty? } unless user_params["skills_attributes"].blank?
     @current_user.assign_attributes(user_params)
@@ -299,6 +298,6 @@ class UserController < ApplicationController
     def user_params
       params.require(:user).permit(:old_password, :password, :password_confirmation, :bio, :display_name, :avatar, :tags,
                                    {games: :name},
-                                   skills_attributes: [:id, :category, :confidence])
+                                   skills_attributes: [:id, :category, :confidence, :note])
     end
 end
