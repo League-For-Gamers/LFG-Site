@@ -297,7 +297,8 @@ class UserController < ApplicationController
 
     def user_params
       params.require(:user).permit(:old_password, :password, :password_confirmation, :bio, :display_name, :avatar, :tags,
-                                   {games: :name},
+                                   {games: :name}, 
+                                   social: [:portfolio, :website, :link_facebook, :link_googleplus, :link_instagram, :link_linkedin, :link_twitter, :link_youtube],
                                    skills_attributes: [:id, :category, :confidence, :note])
     end
 end

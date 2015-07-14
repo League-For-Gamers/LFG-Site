@@ -10,14 +10,14 @@
     <div class="bottom">
       <% unless @user.social["website"].blank? %>
         <span class="website">Website: <%= link_to truncate(reverse_urlify(@user.social["website"]), length: 30), full_urlify(@user.social["website"]) %></span>
-        <ul class="social-links">
-          <% @user.social.each do |social| %>
-            <% if social[0].start_with? 'link_' %>
-              <li><%= link_to "", expand_social_link(social), class: social[0].sub('link_', '') %></li>
-            <% end %>
-          <% end %>
-        </ul>
       <% end %>
+      <ul class="social-links">
+        <% @user.social.each do |social| %>
+          <% if social[0].start_with? 'link_' and !social[1].empty? %>
+            <li><%= link_to "", expand_social_link(social), class: social[0].sub('link_', '') %></li>
+          <% end %>
+        <% end %>
+      </ul>
     </div>
   </div>
 </div>
@@ -70,12 +70,12 @@
         </div>
       <% end %>
       <span class="title"><span title="Favourite">Favorite</span> Games</span>
-      <div class="games-list">
+      <ul class="games-list small-block-grid-3">
         <% @user.games.each do |game| %>
-          <div class="game">
+          <li class="game">
             <%= image_tag game.boxart.url(:small) %>
             <span class="game-title"><%= game.name %></span>
-          </div>
+          </li>
         <% end %>
       </div>
     </div>

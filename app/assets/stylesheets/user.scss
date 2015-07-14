@@ -269,11 +269,8 @@
 			overflow-y: scroll;
 			height: 100%;
 			.game {
-				width: 32%;
 				display: inline-block;
 				text-align: center;
-				margin-bottom: rem-calc(5);
-				padding: 0 rem-calc(2);
 				img {
 					display: block;
 				}
