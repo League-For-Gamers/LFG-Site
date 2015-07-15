@@ -13,7 +13,7 @@ class UserController < ApplicationController
 
     @page = params[:page].to_i
     @page = 0 if @page < 0
-    per_page = 3
+    per_page = 30
     from = (@page * per_page)
     @posts = Post.includes(:user).all.order("id DESC").limit(per_page).offset(from)
     @posts.unshift(Post.includes(:user).where(official: true).order("id DESC").first) if @page == 0
