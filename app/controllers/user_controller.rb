@@ -17,7 +17,6 @@ class UserController < ApplicationController
     @posts = Post.includes(:user).all.limit(per_page).offset(offset).order("created_at ASC")
     count = Post.count
     @num_of_pages = count / per_page
-    puts count
   end
 
   # GET /login
