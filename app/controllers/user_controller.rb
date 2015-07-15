@@ -14,7 +14,7 @@ class UserController < ApplicationController
     per_page = 30
     @page_num = params["page"].to_i || 0
     offset = @page_num * per_page
-    @posts = Post.includes(:user).all.limit(per_page).offset(offset).order("created_at ASC")
+    @posts = Post.includes(:user).all.order("created_at ASC").limit(per_page).offset(offset)
     count = Post.count
     @num_of_pages = count / per_page
   end
