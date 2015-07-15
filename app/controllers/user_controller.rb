@@ -174,12 +174,12 @@ class UserController < ApplicationController
 
   # GET /user/:id
   def show
-    set_title @user.display_name || @user.username.titleize
+    set_title @user.display_name || @user.username
   end
 
   # GET /user/:user_id/:post_id
   def show_post
-    set_title @post.user.display_name || @post.user.username.titleize
+    set_title @post.user.display_name || @post.user.username
   end
 
   # POST /user/post/delete
