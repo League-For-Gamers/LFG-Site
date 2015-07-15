@@ -4,7 +4,7 @@ module ApplicationHelper
   end
 
   def display_name(user)
-    user.display_name || "@#{user.username.titleize.tr(' ', '_')}"
+    user.display_name || "@#{user.username}"
   end
 
   def full_urlify(url)

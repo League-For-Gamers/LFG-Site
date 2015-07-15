@@ -27,7 +27,6 @@ gem 'httpclient'
 gem 'paperclip'
 gem 'aws-sdk', '< 2.0'
 
-# Temporary. Blank pages are boring.
 gem 'foundation-rails'
 
 group :staging, :production do
