@@ -269,6 +269,9 @@
 				margin-top: rem-calc(5);
 				.note {
 					float: right;
+					&.long {
+						font-size: 10pt;
+					}
 				}
 				.bar {
 					width: 100%;
