@@ -11,12 +11,13 @@ class UserController < ApplicationController
     #query = Post.connection.unprepared_statement { "((SELECT * FROM posts WHERE official) UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id})) as posts" }
     #@posts = Post.includes(:user).from(query).order("created_at ASC")
 
-    per_page = 30
-    @page_num = params["page"].to_i || 0
-    offset = @page_num * per_page
-    @posts = Post.includes(:user).all.order("created_at ASC").limit(per_page).offset(offset)
+    @page = params[:page].to_i
+    @page = 0 if @page < 0
+    per_page = 3
+    from = (@page * per_page)
+    @posts = Post.includes(:user).all.order("id DESC").limit(per_page).offset(from)
     count = Post.count
-    @num_of_pages = count / per_page
+    @num_of_pages = (count + per_page - 1) / per_page
   end
 
   # GET /login

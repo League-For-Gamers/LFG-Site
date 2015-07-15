@@ -15,13 +15,13 @@
 </div>
 <div class="row">
   <div class="large-6 small-12 center">
-    <% @posts.reverse.each do |post| -%>
+    <% @posts.each do |post| -%>
       <%= render partial: "post", locals: {post: post} %>
     <% end -%>
   </div>
 </div>
 <div class="row">
   <div class="large-6 small-12 center">
-    <%= render(:partial => "shared/pagination", :locals => {:address_prefix => "/#{@query_string}", :number_of_pages => @num_of_pages, :current => @page_num}) %>
+    <%= render(:partial => "shared/pagination", :locals => {:address_prefix => "/#{@query_string}", :number_of_pages => @num_of_pages, :current => @page}) %>
   </div>
 </div>
