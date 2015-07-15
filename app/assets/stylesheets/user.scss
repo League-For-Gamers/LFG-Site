@@ -261,7 +261,7 @@
 	}
 	&.skills-card {
 		.skills {
-			max-height: rem-calc(320);
+			min-height: rem-calc(320);
 			overflow-y: scroll;
 			.skill {
 				text-transform: uppercase;
