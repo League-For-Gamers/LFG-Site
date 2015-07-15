@@ -8,8 +8,9 @@ class UserController < ApplicationController
   def main
     @user = User.new and set_title("Signup") and return render "signup" unless logged_in?
     set_title("Feed")
-    query = Post.connection.unprepared_statement { "((SELECT * FROM posts WHERE official) UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id})) as posts" }
-    @posts = Post.includes(:user).from(query).order("created_at ASC")
+    #query = Post.connection.unprepared_statement { "((SELECT * FROM posts WHERE official) UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id})) as posts" }
+    #@posts = Post.includes(:user).from(query).order("created_at ASC")
+    @posts = Post.includes(:user).all.order("created_at ASC")
   end
 
   # GET /login
