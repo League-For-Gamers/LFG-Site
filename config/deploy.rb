@@ -78,6 +78,16 @@ namespace :deploy do
       end 
     end
   end
+  task :gzip_assets do
+    on roles(:app) do
+      within release_path do
+        with rails_env: fetch(:rails_env) do
+          execute :rake, 'assets:gzip'
+        end
+      end
+    end
+  end
+  after 'deploy:compile_assets', :gzip_assets
 end
 
 namespace :bundler do
