@@ -10,7 +10,14 @@ class UserController < ApplicationController
     set_title("Feed")
     #query = Post.connection.unprepared_statement { "((SELECT * FROM posts WHERE official) UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id})) as posts" }
     #@posts = Post.includes(:user).from(query).order("created_at ASC")
-    @posts = Post.includes(:user).all.order("created_at ASC")
+
+    per_page = 30
+    @page_num = params["page"].to_i || 0
+    offset = @page_num * per_page
+    @posts = Post.includes(:user).all.limit(per_page).offset(offset).order("created_at ASC")
+    count = Post.count
+    @num_of_pages = count / per_page
+    puts count
   end
 
   # GET /login
