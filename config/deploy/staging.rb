@@ -25,7 +25,7 @@ require 'aws-sdk'
 ec2 = AWS::EC2.new(
       access_key_id: APP_CONFIG['AWS_ACCESS_KEY_ID'],
       secret_access_key: APP_CONFIG['AWS_SECRET_ACCESS_KEY'])
-servers = ec2.instances.tagged('staging-web').map(&:ip_address)
+servers = ec2.instances.tagged('staging-web').map(&:ip_address).compact
 
 role :app, servers, user: 'deploy'
 role :web, servers, user: 'deploy'
