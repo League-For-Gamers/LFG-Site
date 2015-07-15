@@ -23,10 +23,8 @@ module UserHelper
   end
 
   def post_time_ago(post)
-    if post.created_at != post.updated_at
-      "Edited about #{time_ago_in_words(post.updated_at)} ago<span title=\"#{"Created about #{time_ago_in_words(post.created_at)} ago"}\">*</span>".html_safe
-    else
-      "#{time_ago_in_words(post.created_at)} ago"
-    end
+    text = "#{link_to time_ago_in_words(post.created_at) + " ago", "/user/#{post.user.username}"}"
+    text << "<span data-tooltip aria-haspopup=\"true\" title=\"Edited #{time_ago_in_words(post.updated_at)} ago\">*</span>" if post.created_at != post.updated_at
+    return text.html_safe
   end
 end

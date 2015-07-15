@@ -273,7 +273,7 @@ class UserController < ApplicationController
 
     def set_user
       begin
-        @user = User.includes(:skills, :games, :posts).find_by(username: params[:id]) or not_found
+        @user = User.includes(:skills, :games, :posts).where("lower(username) = ?", params[:id].downcase).first or not_found
       rescue ActionController::RoutingError
         render :template => 'shared/not_found', :status => 404
       end

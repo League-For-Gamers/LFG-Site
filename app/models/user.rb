@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
   validates :bio, length: { maximum: 512 }
   validates :decrypted_email, length: {maximum: 325}, on: :create # A bit over what should be the maximum, just incase.
   validates :hashed_email, uniqueness: true
-  validates :username, uniqueness: true
+  validates :username, uniqueness: {case_sensitive: false}
   validates :verification_digest, uniqueness: true, allow_blank: true, allow_nil: true
   validates :display_name, uniqueness: true, case_sensitive: false, allow_blank: true, allow_nil: true
   validates :username, :password_digest, :email, presence: true

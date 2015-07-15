@@ -20,6 +20,6 @@
   <div class="large-10 small-9 columns body">
     <span class="title"><%= link_to display_name(post.user), "/user/#{post.user.username}" -%></span>
     <p><%= post.body -%></p>
-    <span class="time-ago"><%= link_to post_time_ago(post), "/user/#{post.user.username}/#{post.id}" -%></span>
+    <span class="time-ago"><%= post_time_ago(post) -%></span>
   </div>
 </div>
