@@ -5,27 +5,27 @@ RSpec.describe UserHelper, :type => :helper do
     
     it "should return a full twitter URL when given a username" do
       user = ["link_twitter", username]
-      expect(helper.expand_social_link(user)).to eq("https://twitter.com/#{username}")
+      expect(helper.expand_social_link(user)).to match(URI::regexp)
     end
     it "should return a full facebook URL when given a username" do
       user = ["link_facebook", username]
-      expect(helper.expand_social_link(user)).to eq("https://www.facebook.com/#{username}")
+      expect(helper.expand_social_link(user)).to match(URI::regexp)
     end
     it "should return a full google plus URL when given a username" do
       user = ["link_googleplus", username]
-      expect(helper.expand_social_link(user)).to eq("https://plus.google.com/#{username}")
+      expect(helper.expand_social_link(user)).to match(URI::regexp)
     end
     it "should return a full linkedin URL when given a username" do
       user = ["link_linkedin", username]
-      expect(helper.expand_social_link(user)).to eq("https://www.linkedin.com/in/#{username}")
+      expect(helper.expand_social_link(user)).to match(URI::regexp)
     end
     it "should return a full youtube URL when given a username" do
       user = ["link_youtube", username]
-      expect(helper.expand_social_link(user)).to eq("https://www.youtube.com/user/#{username}")
+      expect(helper.expand_social_link(user)).to match(URI::regexp)
     end
     it "should return a full instagram URL when given a username" do
       user = ["link_instagram", username]
-      expect(helper.expand_social_link(user)).to eq("https://instagram.com/#{username}")
+      expect(helper.expand_social_link(user)).to match(URI::regexp)
     end
     it "should fail gracefully when given an unknown link type" do
       user = ["link_unknown", "unknown"]

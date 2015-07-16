@@ -76,6 +76,7 @@
 		min-height: 100%;
 		padding-left: rem-calc(10);
 		padding-right: rem-calc(5);
+		overflow-wrap: break-word;
 		.title {
 			display: inline-block;
 			vertical-align: top;
@@ -212,7 +213,7 @@
 			margin-right: rem-calc(15);
 		}
 		p {
-			text-align: justify;
+			//text-align: justify;
 			font-style: italic;
 			font-weight: 400;
 			font-size: 12pt;
@@ -221,7 +222,8 @@
 			overflow-wrap: break-word;
 			white-space: pre-wrap;
 			hyphens: auto;
-			min-height: rem-calc(360)
+			min-height: rem-calc(360);
+			line-height: 1.6;
 		}
 		.website {
 			font-weight: 600;
@@ -268,10 +270,7 @@
 				font-weight: 500;
 				margin-top: rem-calc(5);
 				.note {
-					float: right;
-					&.long {
-						font-size: 10pt;
-					}
+					font-size: 10pt;
 				}
 				.bar {
 					width: 100%;

@@ -36,12 +36,12 @@
         <% @user.skills.each do |skill| %>
           <div class="skill">
             <span class="category"><%= skill.category.titleize %></span>
-            <span class="note <%= "long" if skill.note.length > 28 %>"><%= skill.note %></span>
             <div class="bar">
               <div class="inlet size-<%= skill.confidence %>">
                 <%= skill.confidence %>
               </div>
             </div>
+            <span class="note"><%= skill.note %></span>
           </div>
         <% end %>
       </div>

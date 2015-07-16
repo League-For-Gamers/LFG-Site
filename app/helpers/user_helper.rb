@@ -10,7 +10,7 @@ module UserHelper
     when "link_linkedin"
       "https://www.linkedin.com/in/#{social[1]}"
     when "link_youtube"
-      "https://www.youtube.com/user/#{social[1]}"
+      "https://www.youtube.com/channel/#{social[1]}"
     when "link_instagram"
       "https://instagram.com/#{social[1]}"
     else

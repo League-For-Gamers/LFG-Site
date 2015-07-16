@@ -14,6 +14,7 @@
 //= require jquery
 //= require jquery.turbolinks
 //= require jquery_ujs
+//= require jquery-placeholder
 
 //= require foundation/foundation
 // require foundation/foundation.abide
@@ -36,4 +37,4 @@
 //= require turbolinks
 //= require_tree .
 
-$(function(){ $(document).foundation(); });
+$(function(){ $(document).foundation(); $('input, textarea').placeholder(); });
