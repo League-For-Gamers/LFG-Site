@@ -22,7 +22,7 @@ class User < ActiveRecord::Base
   validates :display_name, uniqueness: true, case_sensitive: false, allow_blank: true, allow_nil: true
   validates :username, :password_digest, :email, presence: true
   validates_format_of :decrypted_email, with: /\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i, on: :create
-  validates :avatar, attachment_content_type: { content_type: /\Aimage\/.*\Z/ },
+  validates :avatar, attachment_content_type: { content_type: /\A(image\/(!gif\Z))/i },
                      attachment_size: { less_than: 512.kilobytes }
   validates :skill_notes, length: {maximum: 256}
   validate :validates_old_password, unless: :skip_old_password

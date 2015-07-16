@@ -41,7 +41,7 @@ set :ssh_options, { keys: [APP_CONFIG['SSH_KEY_DIR']] }
 
 # Puma configuration
 set :puma_threads, [0, 4]
-set :puma_workers, 4
+set :puma_workers, 3
 set :puma_init_active_record, true
 set :puma_preload_app, true
 
@@ -70,7 +70,7 @@ namespace :deploy do
   desc "Invoke rake task"
   task :invoke_task do
     ask :task, nil
-    on roles(:app) do
+    on roles(:db) do
       within release_path do
         with rails_env: fetch(:rails_env) do
           execute :rake, fetch(:task)
@@ -79,7 +79,7 @@ namespace :deploy do
     end
   end
   task :gzip_assets do
-    on roles(:app) do
+    on roles(:db) do
       within release_path do
         with rails_env: fetch(:rails_env) do
           execute :rake, 'assets:gzip'
