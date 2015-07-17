@@ -8,10 +8,9 @@
 	margin-bottom: rem-calc(15);
 }
 .avatar {
-	$shadow: rem-calc(5) rem-calc(4) rem-calc(8) 0 rgba(0, 0, 0, 0.4);
-	-webkit-box-shadow: $shadow;
-	-moz-box-shadow: $shadow;
-	box-shadow: $shadow;
+	$shadow: drop-shadow(rem-calc(5) rem-calc(5) rem-calc(8) rgba(0,0,0,0.4));
+	-webkit-filter: $shadow;
+	filter: $shadow;
 }
 .search-entry {
 	display: inline-block;

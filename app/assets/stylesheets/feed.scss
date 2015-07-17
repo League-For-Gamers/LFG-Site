@@ -79,9 +79,6 @@
 		padding: 0 rem-calc(5);
 		.avatar {
 			margin-top: rem-calc(-18);
-			$shadow: drop-shadow(rem-calc(5) rem-calc(5) rem-calc(8) rgba(0,0,0,0.4));
-			-webkit-filter: $shadow;
-			filter: $shadow;
 		}
 	}
 }
