@@ -1,5 +1,6 @@
 class FeedController < ApplicationController
   before_action :set_post, only: [:show]
+  before_action :set_user, only: [:user_feed, :show]
 
   # GET /
   def feed
@@ -18,7 +19,20 @@ class FeedController < ApplicationController
     @num_of_pages = (count + per_page - 1) / per_page
   end
 
-  # GET /user/:user_id/:post_id
+  # GET /feed/user/:user_id
+  def user_feed
+    set_title @user.display_name || @user.username
+
+    @page = params[:page].to_i
+    @page = 0 if @page < 0
+    per_page = 30
+    from = (@page * per_page)
+    @posts = Post.where("user_id = ?", @user.id).includes(:user).order("id DESC").limit(per_page).offset(from)
+    count = @user.posts.count
+    @num_of_pages = (count + per_page - 1) / per_page
+  end
+
+  # GET /feed/user/:user_id/:post_id
   def show
     respond_to do |format|
       format.html { set_title @post.user.display_name || @post.user.username }
@@ -26,7 +40,7 @@ class FeedController < ApplicationController
     end
   end
 
-  # POST /user/post/delete
+  # DELETE /feed/user/:user_id/:post_id
   def delete
     render plain: "You do not have permission to delete this post", status: 403 and return unless logged_in?
     post = Post.find(params["id"])
@@ -35,6 +49,8 @@ class FeedController < ApplicationController
     render plain: "OK"
   end
 
+
+  # PATCH /feed/user/:user_id/:post_id
   def update
     render json: {errors: {'0' => 'You do not have permission to delete this post'}}, status: 403 and return unless logged_in?
     post = Post.find(params["id"])
@@ -62,11 +78,19 @@ class FeedController < ApplicationController
   end
 
   private
-      def set_post
-        begin
-          @post = Post.includes(:user).find_by(id: params[:post_id]) or not_found
-        rescue ActionController::RoutingError 
-          render :template => 'shared/not_found', :status => 404
-        end
+    def set_post
+      begin
+        @post = Post.includes(:user).find_by(id: params[:post_id]) or not_found
+      rescue ActionController::RoutingError 
+        render :template => 'shared/not_found', :status => 404
       end
+    end
+
+    def set_user
+      begin
+        @user = User.includes(:skills, :games, :posts).where("lower(username) = ?", params[:user_id].downcase).first or not_found
+      rescue ActionController::RoutingError
+        render :template => 'shared/not_found', :status => 404
+      end
+    end
 end

@@ -25,7 +25,20 @@ RSpec.describe FeedController, type: :controller do
       end
     end 
   end
-  describe "GET /user/:user_id/:post_id" do
+  describe "GET /feed/user/:user_id" do
+    before do
+      500.times { FactoryGirl.create(:post, user: bobby) }
+    end
+    it "only shows posts owned by the user" do
+      get :user_feed, user_id: bobby.username
+      expect(assigns(:posts).map(&:user).map(&:id)).to include(bobby.id)
+    end
+    it "404s when username is invalid" do
+      get :user_feed, user_id: "non_existant"
+      expect(response.status).to eq(404)
+    end
+  end
+  describe "GET /feed/user/:user_id/:post_id" do
     let(:post) { FactoryGirl.create(:post, user: bobby) }
     it "sets @post" do
       get :show, user_id: bobby.username, post_id: post.id
@@ -38,11 +51,11 @@ RSpec.describe FeedController, type: :controller do
     end
   end
 
-  describe "POST /user/post/delete" do
+  describe "DELETE /feed/user/:user_id/:post_id" do
     let(:new_post) { FactoryGirl.create(:post, user: bobby) }
     context "when user is not logged in" do
       it "should fail gracefully" do
-        post :delete, id: new_post.id
+        delete :delete, user_id: bobby.id, id: new_post.id
         expect(response.status).to eq(403)
       end
     end
@@ -53,7 +66,7 @@ RSpec.describe FeedController, type: :controller do
         session[:user] = new_user.id
       end
       it "should fail gracefully" do
-        post :delete, id: new_post.id
+        delete :delete, user_id: bobby.id, id: new_post.id
         expect(response.status).to eq(403)
       end
     end
@@ -63,17 +76,17 @@ RSpec.describe FeedController, type: :controller do
         session[:user] = bobby.id
       end
       it "should delete the post" do
-        post :delete, id: new_post.id
+        delete :delete, user_id: bobby.id, id: new_post.id
         expect(Post.all).to_not include(new_post)
       end
     end
   end
 
-  describe "POST /user/post/edit" do # I should really change this route to PATCH /user/:user_id/:post_id
+  describe "PATCH /feed/user/:user_id/:post_id" do # I should really change this route to PATCH /user/:user_id/:post_id
     let(:new_post) { FactoryGirl.create(:post, user: bobby) }
     context "when user is not logged in" do
       it "should fail gracefully" do
-        post :update, id: new_post.id, body: "new body goes here"
+        patch :update, user_id: bobby.id, id: new_post.id, body: "new body goes here"
         expect(response.status).to eq(403)
       end
     end
@@ -84,7 +97,7 @@ RSpec.describe FeedController, type: :controller do
         session[:user] = new_user.id
       end
       it "should fail gracefully" do
-        post :update, id: new_post.id, body: "new body goes here"
+        patch :update, user_id: bobby.id, id: new_post.id, body: "new body goes here"
         expect(response.status).to eq(403)
       end
     end
@@ -94,21 +107,21 @@ RSpec.describe FeedController, type: :controller do
         session[:user] = bobby.id
       end
       it "should edit the post" do
-        post :update, id: new_post.id, body: "new body goes here"
+        patch :update, user_id: bobby.id, id: new_post.id, body: "new body goes here"
         expect(Post.find(new_post.id).body).to_not eq(new_post.body)
       end
       context "when the post is invalid" do
         it "should fail gracefully" do
           body = ""
           300.times { body << "test test "}
-          post :update, id: new_post.id, body: body
+          patch :update, user_id: bobby.id, id: new_post.id, body: body
           expect(response.status).to eq(422)
         end
       end
     end
   end
 
-  describe "POST /new_post" do
+  describe "POST /feed/new_post" do
     context "while not logged in" do
       it "should redirect to /signup" do
         post :create

@@ -1,5 +1,5 @@
 $ ->
-  if window.location.pathname.match(/^\/$|^\/user\/\w*\/\d*$/i)
+  if window.location.pathname.match(/^\/$|^\/feed\/user\/\w*\/\d*$/i)
     $('.edit-post').click ->
       # This is less terrible!
       # Why, jQuery. Why.
@@ -13,7 +13,7 @@ $ ->
       original_text = ""
 
       $.ajax
-        url: "/user/#{user_id}/#{id}.json"
+        url: "/feed/user/#{user_id}/#{id}.json"
         type: 'GET'
         async: false
         dataType: 'json'
@@ -44,10 +44,10 @@ $ ->
       submit_post.click ->
         text = text_area.val()
         $.ajax
-          url: '/user/post/update'
-          type: 'POST'
+          url: "/feed/user/#{user_id}/#{id}"
+          type: 'PATCH'
           dataType: 'json'
-          data: {id: id, body: text}
+          data: {body: text}
           beforeSend: (xhr) ->
             xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
           success: (data) ->
@@ -61,10 +61,11 @@ $ ->
     $('.delete-post').click ->
       global_parent = $(this).parent().parent().parent().parent()
       id = global_parent.data("id")
+      user_id = global_parent.find(".user").data("id")
       if window.confirm "Do you really want to delete this post?"
         $.ajax
-          url: '/user/post/delete'
-          type: 'POST'
+          url: "/feed/user/#{user_id}/#{id}"
+          type: 'DELETE'
           dataType: 'text'
           data: {id: id}
           beforeSend: (xhr) ->
