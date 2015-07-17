@@ -1,15 +1,15 @@
-<div class="streamPost text-card <%= 'official' if post.official -%>" id="post-<%= post.id %>">
+<div class="streamPost text-card <%= 'official' if post.official -%>" id="post-<%= post.id %>" data-id="<%= post.id %>">
   <div class="large-2 small-3 columns user">
     <%= link_to image_tag(post.user.avatar(:med), class: "avatar"), "/user/#{post.user.username}" %>
     <% if post.user == @current_user or @current_user.has_permission? "can_edit_all_users_posts" -%>
       <div class="user-controls">
         <div class="edit-controls">
-          <a class="submit-post" data-id="<%= post.id %>">Submit</a>
-          <a class="cancel-post" data-id="<%= post.id %>">Cancel</a>
+          <a class="submit-post">Submit</a>
+          <a class="cancel-post">Cancel</a>
         </div>
         <div class="default-controls">
-          <a class="edit-post" data-id="<%= post.id %>">Edit</a>
-          <a class="delete-post" data-id="<%= post.id %>"></a>
+          <a class="edit-post">Edit</a>
+          <a class="delete-post"></a>
         </div>
       </div>
     <% end -%>

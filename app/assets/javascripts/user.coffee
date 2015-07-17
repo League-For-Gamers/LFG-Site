@@ -37,27 +37,35 @@ $ ->
       $('#hidden-search-field').val($(this).val())
   if window.location.pathname.match(/^\/$|^\/user\/\w*\/\d*$/i)
     $('.edit-post').click ->
-      # This is fucking terrible.
-      id = $(this).data("id")
-      default_controls = $(this).parent()
-      edit_post = $(this)
-      cancel_post = $("#post-#{id} .cancel-post")
-      submit_post = $("#post-#{id} .submit-post")
-      edit_controls = $("#post-#{id} .edit-controls")
-      original_text = $("#post-#{id} p").text()
-      text_height = $("#post-#{id} p").height()
-      $("#post-#{id} p").replaceWith $("<textarea class='edit-box'>#{$("#post-#{id} p").text()}</textarea>")
-      $("#post-#{id} textarea").height text_height
+      # This is less terrible!
+      # Why, jQuery. Why.
+      t = $(this)
+
+      global_parent = $(this).parent().parent().parent().parent()
+      id = global_parent.data("id")
+      default_controls = global_parent.find(".user .user-controls .default-controls")
+      edit_controls = global_parent.find(".user .user-controls .edit-controls")
+
+      cancel_post = global_parent.find(".user .user-controls .edit-controls .cancel-post")
+      submit_post = global_parent.find(".user .user-controls .edit-controls .submit-post")
+
+      post = global_parent.find(".body p")
+      original_text = post.text()
+      text_height = post.height()
+
+      post.replaceWith $("<textarea class='edit-box'>#{original_text}</textarea>")
+      text_area = global_parent.find("textarea")
+      text_area.height text_height
       default_controls.hide()
-      edit_controls.toggleClass("show")
+      edit_controls.show()
+
       cancel_post.click ->
-        id = $(this).data("id")
-        $("#post-#{id} textarea").replaceWith $("<p>#{original_text}</p>")
-        edit_controls.toggleClass("show")
+        text_area.replaceWith $("<p>#{original_text}</p>")
+        edit_controls.hide()
         default_controls.show()
+
       submit_post.click ->
-        id = $(this).data("id")
-        text = $("#post-#{id} textarea").val()
+        text = text_area.val()
         $.ajax
           url: '/user/post/update'
           type: 'POST'
@@ -66,16 +74,16 @@ $ ->
           beforeSend: (xhr) ->
             xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
           success: (data) ->
-            $("#post-#{id} textarea").replaceWith $("<p>#{data.body}</p>")
-            edit_controls.toggleClass("show")
+            text_area.replaceWith $("<p>#{data.body}</p>")
+            edit_controls.hide()
             default_controls.show()
           error: (data) ->
             console.log data.responseJSON.errors.join("\n")
             alert("An error occured editing your post:\n#{data.responseJSON.errors.join("\n")}")
 
     $('.delete-post').click ->
-      id = $(this).data("id")
-      t = this
+      global_parent = $(this).parent().parent().parent().parent()
+      id = global_parent.data("id")
       if window.confirm "Do you really want to delete this post?"
         $.ajax
           url: '/user/post/delete'
@@ -85,7 +93,10 @@ $ ->
           beforeSend: (xhr) ->
             xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
           success: (data) ->
-            $(t).parent().parent().parent().slideUp()
+            global_parent.height(global_parent.height())
+            global_parent.toggleClass("hiding")
+            global_parent.find(".user").fadeOut()
+            global_parent.slideUp()
             if window.location.pathname.match(/^\/user\/\w*\/\d*$/i)
               Turbolinks.visit("/")
           error: (data) ->

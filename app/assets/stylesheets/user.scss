@@ -35,6 +35,9 @@
 	&.official {
 		border: rem-calc(4) solid $primary-red;
 	}
+	&.hiding {
+		min-height: 0;
+	}
 	.user-controls {
 		margin-top: rem-calc(5);
 		display: block;
@@ -59,9 +62,6 @@
 			display: none;
 			a {
 				font-size: 9.7pt
-			}
-			&.show {
-				display: inline-block;
 			}
 		}
 	}
