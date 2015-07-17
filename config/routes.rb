@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root 'user#main'
+  root 'feed#feed'
 
   get  'login', to: 'user#login'
   post 'login', to: 'user#login_check'
@@ -8,19 +8,20 @@ Rails.application.routes.draw do
   get  'logout', to: 'user#logout'
   get 'account', to: 'user#my_account'
   patch 'account', to: 'user#update'
-  post 'new_post', to: 'user#create_post'
+  post 'new_post', to: 'feed#create'
 
   get 'search', to: 'user#search'
+
+  get '/user/:user_id/:post_id', to: 'feed#show'
+  post '/user/post/update', to: 'feed#update'
+  post '/user/post/delete', to: 'feed#delete'
 
   namespace :user, path: 'user' do
     get '/forgot_password', action: 'forgot_password'
     post '/forgot_password', action: 'forgot_password_check'
     get '/forgot_password/:activation_id', action: 'reset_password'
     post '/forgot_password/:activation_id', action: 'reset_password_check'
-    post '/post/update', action: 'update_post'
-    post '/post/delete', action: 'delete_post'
     get ':id', action: 'show'
-    get ':user_id/:post_id', action: 'show_post'
   end
 
   scope :ajax do

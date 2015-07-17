@@ -6,7 +6,7 @@
     <% end %>
     <%= image_tag @user.avatar.url(:med), class: "avatar" %>
     <span class="title <%= "long" if display_name(@user).length > 18 %>"><%= display_name(@user) %></span>
-    <p><%= @user.bio %></p>
+    <p><%= replace_urls @user.bio %></p>
     <div class="bottom">
       <% unless @user.social["website"].blank? %>
         <span class="website">Website: <%= link_to truncate(reverse_urlify(@user.social["website"]), length: 30), full_urlify(@user.social["website"]) %></span>

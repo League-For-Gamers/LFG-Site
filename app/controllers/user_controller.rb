@@ -1,25 +1,7 @@
 class UserController < ApplicationController
   before_action :set_user, only: [:show]
-  before_action :set_post, only: [:show_post]
   skip_before_filter :set_current_user, only: [:my_account, :update]
   before_filter :set_current_user_with_includes, only: [:my_account, :update], if: :logged_in?
-
-  # GET /
-  def main
-    @user = User.new and set_title("Signup") and return render "signup" unless logged_in?
-    set_title "Feed"
-    #query = Post.connection.unprepared_statement { "((SELECT * FROM posts WHERE official) UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id})) as posts" }
-    #@posts = Post.includes(:user).from(query).order("created_at ASC")
-
-    @page = params[:page].to_i
-    @page = 0 if @page < 0
-    per_page = 30
-    from = (@page * per_page)
-    @posts = Post.includes(:user).all.order("id DESC").limit(per_page).offset(from)
-    @posts.unshift(Post.includes(:user).where(official: true).order("id DESC").first) if @page == 0
-    count = Post.count
-    @num_of_pages = (count + per_page - 1) / per_page
-  end
 
   # GET /login
   def login
@@ -83,10 +65,10 @@ class UserController < ApplicationController
       user.verification_active = 1.hour.ago
       user.save
       flash[:notice] = "Password has been changed. You can log in now."
-      redirect_to root_url and return
+      redirect_to '/signup' and return
     else
       flash[:notice] = "The token you have provided is invalid or out of date."
-      redirect_to root_url and return
+      redirect_to '/signup' and return
     end
   end
 
@@ -115,7 +97,7 @@ class UserController < ApplicationController
 
   # GET /account
   def my_account
-    redirect_to root_url and return unless logged_in?
+    redirect_to '/signup' and return unless logged_in?
     set_title "Account Settings"
     @games = @current_user.games + [Game.new] # We always want there to be one empty field.
     @current_user.skills.build if @current_user.skills.empty?
@@ -177,49 +159,9 @@ class UserController < ApplicationController
     set_title @user.display_name || @user.username
   end
 
-  # GET /user/:user_id/:post_id
-  def show_post
-    set_title @post.user.display_name || @post.user.username
-  end
-
-  # POST /user/post/delete
-  def delete_post
-    render plain: "You do not have permission to delete this post", status: 403 and return unless logged_in?
-    post = Post.find(params["id"])
-    render plain: "You do not have permission to delete this post", status: 403 and return if post.user_id != @current_user.id and !@current_user.has_permission? "can_edit_all_users_posts"
-    post.delete
-    render plain: "OK"
-  end
-
-  def update_post
-    render json: {errors: {'0' => 'You do not have permission to delete this post'}}, status: 403 and return unless logged_in?
-    post = Post.find(params["id"])
-    render json: {errors: {'0' => 'You do not have permission to delete this post'}}, status: 403 and return if post.user_id != @current_user.id and !@current_user.has_permission? "can_edit_all_users_posts"
-    post.body = params["body"]
-    if post.valid?
-      post.save
-      render json: {body: view_context.replace_urls(post.body)}
-    else
-      render json: {errors: post.errors.full_messages}, status: :unprocessable_entity
-    end
-  end
-
-  # POST /new_post
-  def create_post
-    redirect_to root_url and return unless logged_in?
-    if @current_user.has_permission? "can_create_official_posts"
-      post_params = params.permit(:body, :official)
-    else
-      post_params = params.permit(:body)
-    end
-    post_params["user"] = @current_user
-    Post.create(post_params)
-    redirect_to request.referrer || root_url
-  end
-
   # GET /search
   def search
-    redirect_to root_url and return unless logged_in?
+    redirect_to '/signup' and return unless logged_in?
     set_title "Search"
     search_params = params.permit(:query, :filter, :page)
 
@@ -284,14 +226,6 @@ class UserController < ApplicationController
       begin
         @user = User.includes(:skills, :games, :posts).where("lower(username) = ?", params[:id].downcase).first or not_found
       rescue ActionController::RoutingError
-        render :template => 'shared/not_found', :status => 404
-      end
-    end
-
-    def set_post
-      begin
-        @post = Post.includes(:user).find_by(id: params[:post_id]) or not_found
-      rescue ActionController::RoutingError 
         render :template => 'shared/not_found', :status => 404
       end
     end
