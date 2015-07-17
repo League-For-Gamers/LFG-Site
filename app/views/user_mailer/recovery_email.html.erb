@@ -1,5 +1,5 @@
 <h1>Password reset request</h1>
-<p>You requested a password reset on the <%= Time.now.strftime("%-m").to_i.ordinalize -%> of <%= Time.now.strftime("%B") %>, <%= Time.now.strftime("%Y") %>.</p>
+<p>You requested a password reset on the <%= @time.strftime("%-d").to_i.ordinalize -%> of <%= @time.strftime("%B") %>, <%= @time.strftime("%Y") %>.</p>
 <p>You can reset your password at this <a href="<%= @recovery_link %>">link.</a><br>
 This link will remain active for 24 hours</p>
 
