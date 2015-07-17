@@ -59,4 +59,18 @@ RSpec.describe UserHelper, :type => :helper do
       end
     end
   end
+
+  describe '#replace_urls' do
+    it 'should parse URLs and return a valid HTML link' do
+      body = "https://i.imgur.com/Qe6xws5.jpg"
+      # This can probably be remade better.
+      expect(helper.replace_urls(body)).to_not eq(body)
+      expect(helper.replace_urls(body)).to eq("<a href=\"https://i.imgur.com/Qe6xws5.jpg\">https://i.imgur.com/Qe6xws5.jpg</a>")
+    end
+
+    it 'should escape HTML hidden in URLs' do
+      body = 'http://i.imgur.com/<script>alert("wee-woo");</script>'
+      expect(helper.replace_urls(body)).to include("&lt;script&gt;alert(\"wee-woo\");&lt;/script&gt;")
+    end
+  end
 end

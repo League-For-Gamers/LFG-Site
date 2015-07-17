@@ -257,6 +257,9 @@ a {
 				border: none;
 				color: white;
 				padding: rem-calc(2) rem-calc(24);
+				&:hover, &:focus {
+					cursor: pointer;
+				}
 			}
 		}
 	}

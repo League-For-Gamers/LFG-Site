@@ -18,6 +18,7 @@ gem 'redcarpet'
 gem 'fog', '~> 1.32', require: 'fog/aws'
 gem 'asset_sync'
 gem 'redis-rails'
+gem 'rails_autolink'
 
 # For env[] management
 gem 'figaro'

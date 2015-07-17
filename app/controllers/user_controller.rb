@@ -198,7 +198,7 @@ class UserController < ApplicationController
     post.body = params["body"]
     if post.valid?
       post.save
-      render json: {body: post.body}
+      render json: {body: view_context.replace_urls(post.body)}
     else
       render json: {errors: post.errors.full_messages}, status: :unprocessable_entity
     end

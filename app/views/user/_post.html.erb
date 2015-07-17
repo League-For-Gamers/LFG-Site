@@ -19,7 +19,7 @@
   </div>
   <div class="large-10 small-9 columns body">
     <span class="title"><%= link_to display_name(post.user), "/user/#{post.user.username}" -%></span>
-    <p><%= post.body -%></p>
+    <p><%= replace_urls post.body -%></p>
     <span class="time-ago"><%= post_time_ago(post) -%></span>
   </div>
 </div>
