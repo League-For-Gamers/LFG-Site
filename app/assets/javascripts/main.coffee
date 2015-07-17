@@ -1,9 +1,8 @@
 $ ->
   $('.show_hidden').click ->
-    node = $(this)
+    node = Foundation.utils.S(this)
     id = node.data("id")
-    console.log $("#hidden_#{id}")
-    $("#hidden-#{id}").toggle()
+    Foundation.utils.S("#hidden-#{id}").toggle()
     if node.text().match /show/i
       node.text node.text().replace(/show/i, "Hide")
     else

@@ -7,24 +7,26 @@
 #filtered-search-form {
 	margin-bottom: rem-calc(15);
 }
+.avatar {
+	$shadow: rem-calc(5) rem-calc(4) rem-calc(8) 0 rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow: $shadow;
+	-moz-box-shadow: $shadow;
+	box-shadow: $shadow;
+}
 .search-entry {
 	display: inline-block;
 	width: 100%;
 	min-height: rem-calc(235);
 	margin: rem-calc(15) 0 !important;
-	.avatar {
-		margin-top: rem-calc(-18);
-		$shadow: rem-calc(5) rem-calc(4) rem-calc(8) 0 rgba(0, 0, 0, 0.4);
-		-webkit-box-shadow: $shadow;
-		-moz-box-shadow: $shadow;
-		box-shadow: $shadow;
-	}
 	.title {
 		display: inline-block;
 		vertical-align: top;
 		font-size: 14pt;
 		font-weight: 700;
 		text-transform: uppercase;
+	}
+	.avatar {
+		margin-top: rem-calc(-18);
 	}
 }
 
@@ -98,12 +100,8 @@
 	&.bio-card {
 		.avatar {
 			margin-top: rem-calc(-22);
-			$shadow: rem-calc(5) rem-calc(4) rem-calc(10) 0 rgba(0, 0, 0, 0.4);
-			-webkit-box-shadow: $shadow;
-			-moz-box-shadow: $shadow;
-			box-shadow: $shadow;
-			float: left;
 			margin-right: rem-calc(15);
+			float: left;
 		}
 		p {
 			//text-align: justify;

@@ -1,11 +1,11 @@
 $ ->
   if window.location.pathname.match(/^\/$|^\/feed\/user\/\w*$|^\/feed\/user\/\w*\/\d*$/i)
-    $('.edit-post').click ->
+    Foundation.utils.S('.edit-post').click ->
       # This is less terrible!
       # Why, jQuery. Why.
-      t = $(this)
+      t = Foundation.utils.S(this)
 
-      global_parent = $(this).parent().parent().parent().parent()
+      global_parent = Foundation.utils.S(this).parent().parent().parent().parent()
       id = global_parent.data("id")
       user_id = global_parent.find(".user").data("id")
       default_controls = global_parent.find(".user .user-controls .default-controls")
@@ -49,7 +49,7 @@ $ ->
           dataType: 'json'
           data: {body: text}
           beforeSend: (xhr) ->
-            xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+            xhr.setRequestHeader('X-CSRF-Token', Foundation.utils.S('meta[name="csrf-token"]').attr('content'))
           success: (data) ->
             text_area.replaceWith $("<p>#{data.body}</p>")
             edit_controls.hide()
@@ -59,7 +59,7 @@ $ ->
             alert("An error occured editing your post:\n#{data.responseJSON.errors.join("\n")}")
 
     $('.delete-post').click ->
-      global_parent = $(this).parent().parent().parent().parent()
+      global_parent = Foundation.utils.S(this).parent().parent().parent().parent()
       id = global_parent.data("id")
       user_id = global_parent.find(".user").data("id")
       if window.confirm "Do you really want to delete this post?"
@@ -69,7 +69,7 @@ $ ->
           dataType: 'text'
           data: {id: id}
           beforeSend: (xhr) ->
-            xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+            xhr.setRequestHeader('X-CSRF-Token', Foundation.utils.S('meta[name="csrf-token"]').attr('content'))
           success: (data) ->
             global_parent.height(global_parent.height())
             global_parent.toggleClass("hiding")
