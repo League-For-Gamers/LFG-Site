@@ -27,4 +27,5 @@ AssetSync.configure do |config|
   #
   # Fail silently.  Useful for environments such as Heroku
   # config.fail_silently = true
+  config.custom_headers = { '.*' => { cache_control: 'max-age=315576000', expires: 1.year.from_now.httpdate } }
 end
