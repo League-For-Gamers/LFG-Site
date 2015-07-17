@@ -18,9 +18,12 @@ SimpleCov.start 'rails'
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   config.before(:suite) do
+    require 'rake'
     DatabaseCleaner.strategy = :truncation, {:only => %w[roles permissions permissions_roles]}
     DatabaseCleaner.clean
-    Rails.application.load_seed
+    load "#{Rails.root}/lib/tasks/permission_migration.rake"
+    Rake::Task.define_task(:environment)
+    Rake::Task["db:permission_migration"].invoke
   end
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.

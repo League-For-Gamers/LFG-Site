@@ -88,7 +88,17 @@ namespace :deploy do
       end
     end
   end
+  task :migrate_permissions do
+    on roles(:db) do
+      within release_path do
+        with rails_env: fetch(:rails_env) do
+          execute :rake, 'db:permission_migration'
+        end
+      end
+    end
+  end
   after 'deploy:compile_assets', :gzip_assets
+  after 'deploy:migrate', :migrate_permissions
 end
 
 namespace :bundler do

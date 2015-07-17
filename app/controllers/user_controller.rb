@@ -186,7 +186,7 @@ class UserController < ApplicationController
   def delete_post
     render plain: "You do not have permission to delete this post", status: 403 and return unless logged_in?
     post = Post.find(params["id"])
-    render plain: "You do not have permission to delete this post", status: 403 and return if post.user_id != @current_user.id
+    render plain: "You do not have permission to delete this post", status: 403 and return if post.user_id != @current_user.id and !@current_user.has_permission? "can_edit_all_users_posts"
     post.delete
     render plain: "OK"
   end
@@ -194,7 +194,7 @@ class UserController < ApplicationController
   def update_post
     render json: {errors: {'0' => 'You do not have permission to delete this post'}}, status: 403 and return unless logged_in?
     post = Post.find(params["id"])
-    render json: {errors: {'0' => 'You do not have permission to delete this post'}}, status: 403 and return if post.user_id != @current_user.id
+    render json: {errors: {'0' => 'You do not have permission to delete this post'}}, status: 403 and return if post.user_id != @current_user.id and !@current_user.has_permission? "can_edit_all_users_posts"
     post.body = params["body"]
     if post.valid?
       post.save
