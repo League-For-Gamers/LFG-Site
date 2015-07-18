@@ -9,27 +9,71 @@ class FeedController < ApplicationController
     #query = Post.connection.unprepared_statement { "((SELECT * FROM posts WHERE official) UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id})) as posts" }
     #@posts = Post.includes(:user).from(query).order("created_at ASC")
 
-    @page = params[:page].to_i
-    @page = 0 if @page < 0
-    per_page = 30
-    from = (@page * per_page)
-    @posts = Post.includes(:user).all.order("id DESC").limit(per_page).offset(from)
-    @posts.unshift(Post.includes(:user).where(official: true).order("id DESC").first) if @page == 0
-    count = Post.count
-    @num_of_pages = (count + per_page - 1) / per_page
+    respond_to do |format|
+      format.html {
+        @page = params[:page].to_i
+        @page = 0 if @page < 0
+        per_page = 30
+        from = (@page * per_page)
+        @posts = Post.includes(:user).all.order("id DESC").limit(per_page).offset(from)
+        @posts.unshift(Post.includes(:user).where(official: true).order("id DESC").first) if @page == 0
+        count = Post.count
+        @num_of_pages = (count + per_page - 1) / per_page
+      }
+      # No json currently, I want draper for when I do that.
+      format.rss { 
+        @posts = Post.includes(:user).all.order("id DESC").limit(50)
+        @feed_url = "main.rss"
+        @feed_source = ""
+        render action: "rss.html.erb", content_type: "application/rss", layout: false
+      }
+    end
   end
 
   # GET /feed/user/:user_id
   def user_feed
     set_title @user.display_name || @user.username
+    respond_to do |format|
+      format.html {
+        @page = params[:page].to_i
+        @page = 0 if @page < 0
+        per_page = 30
+        from = (@page * per_page)
+        @posts = Post.where("user_id = ?", @user.id).includes(:user).order("id DESC").limit(per_page).offset(from)
+        count = @user.posts.count
+        @num_of_pages = (count + per_page - 1) / per_page
+      }
+      # No json currently, I want draper for when I do that.
+      format.rss {
+        @posts = Post.where("user_id = ?", @user.id).includes(:user).order("id DESC").limit(50)
+        @feed_url = "user/#{@user.username}.rss"
+        @feed_source = "user/#{@user.username}"
+        render action: "rss.html.erb", content_type: "application/rss", layout: false
+      }
+    end
+  end
 
-    @page = params[:page].to_i
-    @page = 0 if @page < 0
-    per_page = 30
-    from = (@page * per_page)
-    @posts = Post.where("user_id = ?", @user.id).includes(:user).order("id DESC").limit(per_page).offset(from)
-    count = @user.posts.count
-    @num_of_pages = (count + per_page - 1) / per_page
+  # GET /feed/official
+  def official_feed
+    set_title "Official Feed"
+    respond_to do |format|
+      format.html {
+        @page = params[:page].to_i
+        @page = 0 if @page < 0
+        per_page = 30
+        from = (@page * per_page)
+        @posts = Post.where("official = ?", true).includes(:user).order("id DESC").limit(per_page).offset(from)
+        count = Post.where("official = ?", true).count
+        @num_of_pages = (count + per_page - 1) / per_page
+      }
+      # No json currently, I want draper for when I do that.
+      format.rss { 
+        @posts = Post.where("official = ?", true).includes(:user).order("id DESC").limit(50)
+        @feed_url = "official.rss"
+        @feed_source = "official"
+        render action: "rss.html.erb", content_type: "application/rss", layout: false
+      }
+    end
   end
 
   # GET /feed/user/:user_id/:post_id

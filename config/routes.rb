@@ -9,11 +9,12 @@ Rails.application.routes.draw do
   get 'account', to: 'user#my_account'
   patch 'account', to: 'user#update'
   
-
   get 'search', to: 'user#search'
 
   namespace :feed, path: 'feed' do
     post 'new_post', action: 'create'
+    get '/main(.:format)', action: 'feed'
+    get '/official', action: 'official_feed'
     get '/user/:user_id', action: 'user_feed'
     get '/user/:user_id/:post_id', action: 'show'
     patch '/user/:user_id/:id', action: 'update'

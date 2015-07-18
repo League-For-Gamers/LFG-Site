@@ -5,6 +5,7 @@ This is the Rails app for our [main site](http://leagueforgamers.com/).
 ## Requirements
  - A Local Postgres Server for development and testing envs (9.4 preferred)
  - ImageMagick in path
+ - An Amazon S3 bucket for uploads (Unless you can get paperclip to behave locally, because I sure as hell couldn't)
 
 ## Setup
 

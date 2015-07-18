@@ -4,16 +4,18 @@ EMAIL_SALT: 'secrey_KEY_goes_HERE'
 # For deploying
 GIT_REPO: 'git-repo-to-pull-from-remotely.git'
 SSH_KEY_DIR: 'local\uri\pointing\to\private\key\with\access\to\server'
-# AWS access is needed to deploy as server addresses are automatically found through it.
+# For S3 and deploying
 AWS_ACCESS_KEY_ID: 'access_key'
 AWS_SECRET_ACCESS_KEY: 'secret_access_key'
+# For S3 access
+S3_BUCKET_NAME: &bucket 'bucket_name'
+FOG_DIRECTORY: *bucket
+FOG_PROVIDER: 'AWS'
+ASSET_HOST: 'cdn.address.goeshere'
 production: 
-  REDIS_CACHE_ADDRESS: 'redis://:password@hostname:6379/0/cache'  REDIS_SESSION_ADDRESS: 'redis://:password@hostname:6379/1/sessions'
-  ASSET_HOST: 'cdn.address.goeshere'
+  REDIS_CACHE_ADDRESS: 'redis://:password@hostname:6379/0/cache'
+  REDIS_SESSION_ADDRESS: 'redis://:password@hostname:6379/1/sessions'
   SMTP_ADDRESS:  'smtp-host.address-goes.here'
   SMTP_PORT:     587
   SMTP_USERNAME: 'smtp_username'
   SMTP_PASSWORD: 'smtp_password'
-  S3_BUCKET_NAME: &bucket 'bucket_name'
-  FOG_DIRECTORY: *bucket
-  FOG_PROVIDER: 'AWS'

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title><%= @title %></title>
+        <description><%= @title %></description>
+        <atom:link href="http://leagueforgamers.com/feed/<%= @feed_url %>" rel="self" type="application/rss+xml" />
+        <link>http://leagueforgamers.com/<%= @feed_source %></link>
+        <lastBuildDate><%= CGI.rfc1123_date @posts.first.created_at %></lastBuildDate>
+        <ttl>1800</ttl>
+        <% @posts.each do |post| -%>
+            <item>
+                <title><%= post.user.display_name || post.user.username %></title>
+                <description><%= post.body %></description>
+                <link>http://leagueforgamers.com/feed/user/<%= post.user.username %>/<%= post.id %></link>
+                <guid>http://leagueforgamers.com/feed/user/<%= post.user.username %>/<%= post.id %></guid>
+                <pubDate><%= CGI.rfc1123_date post.created_at %></pubDate>
+            </item>
+        <% end -%>
+    </channel>
+</rss>
