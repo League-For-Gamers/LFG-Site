@@ -11,6 +11,7 @@ class User < ActiveRecord::Base
   has_many :skills, -> { order 'confidence DESC' }, dependent: :destroy
   has_many :tags, dependent: :destroy
   has_many :posts, -> { order 'created_at ASC' }, dependent: :destroy
+  has_many :bans, -> { order 'end_date DESC'}, dependent: :destroy
 
   validates :username, :display_name, length: { maximum: 25 }
   validates_format_of :username, with: /\A([a-zA-Z](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.
@@ -30,6 +31,7 @@ class User < ActiveRecord::Base
 
   before_validation :hash_email
   before_create :encrypt_email
+  before_create :set_default_role
 
   accepts_nested_attributes_for :skills, allow_destroy: true
   accepts_nested_attributes_for :tags, allow_destroy: true
@@ -77,6 +79,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def set_default_role
+    self.role = Role.find_by(name: "default") if self.role.nil?
+  end
+
   def generate_verification_digest
     if self.verification_active.nil? or self.verification_active < Time.now
       self.verification_digest = SecureRandom.urlsafe_base64
@@ -92,6 +98,20 @@ class User < ActiveRecord::Base
   def has_permission?(permission)
     return false if self.role.nil?
     self.role.permissions.map(&:name).include? permission
+  end
+
+  def ban(reason, end_date, post = nil)
+    banned_role = Role.find_by(name: "banned")
+    if self.role.name == "banned"
+      old_role = Ban.where(user: self).where.not(role: banned_role).order("end_date DESC").first.role
+    else
+      old_role = self.role
+    end
+    ban = Ban.new(user: self, reason: reason, end_date: end_date, role: old_role)
+    ban.post = post unless post.nil?
+    ban.save
+    self.role = banned_role
+    self.save
   end
 
   private

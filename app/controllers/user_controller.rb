@@ -11,7 +11,7 @@ class UserController < ApplicationController
 
   # POST /login
   def login_check
-    user = User.find_by(username: login_params[:username]).try(:authenticate, login_params[:password])
+    user = User.where("lower(username) = ?", login_params[:username].downcase).first.try(:authenticate, login_params[:password])
 
     unless user.nil? or !user # Nil if there's no results, false if failed authentication
       login_user(user)

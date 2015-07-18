@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe FeedController, type: :controller do
   let(:bobby) { FactoryGirl.create(:user) }
-  describe "GET /" do
+  describe "GET /feed/main" do
     context "when not logged in" do
       it "redirects to signup page" do
         get :feed
@@ -23,8 +23,30 @@ RSpec.describe FeedController, type: :controller do
         get :feed
         expect(assigns(:posts)).to include(bobby.posts.last)
       end
-    end 
+    end
+    it "should respond to rss correctly" do
+      get :feed, format: :rss
+      expect(response).to render_template("feed/rss.html.erb")
+    end
   end
+
+  describe "GET /feed/official" do
+    before do
+      session[:user] = bobby.id
+    end
+    it "populates the @posts variable with official posts" do
+      5.times { FactoryGirl.create(:post, user: bobby)}
+      3.times { FactoryGirl.create(:post, user: bobby, official: true) }
+      get :official_feed
+      expect(assigns(:posts).length).to eq(3)
+      expect(assigns(:posts).map(&:official)).to match_array([true, true, true])
+    end
+    it "should respond to rss correctly" do
+      get :official_feed, format: :rss
+      expect(response).to render_template("feed/rss.html.erb")
+    end
+  end
+
   describe "GET /feed/user/:user_id" do
     before do
       500.times { FactoryGirl.create(:post, user: bobby) }
@@ -36,6 +58,10 @@ RSpec.describe FeedController, type: :controller do
     it "404s when username is invalid" do
       get :user_feed, user_id: "non_existant"
       expect(response.status).to eq(404)
+    end
+    it "should respond to rss correctly" do
+      get :user_feed, user_id: bobby.username, format: :rss
+      expect(response).to render_template("feed/rss.html.erb")
     end
   end
   describe "GET /feed/user/:user_id/:post_id" do

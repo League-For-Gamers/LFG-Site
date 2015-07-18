@@ -12,12 +12,32 @@ RSpec.describe ApplicationController, :type => :controller do
         expect(controller.send(:logged_in?)).to eq(true)
       end
 
-      it 'set_current_user sets @current_user' do
-        controller.send(:set_current_user)
-        expect(assigns(:current_user).username).to eq(bobby.username)
+      context "#set_current_user" do
+        it 'sets @current_user' do
+          controller.send(:set_current_user)
+          expect(assigns(:current_user).username).to eq(bobby.username)
+        end
+        it 'unbans banned users when their date is passed' do
+          bobby.ban("dick", 1.week.ago)
+          expect(User.find(bobby.id).role.name).to eq("banned")
+          controller.send(:set_current_user)
+          expect(assigns(:current_user).role.name).to_not eq("banned")
+        end
+        it 'does not unban permabanned users' do
+          bobby.ban("dick", nil)
+          expect(User.find(bobby.id).role.name).to eq("banned")
+          controller.send(:set_current_user)
+          expect(assigns(:current_user).role.name).to eq("banned") 
+        end
+        it 'sets @ban variable when user is banned' do
+          bobby.ban("dick", nil)
+          expect(User.find(bobby.id).role.name).to eq("banned")
+          controller.send(:set_current_user)
+          expect(assigns(:ban)).to be_present
+        end
       end
 
-      it 'logout_user successfully removes session' do
+      it '#logout_user successfully removes session' do
         controller.send(:logout_user)
         expect(controller.send(:logged_in?)).to eq(false)
       end

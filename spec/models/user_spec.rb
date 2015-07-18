@@ -121,4 +121,20 @@ RSpec.describe User, :type => :model do
       expect(bobby.generate_password_reset_link).to match(URI::regexp)
     end
   end
+
+  describe '#ban' do
+    let(:post) { FactoryGirl.create(:post, user: bobby) }
+    it 'should ban the user' do
+      bobby.ban("dick", 1.week.from_now, post)
+      expect(User.find(bobby.id).role.name).to eq("banned")
+    end
+    context 'when a ban is extended' do
+      it 'should ban the user but preserve their old role in the ban' do
+        old_id = bobby.role_id
+        bobby.ban("dick", 1.week.from_now, post)
+        bobby.ban("serious dick", 2.weeks.from_now, post)
+        expect(User.find(bobby.id).bans.first.role_id).to eq(old_id)
+      end
+    end
+  end
 end

@@ -20,6 +20,8 @@
 /config/application.*.yml
 /config/database.yml
 /config/database.*.yml
+/public/users
+/public/games
 
 /coverage
 /public/assets

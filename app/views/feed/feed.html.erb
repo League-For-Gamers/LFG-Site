@@ -1,18 +1,37 @@
-<div class="row">
-  <div class="large-6 small-12 text-card pad lfg-form center new-post-form">
-    <%= form_tag '/feed/new_post' do -%>
-      <label>New post
-        <%= text_area_tag "body" %>
-      </label>
-      <% if @current_user.has_permission? "can_create_official_posts" %>
-        <label style="float: right;">Official?
-          <%= check_box_tag "official" %>
-        </label>
-      <% end %>
-      <input type="submit" class="btn" value="Post" />
+<% if @current_user.role.name == "banned" -%>
+  <div class="row">
+    <div class="large-6 small-12 text-card pad center banned-message">
+    <h1>You are banned</h1>
+    <p>Your ban will not be lifted until 
+    <% if @ban.end_date.nil? %>
+      <span class="highlight">Never</span>
+    <% else -%>
+      the <span class="highlight"><%= @ban.end_date.strftime("%-d").to_i.ordinalize -%> of <%= @ban.end_date.strftime("%B") %>, <%= @ban.end_date.strftime("%Y") %></span></p>
     <% end -%>
+    <p>You were banned for the reason: <span class="highlight"><%= @ban.reason %></span></p>
+    <% unless @ban.post.nil? -%>
+      <p><a href="/feed/user/<%= @current_user.username %>/<%= @ban.post.id %>">Click here</a> to be taken to the post you were banned for</p>
+    <% end -%>
+    </div>
   </div>
-</div>
+<% end -%>
+<% if @current_user.has_permission? "can_create_post" -%>
+  <div class="row">
+    <div class="large-6 small-12 text-card pad lfg-form center new-post-form">
+      <%= form_tag '/feed/new_post' do -%>
+        <label>New post
+          <%= text_area_tag "body" %>
+        </label>
+        <% if @current_user.has_permission? "can_create_official_posts" %>
+          <label style="float: right;">Official?
+            <%= check_box_tag "official" %>
+          </label>
+        <% end %>
+        <input type="submit" class="btn" value="Post" />
+      <% end -%>
+    </div>
+  </div>
+<% end -%>
 <div class="row">
   <div class="large-6 small-12 center">
     <% @posts.each do |post| -%>

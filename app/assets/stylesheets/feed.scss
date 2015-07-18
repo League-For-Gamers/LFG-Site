@@ -1,6 +1,20 @@
 @import "foundation/functions";
 @import "mixins";
 
+.banned-message {
+	text-align: center;
+	border: rem-calc(3) dashed $primary-lighter-red;
+	margin-bottom: rem-calc(15) !important;
+	h1 {
+		color: $primary-lighter-red !important;
+	}
+	p {
+		font-weight: 400 !important;
+		margin-bottom: rem-calc(5);
+	}
+}
+
+
 .streamPost {
 	display: inline-block;
 	width: 100%;
@@ -79,6 +93,13 @@
 		padding: 0 rem-calc(5);
 		.avatar {
 			margin-top: rem-calc(-18);
+		}
+	}
+	.bans {
+		p {
+			min-height: 0;
+			margin-bottom: 0;
+			color: $primary-lighter-red;
 		}
 	}
 }
