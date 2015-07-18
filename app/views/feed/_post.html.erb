@@ -1,7 +1,7 @@
 <div class="streamPost text-card <%= 'official' if post.official -%>" id="post-<%= post.id %>" data-id="<%= post.id %>">
   <div class="large-2 small-3 columns user" data-id="<%= user.username %>">
     <%= link_to image_tag(user.avatar(:med), class: "avatar"), "/user/#{user.username}" %>
-    <% if (user == @current_user and @current_user.has_permission? "can_edit_own_posts") or @current_user.has_permission? "can_edit_all_users_posts" -%>
+    <% if !@current_user.nil? and ((user == @current_user and @current_user.has_permission? "can_edit_own_posts") or @current_user.has_permission? "can_edit_all_users_posts") -%>
       <div class="user-controls">
         <div class="edit-controls">
           <a class="submit-post">Submit</a>
