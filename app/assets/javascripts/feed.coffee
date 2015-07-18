@@ -1,5 +1,5 @@
 $ ->
-  if window.location.pathname.match(/^\/$|^\/feed\/user\/\w*$|^\/feed\/user\/\w*\/\d*$/i)
+  if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$/i)
     Foundation.utils.S('.edit-post').click ->
       # This is less terrible!
       # Why, jQuery. Why.
