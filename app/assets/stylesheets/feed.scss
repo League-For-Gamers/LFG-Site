@@ -27,6 +27,18 @@
 	&.hiding {
 		min-height: 0;
 	}
+	.ban-user {
+		position: absolute;
+		width: rem-calc(26);
+		height: rem-calc(26);
+		top: rem-calc(-19);
+		margin-left: rem-calc(1);
+		&:hover, &:focus {
+			// Glyphicon remove
+			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAKlBMVEUAAAD///////////////////////////////////////////////////+Gu8ovAAAADXRSTlMAECAwQGBwkKCw0ODw81cYQwAAAJdJREFUeNqFUlsOAyEIBNaKz/tftwJu7abJdD5IYGR4CB1IWhD6gWifjq5PlnV+QfkwV5sPtOvDjFCyWqE7NsfNnEwbeVheaOp5dkTUewuGq3taOTjZSdlVC1FxrbzTVt1OVK16KWbrHZN4cQ92PKG0bCKTcrhsBLcNLpj/1AsIgjZA82BksCiwXvAp4CvBAYCzAccGTvQNWdgRBnI95oEAAAAASUVORK5CYII=);
+			cursor: pointer;
+		}
+	}
 	.user-controls {
 		margin-top: rem-calc(5);
 		display: block;
@@ -45,6 +57,13 @@
 				width: rem-calc(28);
 				height: rem-calc(32);
 				vertical-align: bottom;
+			}
+			&.ban-post {
+				display: block;
+				text-align: center;
+				font-size: 10pt;
+				width: rem-calc(30);
+				margin-top: rem-calc(5);
 			}
 		}
 		.edit-controls {

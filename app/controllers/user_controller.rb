@@ -5,7 +5,7 @@ class UserController < ApplicationController
 
   # GET /login
   def login
-    flash[:notice] = "Already logged in." and redirect_to root_url and return if logged_in?
+    flash[:info] = "Already logged in." and redirect_to root_url and return if logged_in?
     set_title "Login"
   end
 
@@ -15,10 +15,9 @@ class UserController < ApplicationController
 
     unless user.nil? or !user # Nil if there's no results, false if failed authentication
       login_user(user)
-      flash[:notice] = "Successfully logged in."
       redirect_to root_url
     else
-      flash[:alert] = "Invalid username or password."
+      flash[:warning] = "Invalid username or password."
       set_title "Login"
       render "login"
     end
@@ -26,7 +25,7 @@ class UserController < ApplicationController
 
   # GET /logout
   def logout
-    flash[:notice] = "Successfully logged out"
+    flash[:info] = "Successfully logged out"
     logout_user and redirect_to "/signup" and return
   end
 
@@ -64,10 +63,10 @@ class UserController < ApplicationController
       user.skip_old_password = true
       user.verification_active = 1.hour.ago
       user.save
-      flash[:notice] = "Password has been changed. You can log in now."
+      flash[:info] = "Password has been changed. You can log in now."
       redirect_to '/signup' and return
     else
-      flash[:notice] = "The token you have provided is invalid or out of date."
+      flash[:info] = "The token you have provided is invalid or out of date."
       redirect_to '/signup' and return
     end
   end

@@ -25,7 +25,7 @@ RSpec.describe UserController, :type => :controller do
     it "displays an error for invalid credentials" do
       post :login_check, username: bobby.username, password: "invalid password"
       expect(session[:user]).to_not eq(bobby.id)
-      expect(flash[:alert]).to be_present
+      expect(flash[:warning]).to be_present
     end
   end
 
@@ -34,8 +34,8 @@ RSpec.describe UserController, :type => :controller do
       session[:user] = bobby.id
       get :logout
       expect(session[:user]).to_not be_present
-      expect(flash[:notice]).to be_present
-      expect(response).to redirect_to(root_url)
+      expect(flash[:info]).to be_present
+      expect(response).to redirect_to('/signup')
     end
   end
 
@@ -91,7 +91,7 @@ RSpec.describe UserController, :type => :controller do
       post :reset_password_check, activation_id: "junk"
       expect(User.find(bobby.id).password_digest).to eq(bobby.password_digest)
       expect(response).to redirect_to('/signup')
-      expect(flash[:notice]).to be_present
+      expect(flash[:info]).to be_present
     end
     it "should change the users password and set the verification_digest to invalid" do
       bobby.generate_verification_digest

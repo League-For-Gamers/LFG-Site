@@ -111,14 +111,15 @@ class FeedController < ApplicationController
   # POST /new_post
   def create
     redirect_to '/signup' and return unless logged_in?
-    flash[:notice] = "You don't have permission to create a post." and redirect_to request.referrer || root_url and return if !@current_user.has_permission? "can_create_post"
+    flash[:warning] = "You don't have permission to create a post." and redirect_to request.referrer || root_url and return if !@current_user.has_permission? "can_create_post"
     if @current_user.has_permission? "can_create_official_posts"
       post_params = params.permit(:body, :official)
     else
       post_params = params.permit(:body)
     end
     post_params["user"] = @current_user
-    Post.create(post_params)
+    post = Post.create(post_params)
+    flash[:alert] = post.errors.full_messages.join("\n") unless post.valid?
     redirect_to request.referrer || root_url
   end
 

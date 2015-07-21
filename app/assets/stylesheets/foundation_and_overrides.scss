@@ -1,3 +1,4 @@
+@import "mixins";
 // Foundation by ZURB
 // foundation.zurb.com
 // Licensed under MIT Open Source
@@ -116,12 +117,12 @@ $row-width: rem-calc(1280);
 // $black       : #000000;
 
 // We use these as default colors throughout
-// $primary-color: #008CBA;
-// $secondary-color: #e7e7e7;
-// $alert-color: #f04124;
-// $success-color: #43AC6A;
-// $warning-color: #f08a24;
-// $info-color: #a0d3e8;
+$primary-color: $primary-red;
+$secondary-color: $primary-lighter-red;
+$alert-color: $primary-red;
+$success-color: #058A2B;
+$warning-color: #BD491A;
+$info-color: #970505;
 
 // We use these to control various global styles
 // $body-bg: $white;
@@ -1510,7 +1511,7 @@ $row-width: rem-calc(1280);
 //@import 'foundation/components/pricing-tables';
 //@import 'foundation/components/progress-bars';
 //@import 'foundation/components/range-slider';
-//@import 'foundation/components/reveal';
+@import 'foundation/components/reveal';
 //@import 'foundation/components/side-nav';
 //@import 'foundation/components/split-buttons';
 //@import 'foundation/components/sub-nav';
