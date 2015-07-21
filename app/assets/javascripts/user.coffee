@@ -7,7 +7,7 @@ $ ->
       return
     Foundation.utils.S('#new_skill').click ->
       # this is so dirtyyyyy
-      id = Foundation.utils.S('#skills').children().length
+      id = Date.now()
       html = Foundation.utils.S('#skills').children()[0].outerHTML.replace(/selected=\"selected\" /g, "")
       html = html.replace(/\[(\d)\]/g, "[#{id}]").replace(/_\d_/g, "_#{id}_")
       html = html.replace /type="hidden" value="\d+"/, 'type="hidden"'

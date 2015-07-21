@@ -58,7 +58,7 @@ $ ->
             console.log data.responseJSON.errors.join("\n")
             alert("An error occured editing your post:\n#{data.responseJSON.errors.join("\n")}")
 
-    $('.delete-post').click ->
+    Foundation.utils.S('.delete-post').click ->
       global_parent = Foundation.utils.S(this).parent().parent().parent().parent()
       id = global_parent.data("id")
       user_id = global_parent.find(".user").data("id")

@@ -9,11 +9,12 @@
 		color: $primary-lighter-red !important;
 	}
 	p {
+		display: block;
+		float: none;
 		font-weight: 400 !important;
 		margin-bottom: rem-calc(5);
 	}
 }
-
 
 .streamPost {
 	display: inline-block;

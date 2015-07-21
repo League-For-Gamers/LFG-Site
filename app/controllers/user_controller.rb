@@ -27,7 +27,7 @@ class UserController < ApplicationController
   # GET /logout
   def logout
     flash[:notice] = "Successfully logged out"
-    logout_user and redirect_to root_url
+    logout_user and redirect_to "/signup" and return
   end
 
   # GET /user/forgot_password
