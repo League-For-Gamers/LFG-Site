@@ -1,6 +1,7 @@
 class FeedController < ApplicationController
   before_action :set_post, only: [:show]
   before_action :set_user, only: [:user_feed, :show]
+  before_action :required_log_in, only: [:create]
 
   # GET /
   def feed

@@ -11,6 +11,14 @@ Rails.application.routes.draw do
   
   get 'search', to: 'user#search'
 
+  namespace :messages, path: 'messages' do
+    root action: 'index'
+    # put '/new', action: 'new'
+    put '/', action: 'create_chat'
+    get '/:id', action: 'show'
+    put '/:id', action: 'create_message'
+  end
+
   namespace :feed, path: 'feed' do
     post 'new_post', action: 'create'
     get '/main(.:format)', action: 'feed'
@@ -27,7 +35,7 @@ Rails.application.routes.draw do
     get '/forgot_password/:activation_id', action: 'reset_password'
     post '/forgot_password/:activation_id', action: 'reset_password_check'
     get ':id', action: 'show'
-
+    get ':id/message', action: 'direct_message'
   end
 
   scope :ajax do

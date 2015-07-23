@@ -1,0 +1,26 @@
+<div class="large-6 small-12 center text-card pad">
+  <h6>Chat with</h6>
+  <ul class="large-block-grid-6 small-block-grid-3 user-list">
+    <% @users.each do |user| -%>
+      <li class="user">
+        <a href="/user/<%= user.username %>">
+          <div class="avatar-container">
+            <%= image_tag(user.avatar.url(:thumb), class: "avatar") -%>
+          </div>
+          <span><%= display_name user -%></span>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</div>
+<div class="large-6 small-12 center text-card pad lfg-form">
+  <%= form_for @message, url: {controller: "messages", action: "create_chat" }, method: 'put' do |f| -%>
+    <% @users.each_with_index do |user, i| -%>
+      <input type="hidden" name="private_message[user][<%= i %>][id]" id="private_mesage_<%= i %>_id" value="<%= user.id %>">
+    <% end -%>
+    <label>Message
+      <%= f.text_area "body", class: "quick-submit" %>
+    </label>
+    <input type="submit" class="btn small" value="Send" />
+  <% end -%>
+</div>

@@ -1,11 +1,12 @@
 class UserController < ApplicationController
-  before_action :set_user, only: [:show]
-  skip_before_filter :set_current_user, only: [:my_account, :update]
-  before_filter :set_current_user_with_includes, only: [:my_account, :update], if: :logged_in?
+  before_action :set_user, only: [:show, :direct_message]
+  skip_before_filter :set_current_user, only: [:my_account, :update, :direct_message]
+  before_filter :set_current_user_with_includes, only: [:my_account, :update, :direct_message], if: :logged_in?
+  before_action :required_log_in, only: [:my_account, :search, :direct_message]
+  before_action :required_logged_out, only: [:forgot_password, :forgot_password_check, :signup, :login]
 
   # GET /login
   def login
-    flash[:info] = "Already logged in." and redirect_to root_url and return if logged_in?
     set_title "Login"
   end
 
@@ -31,12 +32,10 @@ class UserController < ApplicationController
 
   # GET /user/forgot_password
   def forgot_password
-    redirect_to root_url and return if logged_in?
   end
 
   # POST /user/forgot_password
   def forgot_password_check
-    redirect_to root_url and return if logged_in?
     user = User.find_by(hashed_email: Digest::SHA384.hexdigest(params["email"].downcase + ENV['EMAIL_SALT']))
     unless user.blank?
       user.generate_verification_digest
@@ -73,7 +72,6 @@ class UserController < ApplicationController
 
   # GET /signup
   def signup
-    redirect_to root_url if logged_in?
     @user = User.new 
     set_title("Signup")
   end
@@ -96,7 +94,6 @@ class UserController < ApplicationController
 
   # GET /account
   def my_account
-    redirect_to '/signup' and return unless logged_in?
     set_title "Account Settings"
     @games = @current_user.games + [Game.new] # We always want there to be one empty field.
     @current_user.skills.build if @current_user.skills.empty?
@@ -160,7 +157,6 @@ class UserController < ApplicationController
 
   # GET /search
   def search
-    redirect_to '/signup' and return unless logged_in?
     set_title "Search"
     search_params = params.permit(:query, :filter, :page)
 
@@ -208,12 +204,24 @@ class UserController < ApplicationController
     end
   end
 
+  # POST /ajax/user/hide
   def profile_hide
     render status: 403, plain: "Must be logged in" and return if @current_user.nil?
     p = params.permit(:section)
     @current_user.hidden[p["section"]] = !(@current_user.hidden[p["section"]] == 'true')
     @current_user.save
     render plain: "OK"
+  end
+
+  # GET /user/:user_id/message
+  def direct_message
+    flash[:warning] = "You do not have permission to send messages" and redirect_to root_url and return unless @current_user.has_permission? "can_send_private_messages"
+    # oh jesus this query.
+    existing_chat = Chat.find_by_sql ["SELECT DISTINCT chats.* FROM chats, chats_users WHERE chats.id IN ( SELECT chat_id FROM chats_users WHERE chats_users.user_id = ? INTERSECT ALL SELECT chat_id FROM chats_users WHERE chats_users.user_id = ? EXCEPT SELECT chat_id FROM chats_users WHERE chats_users.user_id != ? AND chats_users.user_id != ?)", @current_user.id, @user.id, @current_user.id, @user.id]
+    redirect_to "/messages/#{existing_chat.first.id}" and return unless existing_chat.empty?
+    flash[:info] = "You can't send a message to yourself." and redirect_to root_url and return if @user == @current_user
+    @users = [@user]
+    @message = PrivateMessage.new()
   end
 
   private

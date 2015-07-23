@@ -323,4 +323,34 @@ RSpec.describe UserController, :type => :controller do
       end
     end
   end
+
+  describe 'GET /user/:id/message' do
+    context 'while not logged in' do
+      it 'should redirect away' do
+        get :direct_message, id: bobby.username
+        expect(response).to redirect_to('/signup')
+      end
+    end
+    context 'while logged in' do
+      let(:admin_bobby) { FactoryGirl.create(:administrator_user) }
+      before do
+        session[:user] = bobby.id
+      end
+      it 'should fail gracefully when a user tries to send a message to themselves' do
+        get :direct_message, id: bobby.username
+        expect(response).to redirect_to(root_url)
+        expect(flash[:info]).to be_present
+      end
+      it 'should redirect to an existing session if a user tries to contact a user they already have a session with' do
+        chat = Chat.create(users: [admin_bobby, bobby])
+        get :direct_message, id: admin_bobby.username
+        expect(response).to redirect_to("/messages/#{chat.id}")
+      end
+      it 'should not fail when trying to create a new chat session' do
+        get :direct_message, id: admin_bobby.username
+        expect(assigns(:users)).to be_present
+        expect(assigns(:message)).to be_present
+      end
+    end
+  end
 end

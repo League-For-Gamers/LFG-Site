@@ -11,6 +11,9 @@
       <% unless @user.social["website"].blank? %>
         <span class="website">Website: <%= link_to truncate(reverse_urlify(@user.social["website"]), length: 30), full_urlify(@user.social["website"]) %></span>
       <% end %>
+      <% if logged_in? and @user != @current_user and @current_user.has_permission? "can_send_private_messages" %>
+        <a href="/user/<%= @user.username %>/message" class="btn small private-message">Send Message</a>
+      <% end %>
       <ul class="social-links">
         <% @user.social.each do |social| %>
           <% if social[0].start_with? 'link_' and !social[1].empty? %>

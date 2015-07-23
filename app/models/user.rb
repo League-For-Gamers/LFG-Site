@@ -61,7 +61,7 @@ class User < ActiveRecord::Base
     crypt = OpenSSL::Cipher::AES256.new(:CBC)
     crypt.encrypt
     crypt.key = Digest::SHA2.hexdigest(ENV['EMAIL_KEY'] + self.username)
-    iv = crypt.random_iv
+    iv = self.email_iv || crypt.random_iv
     crypt.iv = iv
     self.email_iv = iv
     self.email = crypt.update(self.decrypted_email) + crypt.final
@@ -118,14 +118,10 @@ class User < ActiveRecord::Base
     # THANKS STACK OVERFLOW! http://stackoverflow.com/questions/12663593/has-secure-password-authenticate-inside-validation-on-password-update
     def validates_old_password
       return if password_digest_was.nil? || !password_digest_changed?
-      unless BCrypt::Password.new(password_digest_was) == old_password
-        errors.add(:old_password, "is incorrect")
-      end
+      errors.add(:old_password, "is incorrect") unless BCrypt::Password.new(password_digest_was) == old_password
     end
 
     def validates_email_equality
-      unless decrypted_email == email_confirm
-        errors.add(:email, "does not match")
-      end
+      errors.add(:email, "does not match") unless decrypted_email == email_confirm
     end
 end

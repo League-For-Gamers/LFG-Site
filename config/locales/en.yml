@@ -28,3 +28,5 @@ en:
         email: "E-mail address"
       tag:
         name: "Tag"
+      private_message:
+        decrypted_body: "Body"

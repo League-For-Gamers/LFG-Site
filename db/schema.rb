@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150718134124) do
+ActiveRecord::Schema.define(version: 20150722045128) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,6 +30,19 @@ ActiveRecord::Schema.define(version: 20150718134124) do
   add_index "bans", ["post_id"], name: "index_bans_on_post_id", using: :btree
   add_index "bans", ["role_id"], name: "index_bans_on_role_id", using: :btree
   add_index "bans", ["user_id"], name: "index_bans_on_user_id", using: :btree
+
+  create_table "chats", force: :cascade do |t|
+    t.string   "key"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "chats_users", id: false, force: :cascade do |t|
+    t.integer "chat_id", null: false
+    t.integer "user_id", null: false
+  end
+
+  add_index "chats_users", ["user_id", "chat_id"], name: "index_chats_users_on_user_id_and_chat_id", unique: true, using: :btree
 
   create_table "games", force: :cascade do |t|
     t.string   "name"
@@ -82,6 +95,18 @@ ActiveRecord::Schema.define(version: 20150718134124) do
   end
 
   add_index "posts", ["user_id"], name: "index_posts_on_user_id", using: :btree
+
+  create_table "private_messages", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "chat_id"
+    t.binary   "body"
+    t.binary   "iv"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "private_messages", ["chat_id"], name: "index_private_messages_on_chat_id", using: :btree
+  add_index "private_messages", ["user_id"], name: "index_private_messages_on_user_id", using: :btree
 
   create_table "roles", force: :cascade do |t|
     t.string   "name"
@@ -137,6 +162,8 @@ ActiveRecord::Schema.define(version: 20150718134124) do
   add_foreign_key "bans", "posts"
   add_foreign_key "bans", "users"
   add_foreign_key "posts", "users"
+  add_foreign_key "private_messages", "chats"
+  add_foreign_key "private_messages", "users"
   add_foreign_key "skills", "users"
   add_foreign_key "tags", "users"
   add_foreign_key "users", "roles"

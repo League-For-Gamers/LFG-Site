@@ -1,6 +1,10 @@
 @import "foundation/functions";
 @import "mixins";
 
+html.turbolinks-progress-bar::before {
+	background-color: $primary-lighter-red !important;
+}
+
 body {
 	font-family: $font;
 	color: $primary-text;
@@ -35,13 +39,19 @@ a {
 	z-index: 99999;
 }
 
-.settings-button {
+.icon-button {
 	display: inline-block;
-	background-image: url(data:image/png;base64,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);
 	background-repeat: no-repeat;
 	height: rem-calc(43);
-	width: rem-calc(43);
 	vertical-align: sub; // GASP! I have found a situation where vertical-align ACTUALLY WORKS!
+}
+.messages-button {
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEEAAAArCAMAAAAQRhVLAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlP/AOW3MEoAAAClSURBVHgB7dZBCoQwEETRnvtfetZ+eRBiVmIvS3gETZnM7+m8SpiNyRo2gAgmBFQAYSACCQMVRoSBmasgwkAFEgYikDAQAYQACCAERAABAAIIABJCAIAAAgAEEHgCQURzCyaaWmii1ELLjtRCm4rUQmuG1EI7gtTCImZhdekU/PqaQvAnXPxHYRshvQveykoruE4u2dkzy4CJ02e3Ac/pO8x3G/wDDxEE98v/v8QAAAAASUVORK5CYII=);
+	width: rem-calc(65);
+}
+.settings-button {
+	background-image: url(data:image/png;base64,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);
+	width: rem-calc(43);
 }
 
 .text-card {
@@ -133,12 +143,12 @@ a {
 	}
 }
 
-@media only screen and (max-width: 64em) {
+@media only screen and (max-width: 64.688em) {
 	.main-logo {
 		width: rem-calc(200);
 		margin-top: rem-calc(50) !important;
 	}
-	.settings-button {
+	.icon-button {
 		vertical-align: middle;
 	}
 	.top-nav-bar, .bottom-nav-bar {
@@ -174,14 +184,14 @@ a {
 		padding: 0 rem-calc(25);
 	}
 }
-@media only screen and (max-width: 46em) {
+@media only screen and (max-width: 51.9em) {
 	.bottom-nav-bar {
 		position: relative;
 		display: block;
 	}
 }
 // Landscape mobile
-@media only screen and (max-width: 45.99em) {
+@media only screen and (max-width: 51.875em) {
 	.main-logo {
 		width: rem-calc(160)
 	}
@@ -217,16 +227,29 @@ a {
 	padding-bottom: rem-calc(40) !important;
 }
 
+input[type="text"], input[type="password"], input[type="date"], 
+input[type="datetime"], input[type="datetime-local"], input[type="month"], 
+input[type="week"], input[type="email"], input[type="number"],
+input[type="search"], input[type="tel"], input[type="time"], 
+input[type="url"], input[type="color"], input[type="submit"], 
+input[type="button"], input[type="reset"], input[type="file"],
+button, a.btn {
+	font-family: $font;
+	font-style: italic;
+	font-size: 14pt;
+	margin-bottom: rem-calc(10);
+}
+
 .lfg-form {
 	form {
 		h1,h2,h3 {
 			margin-bottom: rem-calc(3);
 		}
-		input {
-			font-family: $font;
-			font-style: italic;
-			font-size: 14pt;
-			margin-bottom: rem-calc(10);
+		input[type="text"], input[type="password"], input[type="date"], 
+		input[type="datetime"], input[type="datetime-local"], input[type="month"], 
+		input[type="week"], input[type="email"], input[type="number"],
+		input[type="search"], input[type="tel"], input[type="time"], 
+		input[type="url"], input[type="color"] {
 			background-color: $primary-cream;
 			border-color: white;
 			box-shadow: none;
@@ -248,29 +271,35 @@ a {
 			&::-webkit-input-placeholder {
 				color: $primary-text;
 			}
-			&.btn {
-				font-size: 24pt;
-				font-style: normal;
-				font-weight: 600;
-				text-transform: uppercase;
-				background-color: $primary-red;
-				border: none;
-				color: white;
-				padding: rem-calc(2) rem-calc(24);
-				&:hover, &:focus {
-					cursor: pointer;
-				}
-			}
+		}
+	}
+}
+input[type="submit"], input[type="button"], input[type="reset"], 
+a, button {
+	&.btn {
+		text-align: center;
+		font-size: 24pt;
+		font-style: normal;
+		font-weight: 600;
+		text-transform: uppercase;
+		background-color: $primary-red;
+		border: none;
+		color: white;
+		padding: rem-calc(2) rem-calc(24);
+		&:hover, &:focus {
+			cursor: pointer;
+		}
+		&.small {
+			font-size: 16pt;
+			padding: rem-calc(2) rem-calc(12);
 		}
 	}
 }
 @media only screen and (max-width: 26em) {
-	.lfg-form {
-		input {
-			&.btn {
-				font-size: 16pt !important;
-				padding: rem-calc(2) rem-calc(16) !important;
-			}
+	input {
+		&.btn {
+			font-size: 16pt !important;
+			padding: rem-calc(2) rem-calc(16) !important;
 		}
 	}
 }

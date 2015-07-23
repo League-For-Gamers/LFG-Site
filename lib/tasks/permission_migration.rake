@@ -12,6 +12,7 @@ namespace :db do
     p3 = Permission.find_or_create_by(name: "can_ban_users")
     p4 = Permission.find_or_create_by(name: "can_create_post")
     p5 = Permission.find_or_create_by(name: "can_edit_own_posts")
+    p6 = Permission.find_or_create_by(name: "can_send_private_messages")
 
     # Admin permissions
     admin.permissions << p1 unless admin.permissions.map(&:name).include? p1.name
@@ -19,17 +20,21 @@ namespace :db do
     admin.permissions << p3 unless admin.permissions.map(&:name).include? p3.name
     admin.permissions << p4 unless admin.permissions.map(&:name).include? p4.name
     admin.permissions << p5 unless admin.permissions.map(&:name).include? p5.name
+    admin.permissions << p6 unless admin.permissions.map(&:name).include? p6.name
     admin.save
 
     # Moderator permissions
     moderator.permissions << p2 unless moderator.permissions.map(&:name).include? p2.name
     moderator.permissions << p3 unless moderator.permissions.map(&:name).include? p3.name
     moderator.permissions << p4 unless moderator.permissions.map(&:name).include? p4.name
+    moderator.permissions << p5 unless moderator.permissions.map(&:name).include? p5.name
+    moderator.permissions << p6 unless moderator.permissions.map(&:name).include? p6.name
     moderator.save
 
     # Default permissions
     default.permissions << p4 unless default.permissions.map(&:name).include? p4.name
     default.permissions << p5 unless default.permissions.map(&:name).include? p5.name
+    default.permissions << p6 unless default.permissions.map(&:name).include? p6.name
     default.save
   end
   task :set_default_user_role => :environment do
