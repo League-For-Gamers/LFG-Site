@@ -49,6 +49,7 @@ class User < ActiveRecord::Base
   before_validation do
     remove_zalgo! self.display_name
     remove_zalgo! self.bio
+    self.enc_key = self.enc_key || SecureRandom.hex(64)
   end
 
   def hash_email
@@ -60,7 +61,7 @@ class User < ActiveRecord::Base
   def encrypt_email
     crypt = OpenSSL::Cipher::AES256.new(:CBC)
     crypt.encrypt
-    crypt.key = Digest::SHA2.hexdigest(ENV['EMAIL_KEY'] + self.username)
+    crypt.key = Digest::SHA2.hexdigest(ENV['EMAIL_KEY'] + self.enc_key)
     iv = self.email_iv || crypt.random_iv
     crypt.iv = iv
     self.email_iv = iv
@@ -71,7 +72,7 @@ class User < ActiveRecord::Base
     begin
       crypt = OpenSSL::Cipher::AES256.new(:CBC)
       crypt.decrypt
-      crypt.key = Digest::SHA2.hexdigest(ENV['EMAIL_KEY'] + self.username)
+      crypt.key = Digest::SHA2.hexdigest(ENV['EMAIL_KEY'] + self.enc_key)
       crypt.iv = self.email_iv
       crypt.update(self.email) + crypt.final
     rescue # I should have specific cases here but it'll be a lot...

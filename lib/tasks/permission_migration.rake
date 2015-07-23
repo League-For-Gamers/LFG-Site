@@ -38,6 +38,6 @@ namespace :db do
     default.save
   end
   task :set_default_user_role => :environment do
-      User.where(role: nil).each{|x| x.role=Role.find_by(name: 'default');x.save}
+    User.where(role: nil).each{|x| x.role=Role.find_by(name: 'default');x.save}
   end
 end
