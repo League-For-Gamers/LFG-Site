@@ -2,7 +2,7 @@ class UserController < ApplicationController
   before_action :set_user, only: [:show, :direct_message]
   skip_before_filter :set_current_user, only: [:my_account, :update, :direct_message]
   before_filter :set_current_user_with_includes, only: [:my_account, :update, :direct_message], if: :logged_in?
-  before_action :required_log_in, only: [:my_account, :search, :direct_message]
+  before_action :required_log_in, only: [:my_account, :search, :direct_message, :logout]
   before_action :required_logged_out, only: [:forgot_password, :forgot_password_check, :signup, :login]
 
   # GET /login
