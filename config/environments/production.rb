@@ -78,7 +78,7 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
   config.action_mailer.logger = nil # We do NOT want emails to be logged, this would reveal decrypted email addresses in the log.
 
-  config.action_controller.asset_host = ENV['ASSET_HOST']
+  config.action_controller.asset_host = "//#{ENV['ASSET_HOST']}"
 
   config.paperclip_defaults = {
     :storage => :s3,
