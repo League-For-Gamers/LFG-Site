@@ -18,6 +18,7 @@ class FeedController < ApplicationController
         from = (@page * per_page)
         @posts = Post.includes(:user, :bans).all.order("id DESC").limit(per_page).offset(from)
         @posts.unshift(Post.includes(:user).where(official: true).order("id DESC").first) if @page == 0
+        @posts = @posts.compact
         count = Post.count
         @num_of_pages = (count + per_page - 1) / per_page
       }
