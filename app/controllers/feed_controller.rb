@@ -91,7 +91,7 @@ class FeedController < ApplicationController
     render plain: "You do not have permission to delete this post", status: 403 and return unless logged_in?
     post = Post.find(params["id"])
     render plain: "You do not have permission to delete this post", status: 403 and return if (post.user_id != @current_user.id or !@current_user.has_permission? "can_edit_own_posts") and !@current_user.has_permission? "can_edit_all_users_posts"
-    post.delete
+    post.destroy
     render plain: "OK"
   end
 

@@ -9,4 +9,11 @@ class Post < ActiveRecord::Base
   before_validation do
     remove_zalgo! self.body
   end
+
+  before_destroy do
+    self.bans.each do |ban|
+      ban.post = nil
+      ban.save
+    end
+  end
 end
