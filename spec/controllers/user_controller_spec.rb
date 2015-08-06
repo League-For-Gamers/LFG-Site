@@ -231,6 +231,15 @@ RSpec.describe UserController, :type => :controller do
         expect(response).to redirect_to("/account")
       end
 
+      it "ignores empty entries" do
+        patch :update, user: {tags: ",apple,,   ,orange," }
+        expect(User.find(bobby.id).tags.count).to eql(2)
+        expect(User.find(bobby.id).tags).to include(Tag.find_by(name: "apple", user: bobby))
+        expect(User.find(bobby.id).tags).to include(Tag.find_by(name: "orange", user: bobby))
+        expect(assigns(:current_user).errors).to be_empty
+        expect(response).to redirect_to("/account")
+      end
+
     end
 
     it "throws an error on an invalid tag entry" do
