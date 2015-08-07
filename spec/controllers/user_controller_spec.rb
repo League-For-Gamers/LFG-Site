@@ -212,6 +212,45 @@ RSpec.describe UserController, :type => :controller do
       expect(response).to redirect_to("/account")
     end
 
+    context "more detailed tag inputs" do
+
+      it "successfully adds a tag, given many different white-space separators" do
+        patch :update, user: {tags: "apple,orange,   banana,  squash" }
+        expect(User.find(bobby.id).tags).to include(Tag.find_by(name: "apple", user: bobby))
+        expect(User.find(bobby.id).tags).to include(Tag.find_by(name: "orange", user: bobby))
+        expect(User.find(bobby.id).tags).to include(Tag.find_by(name: "banana", user: bobby))
+        expect(User.find(bobby.id).tags).to include(Tag.find_by(name: "squash", user: bobby))
+        expect(assigns(:current_user).errors).to be_empty
+        expect(response).to redirect_to("/account")
+      end
+
+      it "successfully adds a tag, given extra space on the right" do
+        patch :update, user: {tags: "apple  " }
+        expect(User.find(bobby.id).tags).to include(Tag.find_by(name: "apple", user: bobby))
+        expect(assigns(:current_user).errors).to be_empty
+        expect(response).to redirect_to("/account")
+      end
+
+      it "ignores empty entries" do
+        patch :update, user: {tags: ",apple,,   ,orange," }
+        expect(User.find(bobby.id).tags.count).to eql(2)
+        expect(User.find(bobby.id).tags).to include(Tag.find_by(name: "apple", user: bobby))
+        expect(User.find(bobby.id).tags).to include(Tag.find_by(name: "orange", user: bobby))
+        expect(assigns(:current_user).errors).to be_empty
+        expect(response).to redirect_to("/account")
+      end
+
+      it "treats new lines as separators" do
+        patch :update, user: {tags: "\n\r\napple\n\n\r\n\r\rorange\r\r\r\r\n\n\n\n" }
+        expect(User.find(bobby.id).tags.count).to eql(2)
+        expect(User.find(bobby.id).tags).to include(Tag.find_by(name: "apple", user: bobby))
+        expect(User.find(bobby.id).tags).to include(Tag.find_by(name: "orange", user: bobby))
+        expect(assigns(:current_user).errors).to be_empty
+        expect(response).to redirect_to("/account")
+      end
+
+    end
+
     it "throws an error on an invalid tag entry" do
       patch :update, user: {tags: "new tag" }
       expect(assigns(:current_user).errors).to_not be_empty
