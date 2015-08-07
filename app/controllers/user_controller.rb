@@ -111,7 +111,7 @@ class UserController < ApplicationController
 
     # Could probably be better.
     unless tag_params.blank?
-      tags = tag_params.split(/[,\n\r]/).map { |x| x.strip }.select { |x| x.present? }
+      tags = tag_params.split(/[,\n\r]/).map(&:strip).select(&:present?)
       tags.each do |tag|
         t = Tag.find_or_create_by(name: tag, user: @current_user)
         unless t.valid?
