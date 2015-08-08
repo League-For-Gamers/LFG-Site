@@ -110,8 +110,7 @@ class UserController < ApplicationController
     user_params.delete("tags")
 
     # Could probably be better.
-    unless tag_params.blank?
-      tags = tag_params.split(/[,\n\r]/).map(&:strip).select(&:present?)
+      tags = tag_params.to_s.split(/[,\n\r]/).map(&:strip).select(&:present?)
       tags.each do |tag|
         t = Tag.find_or_create_by(name: tag, user: @current_user)
         unless t.valid?
@@ -127,7 +126,7 @@ class UserController < ApplicationController
         tmp["_destroy"] = '1' unless tags.include? tag.name
         user_params["tags_attributes"]["#{user_params["tags_attributes"].length}"] = tmp
       end
-    end
+
     # Blank skills should be destroyed.
     user_params["skills_attributes"].each_with_index {|x, i| user_params["skills_attributes"]["#{i}"]["_destroy"] = '1' if x[1]["category"].empty? } unless user_params["skills_attributes"].blank?
     @current_user.assign_attributes(user_params)
