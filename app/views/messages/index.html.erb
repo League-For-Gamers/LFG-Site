@@ -1,23 +1,23 @@
 <% @chats.each do |chat| %>
-<div class="large-6 small-12 center text-card pad chat">
-  <a href="/messages/<%= chat.id %>">
-    <div class="users">Chat with:
-    <%= (chat.users - [@current_user]).map { |x| display_name x }.join(", ") %>
-    </div>
-    <div class="last-message message">
-      <div class="avatar-container">
-        <%= image_tag chat.private_messages.first.user.avatar.url(:thumb), class: "avatar" %>
+  <div class="large-6 small-12 center text-card pad chat">
+    <a href="/messages/<%= chat.id %>">
+      <div class="users">Chat with:
+      <%= (chat.users - [@current_user]).map { |x| display_name x }.join(", ") %>
       </div>
-      <p class="body">
-        <%= chat.private_messages.first.decrypted_body %>
-      </p>
-    </div>
-  </a>
-</div>
+      <div class="last-message message">
+        <div class="avatar-container">
+          <%= image_tag chat.private_messages.first.user.avatar.url(:thumb), class: "avatar" %>
+        </div>
+        <p class="body">
+          <%= chat.private_messages.first.decrypted_body %>
+        </p>
+      </div>
+    </a>
+  </div>
 <% end %>
 <% if @chats.empty? -%>
   <div class="large-6 small-12 center text-card pad">
-  <h2>No chats!</h2>
-  <p>You haven't been talking to anyone yet</p>
+    <h2>No chats!</h2>
+    <p>You haven't been talking to anyone yet</p>
   </div>
 <% end -%>

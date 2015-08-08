@@ -23,6 +23,7 @@
     <% end %>
   </div>
 <% end -%>
+<%# Message views should NEVER be cached. This defeats the encryption %>
 <div class="large-6 small-12 center text-card chat-card">
   <% @chat.private_messages.each do |message| %>
     <div class="message <%= "own" if message.user == @current_user %>">

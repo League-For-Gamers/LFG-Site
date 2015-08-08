@@ -1,8 +1,6 @@
 @import "foundation/functions";
 @import "mixins";
 
-
-
 .avatar-container {
     display: inline-block;
     margin: 0 auto;
@@ -77,6 +75,9 @@
             max-width: initial;
             float: none;
         }
+    }
+    &.unread {
+        background: scale-color($primary-darker-red, $lightness: 95%);
     }
     &:hover, &:focus {
         background: scale-color($primary-red, $lightness: 90%);

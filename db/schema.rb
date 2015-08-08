@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150723160833) do
+ActiveRecord::Schema.define(version: 20150808011333) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,8 +38,9 @@ ActiveRecord::Schema.define(version: 20150723160833) do
   end
 
   create_table "chats_users", id: false, force: :cascade do |t|
-    t.integer "chat_id", null: false
-    t.integer "user_id", null: false
+    t.integer  "chat_id",                     null: false
+    t.integer  "user_id",                     null: false
+    t.datetime "last_read", default: "now()"
   end
 
   add_index "chats_users", ["user_id", "chat_id"], name: "index_chats_users_on_user_id_and_chat_id", unique: true, using: :btree
@@ -156,6 +157,7 @@ ActiveRecord::Schema.define(version: 20150723160833) do
     t.string   "verification_digest"
     t.datetime "verification_active"
     t.string   "enc_key"
+    t.integer  "unread_count",        default: 0
   end
 
   add_index "users", ["role_id"], name: "index_users_on_role_id", using: :btree

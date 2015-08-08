@@ -14,7 +14,6 @@ gem 'bcrypt', '~> 3.1.7'
 ## Aftermarket rails
 gem 'pg', '0.18.2'
 gem 'pg_search'
-gem 'redcarpet'
 gem 'fog', '~> 1.32', require: 'fog/aws'
 gem 'asset_sync'
 gem 'redis-rails'
@@ -23,6 +22,7 @@ gem 'rails_autolink'
 # For env[] management
 gem 'figaro'
 gem 'httpclient'
+gem 'sucker_punch'
 
 # For S3 access
 gem 'paperclip'

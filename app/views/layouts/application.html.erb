@@ -46,7 +46,11 @@
       <% if !logged_in? %>
         <li><a href="/login">Login</a></li>
       <% else %>
-        <li><a href="/messages" title="Messages" class="icon-button messages-button"></a></li>
+        <li><a href="/messages" title="Messages" class="icon-button messages-button">
+          <% if @current_user.unread_count > 0 -%>
+            <span class="message-count"><%= @current_user.unread_count %></span>
+          <% end -%>
+        </a></li>
         <li><a href="/account" title="Settings" class="icon-button settings-button"></a></li>
         <li><a href="/user/<%= @current_user.username %>"><%= display_name(@current_user) %></a></li>
         <li><a href="/logout">Log Out</a></li>

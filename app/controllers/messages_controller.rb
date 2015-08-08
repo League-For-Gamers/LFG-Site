@@ -4,7 +4,8 @@ class MessagesController < ApplicationController
   
   # GET /messages
   def index
-    @chats = Chat.includes(:private_messages, :users).find_by_sql ["SELECT chats.* FROM chats_users INNER JOIN chats ON chats_users.chat_id = chats.id WHERE chats_users.user_id = ?", @current_user.id]
+    @chats = Chat.includes(:private_messages, :users).find_by_sql ["SELECT chats.*, chats_users.last_read FROM chats_users INNER JOIN chats ON chats_users.chat_id = chats.id WHERE chats_users.user_id = ?", @current_user.id]
+    @chats.sort! {|a,b| b.private_messages.first.created_at <=> a.private_messages.first.created_at} # Newest message takes precedent.
   end
 
   # GET /messages/new
@@ -42,6 +43,8 @@ class MessagesController < ApplicationController
   # GET /messages/:id
   def show
     set_title "Chat between #{@chat.users.map(&:username).join(", ")}"
+    MessageCountResolveJob.perform_later(@chat, @current_user, @chat.last_viewed(@current_user))
+    @chat.update_timestamp(@current_user.id)
   end
 
   # PUT /messages/:id
@@ -52,18 +55,23 @@ class MessagesController < ApplicationController
     respond_to do |format|
       if message.valid?
         message.save
+        MessageCountIncrementJob.perform_later(message)
         format.html { redirect_to "/messages/#{@chat.id}" }
         format.json { head :no_content }
       else
         format.html { 
           flash[:alert] = message.errors.full_messages.join("\n")
           set_title "Chat between #{@chat.users.map(&:username).join(", ")}"
-          render action: 'show' 
+          @chat.update_timestamp(@current_user.id)
+          render action: 'show'
         }
         format.json { render json: @current_user.errors, status: :unprocessable_entity }
       end
     end
   end
+
+  # TODO: Mark all as read button
+  # TODO: Infinite scrolling type loading. Don't load all messages at once.
 
   private
     def set_chat
