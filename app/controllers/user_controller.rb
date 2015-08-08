@@ -235,12 +235,10 @@ class UserController < ApplicationController
 
     def build_the_tag_attributes
       tags = user_params["tags"].to_s.split(/[,\n\r]/).map(&:strip).select(&:present?)
-      tags.each do |tag|
-        t = Tag.find_or_create_by(name: tag, user: @current_user)
-        unless t.valid?
-          t.errors.messages.each {|e| @current_user.errors.add("Tag", e[1][0]) }
-        end
-      end
+
+      tags.map    { |t| Tag.find_or_create_by(name: t, user: @current_user) }
+          .select { |t| t.invalid? }
+          .each   { |t| t.errors.messages.each { |e| @current_user.errors.add("Tag", e[1][0]) } }
 
       @current_user.tags.each_with_index.reduce({}) do |t, i|
         tag, index = i[0], i[1]
