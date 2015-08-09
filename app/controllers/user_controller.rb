@@ -104,30 +104,11 @@ class UserController < ApplicationController
     # Okay this is a wee bit dirty
     user_params = user_params()
     game_params = user_params["games"]
-    tag_params = user_params["tags"]
     user_params["display_name"] = nil if user_params["display_name"].blank?
     user_params.delete("games")
     user_params.delete("tags")
+    user_params["tags_attributes"] = build_the_tag_attributes
 
-    # Could probably be better.
-    unless tag_params.blank?
-      tags = tag_params.split(/[,\n\r]/).map(&:strip).select(&:present?)
-      tags.each do |tag|
-        t = Tag.find_or_create_by(name: tag, user: @current_user)
-        unless t.valid?
-          t.errors.messages.each {|e| @current_user.errors.add("Tag", e[1][0]) }
-        end
-      end
-      
-      user_params["tags_attributes"] = {}
-      @current_user.tags.each do |tag|
-        tmp = {}
-        tmp["id"] = tag.id
-        tmp["name"] = tag.name
-        tmp["_destroy"] = '1' unless tags.include? tag.name
-        user_params["tags_attributes"]["#{user_params["tags_attributes"].length}"] = tmp
-      end
-    end
     # Blank skills should be destroyed.
     user_params["skills_attributes"].each_with_index {|x, i| user_params["skills_attributes"]["#{i}"]["_destroy"] = '1' if x[1]["category"].empty? } unless user_params["skills_attributes"].blank?
     @current_user.assign_attributes(user_params)
@@ -250,5 +231,20 @@ class UserController < ApplicationController
                                    {games: :name}, 
                                    social: [:portfolio, :website, :link_facebook, :link_googleplus, :link_instagram, :link_linkedin, :link_twitter, :link_youtube],
                                    skills_attributes: [:id, :category, :confidence, :note])
+    end
+
+    def build_the_tag_attributes
+      tags = user_params["tags"].to_s.split(/[,\n\r]/).map(&:strip).select(&:present?)
+
+      tags.map    { |t| Tag.find_or_create_by(name: t, user: @current_user) }
+          .select { |t| t.invalid? }
+          .each   { |t| t.errors.messages.each { |e| @current_user.errors.add("Tag", e[1][0]) } }
+
+      @current_user.tags.each_with_index.reduce({}) do |t, i|
+        tag, index = i[0], i[1]
+        t.merge!("#{i}" => { 'id'       => tag.id,
+                             'name'     => tag.name,
+                             '_destroy' => tags.include?(tag.name) ? nil : '1' } )
+      end
     end
 end

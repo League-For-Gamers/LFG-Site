@@ -265,6 +265,25 @@ RSpec.describe UserController, :type => :controller do
       expect(assigns(:current_user).errors).to be_empty
       expect(response).to redirect_to("/account")
     end
+
+    it "successfully clears all tags if tag input is empty" do
+      old_tags = bobby.tags
+      bobby.tags << FactoryGirl.create(:tag, user: bobby)
+      patch :update, user: {tags: '' }
+      expect(User.find(bobby.id).tags).to be_empty
+      expect(assigns(:current_user).errors).to be_empty
+      expect(response).to redirect_to("/account")
+    end
+
+    it "successfully clears all tags if tag input is missing" do
+      old_tags = bobby.tags
+      bobby.tags << FactoryGirl.create(:tag, user: bobby)
+      patch :update, user: {tags: nil }
+      expect(User.find(bobby.id).tags).to be_empty
+      expect(assigns(:current_user).errors).to be_empty
+      expect(response).to redirect_to("/account")
+    end
+
     context "when changing the name of an entered game" do
       it "does not change the name of the game globally but creates a new entry" do
         bobby.games << FactoryGirl.create(:game, name: "newgame1")
