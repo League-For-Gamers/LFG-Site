@@ -10,6 +10,9 @@
         <div class="default-controls">
           <a class="edit-post">Edit</a>
           <a class="delete-post"></a>
+          <% if @current_user.has_permission? "can_ban_users" %> <!-- if current_user can ban users -->
+            <a class="ban-post" href="#" data-reveal-id="ban-post-modal"></a>
+          <% end %>
         </div>
       </div>
     <% end -%>
@@ -17,6 +20,7 @@
       <%= image_tag 'ui/official-shield.png', class: 'official-shield' %>
     <% end -%>
   </div>
+
   <div class="large-10 small-9 columns body">
     <span class="title"><%= link_to display_name(user), "/user/#{user.username}" -%></span>
     <p><%= replace_urls post.body -%></p>
@@ -29,4 +33,16 @@
     <% end %>
     <span class="time-ago"><%= post_time_ago(post) -%></span>
   </div>
+</div>
+
+
+
+<div id="ban-post-modal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+  <p class="lead">Zees persun. Zhey are beeink naughty</p>
+  <p>Please select the severity of the banhammer:</p>
+  <a href="#" class="button">48H</a>
+  <a href="#" class="button">1W</a>
+  <a href="#" class="button">4EVAH</a>
+  <%= text_field :ban, :reason, placeholder: "reason" %>
+  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>
