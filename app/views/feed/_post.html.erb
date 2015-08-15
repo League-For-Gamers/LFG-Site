@@ -23,11 +23,17 @@
 
   <div class="large-10 small-9 columns body">
     <span class="title"><%= link_to display_name(user), "/user/#{user.username}" -%></span>
-    <p><%= replace_urls post.body -%></p>
-    <% unless post.bans.empty? -%>
+    <% if post.bans.empty? %> <!-- if post is NOT banned -->
+      <p><%= replace_urls post.body -%></p> <!-- post is visible -->
+    <% else %> <!-- if post IS banned -->
+      <% if !@current_user.nil? and ((user == @current_user and @current_user.has_permission? "can_edit_own_posts") or @current_user.has_permission? "can_edit_all_users_posts") -%>
+        <p><%= replace_urls post.body -%></p> <!-- post is visible to ADMIN/MOD, or the poster -->
+      <% else %>
+        <p>(Message removed due to ban)</p> <!-- no one else can see banned post -->
+      <% end %>
       <div class="bans">
         <% post.bans.each do |ban| -%>
-          <p>User was banned for this post: <%= ban.reason %></p>
+          <p>User was banned for this post: <%= ban.reason %></p> <!-- everyone can see ban notice -->
         <% end -%>
       </div>
     <% end %>
