@@ -83,3 +83,9 @@
         background: scale-color($primary-red, $lightness: 90%);
     }
 }
+#loading-message p {
+    font-size: 20pt;
+    font-weight: 400;
+    font-style: italic;
+    text-align: center;
+}

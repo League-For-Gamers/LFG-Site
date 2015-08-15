@@ -25,14 +25,10 @@
 <% end -%>
 <%# Message views should NEVER be cached. This defeats the encryption %>
 <div class="large-6 small-12 center text-card chat-card">
-  <% @chat.private_messages.each do |message| %>
-    <div class="message <%= "own" if message.user == @current_user %>">
-      <div class="avatar-container">
-        <%= link_to image_tag(message.user.avatar.url(:thumb), class: "avatar"), "/user/#{message.user.username}" %>
-      </div>
-      <p class="body">
-        <%= message.decrypted_body %>
-      </p>
-    </div>
+  <% @messages.each do |message| %>
+    <%= render partial: "message", locals: {message: message} %>
   <% end %>
+</div>
+<div class="large-6 small-12 center text-card hidden" id="loading-message">
+  <p>Loading...</p>
 </div>

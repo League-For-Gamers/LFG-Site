@@ -1,5 +1,5 @@
 class MessagesController < ApplicationController
-  before_action :set_chat, only: [:show, :create_message]
+  before_action :set_chat, only: [:show, :older_messages, :new_messages, :create_message]
   before_action :required_log_in
   
   # GET /messages
@@ -42,9 +42,25 @@ class MessagesController < ApplicationController
 
   # GET /messages/:id
   def show
+    @messages = @chat.private_messages.offset(0).limit(25)
     set_title "Chat between #{@chat.users.map(&:username).join(", ")}"
     MessageCountResolveJob.perform_later(@chat, @current_user, @chat.last_viewed(@current_user))
     @chat.update_timestamp(@current_user.id)
+  end
+
+  # GET /messages/:id/newer
+  def new_messages
+    # This is a stupid workaround BUT IT WORKS SO WHO CARES
+    @messages = @chat.private_messages.where("created_at > timestamp with time zone ? + interval '1 second'", params[:timestamp]).limit(25)
+    MessageCountResolveJob.perform_later(@chat, @current_user, @chat.last_viewed(@current_user))
+    @chat.update_timestamp(@current_user.id)
+    render :raw_messages, layout: false
+  end
+
+  # GET /messages/:id/older
+  def older_messages
+    @messages = @chat.private_messages.where("created_at < ?", params[:timestamp]).limit(25)
+    render :raw_messages, layout: false
   end
 
   # PUT /messages/:id

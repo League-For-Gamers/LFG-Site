@@ -1,0 +1,8 @@
+<div class="message <%= "own" if message.user == @current_user %>" data-timestamp="<%= message.created_at %>">
+  <div class="avatar-container">
+    <%= link_to image_tag(message.user.avatar.url(:thumb), class: "avatar"), "/user/#{message.user.username}" %>
+  </div>
+  <p class="body">
+    <%= message.decrypted_body %>
+  </p>
+</div>

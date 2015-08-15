@@ -17,6 +17,8 @@ Rails.application.routes.draw do
     put '/', action: 'create_chat'
     get '/:id', action: 'show'
     put '/:id', action: 'create_message'
+    get '/:id/older', action: 'older_messages'
+    get '/:id/newer', action: 'new_messages'
   end
 
   namespace :feed, path: 'feed' do
