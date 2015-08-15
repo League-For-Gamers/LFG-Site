@@ -10,7 +10,7 @@
         <div class="default-controls">
           <a class="edit-post">Edit</a>
           <a class="delete-post"></a>
-          <% if @current_user.has_permission? "can_ban_users" %> <!-- if current_user can ban users -->
+          <% if @current_user.has_permission? "can_ban_users" %>
             <a class="ban-post" href="#" data-reveal-id="ban-post-modal"></a>
           <% end %>
         </div>
@@ -20,20 +20,19 @@
       <%= image_tag 'ui/official-shield.png', class: 'official-shield' %>
     <% end -%>
   </div>
-
   <div class="large-10 small-9 columns body">
     <span class="title"><%= link_to display_name(user), "/user/#{user.username}" -%></span>
-    <% if post.bans.empty? %> <!-- if post is NOT banned -->
-      <p><%= replace_urls post.body -%></p> <!-- post is visible -->
-    <% else %> <!-- if post IS banned -->
+    <% if post.bans.empty? %>
+      <p><%= replace_urls post.body -%></p>
+    <% else %>
       <% if !@current_user.nil? and ((user == @current_user and @current_user.has_permission? "can_edit_own_posts") or @current_user.has_permission? "can_edit_all_users_posts") -%>
-        <p><%= replace_urls post.body -%></p> <!-- post is visible to ADMIN/MOD, or the poster -->
+        <p><%= replace_urls post.body -%></p>
       <% else %>
-        <p>(Message removed due to ban)</p> <!-- no one else can see banned post -->
+        <p>(Message removed due to ban)</p>
       <% end %>
       <div class="bans">
         <% post.bans.each do |ban| -%>
-          <p>User was banned for this post: <%= ban.reason %></p> <!-- everyone can see ban notice -->
+          <p>User was banned for this post: <%= ban.reason %></p>
         <% end -%>
       </div>
     <% end %>
