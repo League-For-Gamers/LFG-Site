@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe MessagesController, type: :controller do
+  include ActiveJob::TestHelper
   let(:bobby) { FactoryGirl.create(:user)}
   let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
   let(:chat) { FactoryGirl.create(:chat, users: [bobby, admin_bobby])}
@@ -31,6 +32,27 @@ RSpec.describe MessagesController, type: :controller do
     it 'should throw a 404 when the chat ID doesnt exist' do
       get :show, id: "invalid_id"
       expect(response.status).to eq(404)
+    end
+  end
+
+  describe 'GET /messages/:id/newer' do
+    it 'should get messages newer than the last' do
+      2.times { FactoryGirl.create(:private_message, user: bobby, chat: chat) }
+      last_post = chat.private_messages.first
+      new_post = FactoryGirl.create(:private_message, user: admin_bobby, chat: chat, created_at: Time.now + 1.minute)
+      get :new_messages, id: chat.id, timestamp: last_post.created_at
+      expect(assigns(:messages)).to include(new_post)
+      expect(enqueued_jobs.size).to eq(1)
+    end
+  end
+
+  describe 'GET /messages/:id/older' do
+    it 'should get messages older than the first' do
+      10.times { FactoryGirl.create(:private_message, user: bobby, chat: chat) }
+      new_post = FactoryGirl.create(:private_message, user: admin_bobby, chat: chat, created_at: Time.now - 1.year)
+      last_post = chat.private_messages.last
+      get :older_messages, id: chat.id, timestamp: last_post.created_at
+      expect(assigns(:messages)).to include(new_post)
     end
   end
 

@@ -31,8 +31,8 @@
 @ff_browser = !!navigator.userAgent.match(/Firefox\/\d+/)
 
 $ ->
-	$(document).foundation()
-	$('input, textarea').placeholder()
-	Turbolinks.enableProgressBar()
-	Turbolinks.enableTransitionCache()
-	return
+  $(document).foundation()
+  $('input, textarea').placeholder()
+  Turbolinks.enableProgressBar()
+  Turbolinks.enableTransitionCache()
+  return

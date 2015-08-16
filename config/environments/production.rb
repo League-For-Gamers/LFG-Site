@@ -80,6 +80,8 @@ Rails.application.configure do
 
   config.action_controller.asset_host = "//#{ENV['ASSET_HOST']}"
 
+  config.active_job.queue_adapter = :sucker_punch
+
   config.paperclip_defaults = {
     :storage => :s3,
     :url => ":s3_alias_url",

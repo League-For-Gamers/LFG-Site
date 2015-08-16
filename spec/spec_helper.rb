@@ -25,6 +25,11 @@ RSpec.configure do |config|
     Rake::Task.define_task(:environment)
     Rake::Task["db:permission_migration"].invoke
   end
+
+  config.after(:each) do
+    ActiveJob::Base.queue_adapter.enqueued_jobs = []
+    ActiveJob::Base.queue_adapter.performed_jobs = []
+  end
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.
 =begin

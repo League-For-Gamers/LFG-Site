@@ -22,7 +22,7 @@ class Chat < ActiveRecord::Base
 
   def new_messages_count(user)
     # This can do with some optimization. A CTE can do this in one query.
-    self.private_messages.where('created_at > ?', self.last_viewed).where('user_id != ?', user.id).count
+    self.private_messages.where('created_at > ?', self.last_viewed(user)).where('user_id != ?', user.id).count
   end
 
   def new_messages_since(timestamp, user)

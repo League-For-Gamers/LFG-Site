@@ -2,90 +2,90 @@
 @import "mixins";
 
 .avatar-container {
-    display: inline-block;
-    margin: 0 auto;
-    border-radius: rem-calc(3);
-    background: white;
-    border: rem-calc(1) solid #c4c4c4;
-    text-align: center;
-    .avatar {
-        max-height: 100%;
-        max-width: 100%;
-        -webkit-filter: none;
-        filter: none;
-    }
+	display: inline-block;
+	margin: 0 auto;
+	border-radius: rem-calc(3);
+	background: white;
+	border: rem-calc(1) solid #c4c4c4;
+	text-align: center;
+	.avatar {
+		max-height: 100%;
+		max-width: 100%;
+		-webkit-filter: none;
+		filter: none;
+	}
 }
 .user-list {
-    text-align: center;
-    .avatar-container {
-        display: block;
-        height: rem-calc(64);
-        width: rem-calc(64);
-    }
+	text-align: center;
+	.avatar-container {
+		display: block;
+		height: rem-calc(64);
+		width: rem-calc(64);
+	}
 }
 .chat-card {
-    overflow: auto;
-    padding: 0 rem-calc(3);
+	overflow: auto;
+	padding: 0 rem-calc(3);
 }
 .message {
-    display: block;
-    float: left;
-    margin: rem-calc(2) 0;
-    width: 100%;
-    .avatar-container {
-        height: rem-calc(40);
-        width: rem-calc(40);
-        margin-right: rem-calc(3);
-        float: left;
-    }
-    .body {
-        display: inline-block;
-        min-height: rem-calc(40);
-        max-width: 45%;
-        float: left;
-        text-align: justify;
+	display: block;
+	float: left;
+	margin: rem-calc(2) 0;
+	width: 100%;
+	.avatar-container {
+		height: rem-calc(40);
+		width: rem-calc(40);
+		margin-right: rem-calc(3);
+		float: left;
+	}
+	.body {
+		display: inline-block;
+		min-height: rem-calc(40);
+		max-width: 45%;
+		float: left;
+		text-align: justify;
 
-        margin-bottom: 0;
-        padding: rem-calc(5);
+		margin-bottom: 0;
+		padding: rem-calc(5);
 
-        background-color: $primary-lighter-red;
-        color: $primary-cream;
-        border: rem-calc(1) solid scale-color($primary-lighter-red, $lightness: -14%);
-    }
-    &.own {
-        float: right;
-        .avatar-container {
-            margin-right: 0;
-            margin-left: rem-calc(3);
-            float: right;
-        }
-        .body {
-            float: right;
-            background-color: $primary-red;
-            border-color: scale-color($primary-red, $lightness: -14%);
-        }
-    }
+		background-color: $primary-lighter-red;
+		color: $primary-cream;
+		border: rem-calc(1) solid scale-color($primary-lighter-red, $lightness: -14%);
+	}
+	&.own {
+		float: right;
+		.avatar-container {
+			margin-right: 0;
+			margin-left: rem-calc(3);
+			float: right;
+		}
+		.body {
+			float: right;
+			background-color: $primary-red;
+			border-color: scale-color($primary-red, $lightness: -14%);
+		}
+	}
 }
 .chat {
-    background: $primary-cream;
-    overflow: auto;
-    .last-message.message {
-        .body {
-            display: table-cell;
-            max-width: initial;
-            float: none;
-        }
-    }
-    &.unread {
-        background: scale-color($primary-darker-red, $lightness: 95%);
-    }
-    &:hover, &:focus {
-        background: scale-color($primary-red, $lightness: 90%);
-    }
+	background: $primary-cream;
+	overflow: auto;
+	.last-message.message {
+		.body {
+			display: table-cell;
+			max-width: initial;
+			float: none;
+		}
+	}
+	&.unread {
+		background: scale-color($primary-darker-red, $lightness: 95%);
+	}
+	&:hover, &:focus {
+		background: scale-color($primary-red, $lightness: 90%);
+	}
 }
 #loading-message p {
-    font-size: 20pt;
-    font-weight: 400;
-    font-style: italic;
-    text-align: center;
+	font-size: 20pt;
+	font-weight: 400;
+	font-style: italic;
+	text-align: center;
 }
