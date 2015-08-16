@@ -22,14 +22,8 @@
   </div>
   <div class="large-10 small-9 columns body">
     <span class="title"><%= link_to display_name(user), "/user/#{user.username}" -%></span>
-    <% if post.bans.empty? %>
-      <p><%= replace_urls post.body -%></p>
-    <% else %>
-      <% if !@current_user.nil? and ((user == @current_user and @current_user.has_permission? "can_edit_own_posts") or @current_user.has_permission? "can_edit_all_users_posts") -%>
-        <p><%= replace_urls post.body -%></p>
-      <% else %>
-        <p>(Message removed due to ban)</p>
-      <% end %>
+    <p><%= replace_urls post.body -%></p>
+    <% unless post.bans.empty? -%>
       <div class="bans">
         <% post.bans.each do |ban| -%>
           <p>User was banned for this post: <%= ban.reason %></p>
