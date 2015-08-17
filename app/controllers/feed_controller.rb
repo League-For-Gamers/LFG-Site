@@ -1,5 +1,5 @@
 class FeedController < ApplicationController
-  before_action :set_post, only: [:show]
+  before_action :set_post, only: [:show, :ban]
   before_action :set_user, only: [:user_feed, :show]
   before_action :required_log_in, only: [:create]
 
@@ -111,9 +111,22 @@ class FeedController < ApplicationController
 
   def ban
     render plain: "You do not have permission to delete this post", status: 403 and return unless logged_in?
-    ban = Ban.new
     render plain: "You do not have permission to delete this post", status: 403 and return if !@current_user.has_permission? "can_ban_users"
-    
+    case params[:ban_duration]
+    when "1w"
+      duration = 1.week.from_now
+    when "48h"
+      duration = 48.hours.from_now
+    when "perm"
+      duration = nil
+    else
+      render plain: "Ban duration is unset or invalid", status: 403 and return
+    end
+    @post.user.ban(params[:reason], duration, @post)
+    respond_to do |format|
+      format.html { redirect_to request.referrer || root_url, notice: "User was banned" }
+      #render plain: "OK"
+    end
   end
 
   # POST /new_post

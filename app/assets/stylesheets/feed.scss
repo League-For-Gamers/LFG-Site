@@ -58,14 +58,6 @@
 				height: rem-calc(32);
 				vertical-align: bottom;
 			}
-			&.ban-post {
-				display: block;
-				text-align: center;
-				font-size: 10pt;
-				width: rem-calc(30);
-        height: rem-calc(32);
-				margin-top: rem-calc(5);
-			}
 		}
 		.edit-controls {
 			display: none;
@@ -148,15 +140,8 @@
 }
 #ban-post-modal {
   .button {
-    display: inline-block;
-    width: rem-calc(80);
-    height: rem-calc(30);
-    padding: 0;
     font-weight: 600;
     text-transform: uppercase;
-    color: white;
-    font-family: "Oswald",sans-serif;
-    font-size: 15pt;
     &:hover { background: #c93232; }
   }
 }

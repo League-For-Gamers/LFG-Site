@@ -79,3 +79,8 @@ $ ->
               Turbolinks.visit("/")
           error: (data) ->
             alert("An error occured deleting your post: #{data.statusText}")
+    Foundation.utils.S('.ban-user').click ->
+      global_parent = Foundation.utils.S(this).parent().parent()
+      id = global_parent.data("id")
+      modal = Foundation.utils.S('#ban-post-modal')
+      modal.find('#post_id').val(id)

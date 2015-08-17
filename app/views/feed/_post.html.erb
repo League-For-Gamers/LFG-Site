@@ -1,6 +1,9 @@
 <div class="streamPost text-card <%= 'official' if post.official -%>" id="post-<%= post.id %>" data-id="<%= post.id %>">
   <div class="large-2 small-3 columns user" data-id="<%= user.username %>">
     <%= link_to image_tag(user.avatar(:med), class: "avatar"), "/user/#{user.username}" %>
+    <% if @current_user.has_permission? "can_ban_users" %>
+      <a class="ban-user" data-reveal-id="ban-post-modal"></a>
+    <% end %>
     <% if !@current_user.nil? and ((user == @current_user and @current_user.has_permission? "can_edit_own_posts") or @current_user.has_permission? "can_edit_all_users_posts") -%>
       <div class="user-controls">
         <div class="edit-controls">
@@ -10,9 +13,6 @@
         <div class="default-controls">
           <a class="edit-post">Edit</a>
           <a class="delete-post"></a>
-          <% if @current_user.has_permission? "can_ban_users" %>
-            <a class="ban-post" href="#" data-reveal-id="ban-post-modal"></a>
-          <% end %>
         </div>
       </div>
     <% end -%>
@@ -32,24 +32,4 @@
     <% end %>
     <span class="time-ago"><%= post_time_ago(post) -%></span>
   </div>
-</div>
-
-<div id="ban-post-modal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-  <p class="lead">Zees persun. Zhey are beeink naughty</p>
-  <p>Please select the severity of the banhammer:</p>
-
-  <%= form_tag feed_ban_post_path, multipart: true do %>
-    <%= radio_button_tag(:ban_duration, "48h") %>
-    <%= label_tag(:ban_duration_48h, "48 hours") %>
-    <%= radio_button_tag(:ban_duration, "1w") %>
-    <%= label_tag(:ban_duration_1w, "1 week") %>
-    <%= radio_button_tag(:ban_duration, "perm") %>
-    <%= label_tag(:ban_duration_perm, "permanent") %>
-
-    <%= text_field "", :reason %>
-
-    <%= submit_tag "DROP ZE HAMMAH" %>
-  <% end %>
-
-  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>
