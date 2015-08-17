@@ -34,14 +34,22 @@
   </div>
 </div>
 
-
-
 <div id="ban-post-modal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
   <p class="lead">Zees persun. Zhey are beeink naughty</p>
   <p>Please select the severity of the banhammer:</p>
-  <a href="#" class="button">48H</a>
-  <a href="#" class="button">1W</a>
-  <a href="#" class="button">4EVAH</a>
-  <%= text_field :ban, :reason, placeholder: "reason" %>
+
+  <%= form_tag feed_ban_post_path, multipart: true do %>
+    <%= radio_button_tag(:ban_duration, "48h") %>
+    <%= label_tag(:ban_duration_48h, "48 hours") %>
+    <%= radio_button_tag(:ban_duration, "1w") %>
+    <%= label_tag(:ban_duration_1w, "1 week") %>
+    <%= radio_button_tag(:ban_duration, "perm") %>
+    <%= label_tag(:ban_duration_perm, "permanent") %>
+
+    <%= text_field "", :reason %>
+
+    <%= submit_tag "DROP ZE HAMMAH" %>
+  <% end %>
+
   <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>
