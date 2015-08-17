@@ -1,6 +1,10 @@
 @import "foundation/functions";
 @import "mixins";
 
+// I know what you're thinking, these should be one line, but browsers are assholes and refuse to work like that.
+::-moz-selection { background: $primary-lighter-red; }
+::selection { background: $primary-lighter-red; }
+
 html.turbolinks-progress-bar::before {
 	background-color: $primary-lighter-red !important;
 }
@@ -57,8 +61,6 @@ a {
 
 .alert-box {
 	position: absolute;
-	border-color: $primary-darker-red;
-	background-color: $primary-red;
 	width: 50%;
 	left: 0;
 	right: 0;
@@ -209,7 +211,7 @@ a {
 	.top-nav-bar {
 		ul {
 			line-height: 2.5;
-			font-size: 18pt;
+			font-size: 16pt;
 		}
 	}
 	.search {

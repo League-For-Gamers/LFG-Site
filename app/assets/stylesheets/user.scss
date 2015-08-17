@@ -279,6 +279,7 @@
 		}
 	}
 	.profile-card {
+		min-height: rem-calc(200);
 		&.settings-card {
 			&.bio-card {
 				.avatar {
@@ -287,6 +288,11 @@
 				.avatar-upload {
 					margin-bottom: 0;
 				}
+			}
+		}
+		&.bio-card {
+			p {
+				min-height: rem-calc(230);
 			}
 		}
 		&.skills-card {
