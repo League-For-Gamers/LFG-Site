@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     get '/user/:user_id', action: 'user_feed'
     get '/user/:user_id/:post_id', action: 'show'
     patch '/user/:user_id/:id', action: 'update'
+    patch 'ban_post', action: 'ban'
     delete '/user/:user_id/:id', action: 'delete'
   end
 

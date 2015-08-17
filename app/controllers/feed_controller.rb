@@ -95,7 +95,6 @@ class FeedController < ApplicationController
     render plain: "OK"
   end
 
-
   # PATCH /feed/user/:user_id/:post_id
   def update
     render json: {errors: {'0' => 'You do not have permission to delete this post'}}, status: 403 and return unless logged_in?
@@ -108,6 +107,13 @@ class FeedController < ApplicationController
     else
       render json: {errors: post.errors.full_messages}, status: :unprocessable_entity
     end
+  end
+
+  def ban
+    render plain: "You do not have permission to delete this post", status: 403 and return unless logged_in?
+    ban = Ban.new
+    render plain: "You do not have permission to delete this post", status: 403 and return if !@current_user.has_permission? "can_ban_users"
+    
   end
 
   # POST /new_post
