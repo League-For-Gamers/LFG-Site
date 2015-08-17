@@ -25,6 +25,9 @@
   <link rel="shortcut icon" href="/favicon.ico?v2" />
 </head>
 <body class="antialiased">
+  
+    
+  
   <% flash.each do |message_type, message| %>
     <div data-alert class="alert-box <%= message_type  %>">
       <%= message %>
@@ -42,9 +45,10 @@
         </form>
       </div>
     <% end %>
+    <% if !logged_in? %><div class="center lfg-form" id="login-form"><%= render "user/login" %></div><% end -%>
     <ul class="right">
       <% if !logged_in? %>
-        <li><a href="/login">Login</a></li>
+        <li><a href="/login" id="login-button">Login</a></li>
       <% else %>
         <li><a href="/messages" title="Messages" class="icon-button messages-button">
           <% if @current_user.unread_count > 0 -%>

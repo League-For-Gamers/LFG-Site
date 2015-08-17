@@ -1,27 +1,4 @@
-<div class="large-3 center lfg-form">
-  <%= form_tag("/login", method: "post") do %>
-    <% if flash[:alert] -%>
-      <div data-alert class="alert-box">
-      <%= flash[:alert] %>
-      </div>
-    <% end -%>
-    
-    <div class="small-12">
-      <h2>Login</h2>
-    </div>
-
-    <div class="small-12">
-      <%= text_field_tag :username, nil, { placeholder: "Username" } %>
-    </div>
-    <div class="small-12">
-      <%= password_field_tag :password, nil, { placeholder: "Password" }  %>
-    </div>
-    <div class="small-12">
-      <a href="/user/forgot_password">I forgot my password!</a>
-    </div>
-
-    <div class="small-12">
-      <%= submit_tag "Log In", class: "btn" %>
-    </div>
-  <% end -%>
+<div class="large-3 small-12 center lfg-form">
+  <h1>Log In</h1>
+  <%= render "user/login" %>
 </div>

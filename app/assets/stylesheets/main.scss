@@ -27,6 +27,34 @@ a {
 	}
 }
 
+#login-form {
+	display: none;
+	position: absolute;
+	z-index: 99998; // One below alert-box.
+	right: rem-calc(15);
+	top: rem-calc(86);
+	width: rem-calc(250);
+	border: rem-calc(1) solid $primary-darker-red;
+	background-color: $primary-cream;
+	padding: rem-calc(5);
+	.submit {
+		.btn {
+			width: 100%;
+		}
+	}
+	.forgot {
+		font-size: 8pt;
+		a {
+			color: $primary-red;
+		}
+	}
+}
+@media only screen and (max-width: 40em) {
+	#login-form {
+		width: 100%;
+	}
+}
+
 .alert-box {
 	position: absolute;
 	border-color: $primary-darker-red;
@@ -170,6 +198,10 @@ a {
 	.icon-button {
 		vertical-align: middle;
 	}
+	#login-form {
+		top: rem-calc(65);
+		right: rem-calc(5);
+	}
 	.top-nav-bar, .bottom-nav-bar {
 		height: rem-calc(65);
 		padding: 0 rem-calc(15);
@@ -213,6 +245,10 @@ a {
 @media only screen and (max-width: 51.875em) {
 	.main-logo {
 		width: rem-calc(160)
+	}
+	#login-form {
+		top: rem-calc(-20);
+		right: 0;
 	}
 	.top-nav-bar {
 		height: rem-calc(50);

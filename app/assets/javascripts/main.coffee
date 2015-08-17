@@ -11,3 +11,6 @@ $ ->
       node.text node.text().replace(/show/i, "Hide")
     else
       node.text node.text().replace(/hide/i, "Show")
+  $('#login-button').click (e) -> 
+    e.preventDefault()
+    $('#login-form').slideToggle(200);
