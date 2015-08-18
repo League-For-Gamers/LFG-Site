@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   
   get 'search', to: 'user#search'
 
+  get 'timeline', to: 'feed#timeline'
+
   namespace :messages, path: 'messages' do
     root action: 'index'
     # put '/new', action: 'new'

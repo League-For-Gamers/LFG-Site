@@ -1,5 +1,49 @@
+get_new_posts = (feed, url) ->
+  if window.location.pathname == url
+    latest_id = Foundation.utils.S('#feed-posts').children().first().data("id")
+    $.ajax
+      url: "/timeline"
+      type: 'GET'
+      dataType: 'html'
+      data: {'feed': feed, 'id': latest_id, 'direction': 'newer'}
+      complete: (data) ->
+        Foundation.utils.S('#feed-posts').prepend(data.responseText)
+        window.setTimeout(get_new_posts, 10000, feed, url)
+
 $ ->
   if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$/i)
+    loading_messages = false
+    end_of_stream = false
+    
+    if window.location.pathname.match(/^\/$/)
+      feed_type = "main"
+    else
+      feed_type = window.location.pathname.match(/^\/feed\/([\w\d\/]*)$/i)[1]
+
+    Foundation.utils.S(window).scroll ->
+      # Each browser seems to treat all the elements used in this differently.
+      # So, this is the only method that seems to work for all
+      if @ie_browser or @ff_browser
+        detected = document.documentElement.clientHeight + document.documentElement.scrollTop >= document.body.scrollHeight - 500
+      else
+        detected = window.innerHeight + document.body.scrollTop >= document.body.scrollHeight - 500
+
+      if detected and !end_of_stream and !loading_messages
+        loading_messages = true
+        Foundation.utils.S("#loading-message").show()
+        last_id = Foundation.utils.S('#feed-posts').children().last().data("id")
+        $.ajax
+          url: "/timeline"
+          type: 'GET'
+          dataType: 'html'
+          data: {'feed': feed_type, 'id': last_id, 'direction': 'older'}
+          complete: (data) ->
+            if data.responseText.length == 0
+              end_of_stream = true
+            Foundation.utils.S('#feed-posts').append(data.responseText)
+            loading_messages = false
+            Foundation.utils.S("#loading-message").hide()
+
     Foundation.utils.S('.edit-post').click ->
       # This is less terrible!
       # Why, jQuery. Why.
@@ -79,3 +123,5 @@ $ ->
               Turbolinks.visit("/")
           error: (data) ->
             alert("An error occured deleting your post: #{data.statusText}")
+
+    get_new_posts(feed_type, window.location.pathname)

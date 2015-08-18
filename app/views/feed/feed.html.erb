@@ -33,14 +33,9 @@
   </div>
 <% end -%>
 <div class="row">
-  <div class="large-6 small-12 center">
+  <div class="large-6 small-12 center" id="feed-posts">
     <% @posts.each do |post| -%>
       <%= render partial: "post", locals: {post: post, user: post.user} %>
     <% end -%>
-  </div>
-</div>
-<div class="row">
-  <div class="large-6 small-12 center">
-    <%= render(:partial => "shared/pagination", :locals => {:address_prefix => "/#{@query_string}", :number_of_pages => @num_of_pages, :current => @page}) %>
   </div>
 </div>
