@@ -23,6 +23,7 @@ class FeedController < ApplicationController
     end
   end
 
+  # This could probably be cleaner.
   # GET /timeline
   def timeline
     render plain: "Feed parameter is missing", status: 403 and return if params[:feed].blank?
