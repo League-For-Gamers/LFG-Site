@@ -6,9 +6,8 @@ class FeedController < ApplicationController
   # GET /
   def feed
     set_title "Feed"
-    #query = Post.connection.unprepared_statement { "((SELECT * FROM posts WHERE official) UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id})) as posts" }
-    #@posts = Post.includes(:user).from(query).order("created_at ASC")
-
+    # Good god...
+    query = Post.connection.unprepared_statement { "((SELECT * FROM posts WHERE official) UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id}) UNION (SELECT * FROM posts WHERE user_id IN (#{@current_user.follows.map(&:following_id).join(",")}))) as posts" }
     respond_to do |format|
       format.html {
         redirect_to '/signup' unless logged_in?
@@ -16,10 +15,10 @@ class FeedController < ApplicationController
         @page = 0 if @page < 0
         per_page = 30
         from = (@page * per_page)
-        @posts = Post.includes(:user, :bans).all.order("id DESC").limit(per_page).offset(from)
+        @posts = Post.includes(:user, :bans).from(query).order("id DESC").limit(per_page).offset(from)
         @posts.unshift(Post.includes(:user).where(official: true).order("id DESC").first) if @page == 0
         @posts = @posts.compact
-        count = Post.count
+        count = @posts.count
         @num_of_pages = (count + per_page - 1) / per_page
       }
       # No json currently, I want draper for when I do that.

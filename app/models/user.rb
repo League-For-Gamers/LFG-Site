@@ -20,6 +20,8 @@ class User < ActiveRecord::Base
   has_many :tags, dependent: :destroy
   has_many :posts, -> { order 'created_at ASC' }, dependent: :destroy
   has_many :bans, -> { order 'id DESC'}, dependent: :destroy
+  has_many :follows
+  has_many :followers, class_name: 'Follow', foreign_key: 'following_id'
 
   validates :username, :display_name, length: { maximum: 25 }
   validates_format_of :username, with: /\A([a-zA-Z](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.
@@ -113,6 +115,11 @@ class User < ActiveRecord::Base
     ban.save
     self.role = banned_role
     self.save
+  end
+
+  # Usage: user_that_current_user_wants_to_follow.follow(current_user)
+  def follow(user)
+    Follow.create(user: user, following: self)
   end
 
   private
