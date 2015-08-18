@@ -38,6 +38,7 @@ Rails.application.routes.draw do
     post '/forgot_password/:activation_id', action: 'reset_password_check'
     get ':id', action: 'show'
     get ':id/message', action: 'direct_message'
+    get ':id/follow', action: 'follow'
   end
 
   scope :ajax do

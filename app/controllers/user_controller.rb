@@ -1,5 +1,5 @@
 class UserController < ApplicationController
-  before_action :set_user, only: [:show, :direct_message]
+  before_action :set_user, only: [:show, :direct_message, :follow]
   skip_before_filter :set_current_user, only: [:my_account, :update, :direct_message]
   before_filter :set_current_user_with_includes, only: [:my_account, :update, :direct_message], if: :logged_in?
   before_action :required_log_in, only: [:my_account, :search, :direct_message, :logout]
@@ -134,6 +134,21 @@ class UserController < ApplicationController
   # GET /user/:id
   def show
     set_title @user.display_name || @user.username
+  end
+
+  # GET /user/:id/follow
+  def follow
+    render status: 403, plain: "Must be logged in" and return if @current_user.nil?
+    render status: 403, plain: "You cannot follow yourself" and return if @user == @current_user
+    if !@current_user.follows.map(&:following).include? @user
+      @user.follow(@current_user)
+    else
+      Follow.find_by(user: @current_user, following: @user).destroy
+    end
+    respond_to do |format|
+      format.html { redirect_to request.referrer || root_url }
+      format.json { render plain: "OK" }
+    end
   end
 
   # GET /search

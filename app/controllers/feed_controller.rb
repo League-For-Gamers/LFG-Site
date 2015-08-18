@@ -6,8 +6,7 @@ class FeedController < ApplicationController
   # GET /
   def feed
     set_title "Feed"
-    # Good god...
-    query = Post.connection.unprepared_statement { "((SELECT * FROM posts WHERE official) UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id}) UNION (SELECT * FROM posts WHERE user_id IN (#{@current_user.follows.map(&:following_id).join(",")}))) as posts" }
+    
     respond_to do |format|
       format.html {
         redirect_to '/signup' unless logged_in?
@@ -15,7 +14,7 @@ class FeedController < ApplicationController
         @page = 0 if @page < 0
         per_page = 30
         from = (@page * per_page)
-        @posts = Post.includes(:user, :bans).from(query).order("id DESC").limit(per_page).offset(from)
+        @posts = Post.includes(:user, :bans).from(build_main_feed_query).order("id DESC").limit(per_page).offset(from)
         @posts.unshift(Post.includes(:user).where(official: true).order("id DESC").first) if @page == 0
         @posts = @posts.compact
         count = @posts.count
@@ -139,5 +138,13 @@ class FeedController < ApplicationController
       rescue ActionController::RoutingError
         render :template => 'shared/not_found', :status => 404
       end
+    end
+
+    def build_main_feed_query
+      # Good god...
+      official_query = "(SELECT * FROM posts WHERE official)"
+      own_query = "UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id})"
+      following_query = "UNION (SELECT * FROM posts WHERE user_id IN (#{@current_user.follows.map(&:following_id).join(",")}))"
+      Post.connection.unprepared_statement { "(#{official_query} #{own_query} #{following_query if @current_user.follows.count > 0}) as posts" }
     end
 end
