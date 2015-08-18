@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   root 'feed#feed'
 
+  get 'feed.:format', to: 'feed#feed'
+
   get  'login', to: 'user#login'
   post 'login', to: 'user#login_check'
   get  'signup', to: 'user#signup'
@@ -23,7 +25,6 @@ Rails.application.routes.draw do
 
   namespace :feed, path: 'feed' do
     post 'new_post', action: 'create'
-    get '/main(.:format)', action: 'feed'
     get '/official', action: 'official_feed'
     get '/user/:user_id', action: 'user_feed'
     get '/user/:user_id/:post_id', action: 'show'

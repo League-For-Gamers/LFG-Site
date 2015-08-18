@@ -20,8 +20,8 @@ class User < ActiveRecord::Base
   has_many :tags, dependent: :destroy
   has_many :posts, -> { order 'created_at ASC' }, dependent: :destroy
   has_many :bans, -> { order 'id DESC'}, dependent: :destroy
-  has_many :follows
-  has_many :followers, class_name: 'Follow', foreign_key: 'following_id'
+  has_many :follows, dependent: :destroy
+  has_many :followers, class_name: 'Follow', foreign_key: 'following_id', dependent: :destroy
 
   validates :username, :display_name, length: { maximum: 25 }
   validates_format_of :username, with: /\A([a-zA-Z](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.

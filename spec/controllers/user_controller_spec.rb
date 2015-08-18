@@ -311,6 +311,46 @@ RSpec.describe UserController, :type => :controller do
     end
   end
 
+  describe "GET /user/:id/follow" do
+    let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
+    context 'when not logged in' do
+      it 'should result in a 403 error' do
+        get :follow, id: bobby.username
+        expect(response.status).to eq(403)
+      end
+    end
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+      end
+      context 'when trying to follow yourself' do
+        it 'should result in a 403 error' do
+          get :follow, id: bobby.username
+          expect(response.status).to eq(403)
+        end
+      end
+      context 'when the current user is not already following user' do
+        it 'should follow the user' do
+          get :follow, id: admin_bobby.username
+          expect(response).to redirect_to root_url
+          expect(User.find(bobby.id).follows.map(&:following)).to include(admin_bobby)
+          expect(User.find(admin_bobby.id).followers.map(&:user)).to include(bobby)
+        end
+      end
+      context 'when the current user is already following user' do
+        it 'should unfollow the user' do
+          FactoryGirl.create(:follow, user: bobby, following: admin_bobby)
+          expect(User.find(bobby.id).follows.map(&:following)).to include(admin_bobby)
+          expect(User.find(admin_bobby.id).followers.map(&:user)).to include(bobby)
+          get :follow, id: admin_bobby.username
+          expect(response).to redirect_to root_url
+          expect(User.find(bobby.id).follows.map(&:following)).to_not include(admin_bobby)
+          expect(User.find(admin_bobby.id).followers.map(&:user)).to_not include(bobby)
+        end
+      end
+    end
+  end
+
   describe "GET /search" do
     before do
       session[:user] = bobby.id

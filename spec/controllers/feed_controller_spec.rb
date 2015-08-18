@@ -2,11 +2,13 @@ require 'rails_helper'
 
 RSpec.describe FeedController, type: :controller do
   let(:bobby) { FactoryGirl.create(:user) }
-  describe "GET /feed/main" do
+  describe "GET /" do
     context "when not logged in" do
       it "redirects to signup page" do
         get :feed
         expect(response).to redirect_to('/signup')
+        get :feed, format: :rss
+        expect(response.status).to eq(403)
       end
     end
     context "when logged in" do
@@ -23,10 +25,10 @@ RSpec.describe FeedController, type: :controller do
         get :feed
         expect(assigns(:posts)).to include(bobby.posts.last)
       end
-    end
-    it "should respond to rss correctly" do
-      get :feed, format: :rss
-      expect(response).to render_template("feed/rss.html.erb")
+      it "should respond to rss correctly" do
+        get :feed, format: :rss
+        expect(response).to render_template("feed/rss.html.erb")
+      end
     end
   end
 

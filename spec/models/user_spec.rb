@@ -122,6 +122,15 @@ RSpec.describe User, :type => :model do
     end
   end
 
+  describe '#follow' do
+    let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
+    it 'should follow another user' do
+      admin_bobby.follow(bobby)
+      expect(User.find(bobby.id).follows.map(&:following)).to include(admin_bobby)
+      expect(User.find(admin_bobby.id).followers.map(&:user)).to include(bobby)
+    end
+  end
+
   describe '#ban' do
     let(:post) { FactoryGirl.create(:post, user: bobby) }
     it 'should ban the user' do

@@ -9,7 +9,7 @@ class FeedController < ApplicationController
     
     respond_to do |format|
       format.html {
-        redirect_to '/signup' unless logged_in?
+        redirect_to '/signup' and return unless logged_in?
         @page = params[:page].to_i
         @page = 0 if @page < 0
         per_page = 30
@@ -21,8 +21,9 @@ class FeedController < ApplicationController
         @num_of_pages = (count + per_page - 1) / per_page
       }
       # No json currently, I want draper for when I do that.
-      format.rss { 
-        @posts = Post.includes(:user, :bans).all.order("id DESC").limit(50)
+      format.rss {
+        render status: 403, plain: "Must be logged in to view personal RSS feed" and return unless logged_in?
+        @posts = Post.includes(:user, :bans).from(build_main_feed_query).order("id DESC").limit(50)
         @feed_url = "main.rss"
         @feed_source = ""
         render action: "rss.html.erb", content_type: "application/rss", layout: false
