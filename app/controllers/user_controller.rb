@@ -111,10 +111,8 @@ class UserController < ApplicationController
 
     # Blank skills should be destroyed.
     unless user_params["skills_attributes"].blank?
-      user_params["skills_attributes"].each_with_index do |x, i|
-        if x[1]["category"].empty?
-          user_params["skills_attributes"]["#{i}"]["_destroy"] = '1'
-        end
+      user_params['skills_attributes'].map { |x| x[1] }.each do |skill|
+        skill["_destroy"] = '1' if skill[:category].empty?
       end
     end
 

@@ -182,6 +182,7 @@ RSpec.describe UserController, :type => :controller do
       expect(assigns(:current_user).errors).to be_empty
       expect(bobby.skills.map {|x| [x.category, x.confidence]}).to include(["writing", 7])
     end
+
     it "removes a skill from the users list" do
       skill = Skill.new(category: :writing, confidence: 7) # Should probably use factory girl
       bobby.skills << skill
@@ -189,6 +190,22 @@ RSpec.describe UserController, :type => :controller do
       expect(response).to redirect_to("/account")
       expect(assigns(:current_user).errors).to be_empty
       expect(assigns(:current_user).skills.length).to eq(0) 
+    end
+
+    describe "more complicated skill management details" do
+      it "ignores empty lines that were created on the client side" do
+        skills_attributes = {
+                              "0"             => {"id"=>"", "category"=>"web_programming", "confidence"=>"2", "note"=>"", "test"=>"test"},
+                              "1440040946004" => {"id"=>"", "category"=>"", "confidence"=>"4", "note"=>"", "test"=>"test"},
+                              "1440040947354" => {"id"=>"", "category"=>"voice_acting/directing", "confidence"=>"8", "note"=>"", "test"=>"test"},
+                              "1440040948106" => {"id"=>"", "category"=>"", "confidence"=>"6", "note"=>"", "test"=>"test"}
+                            }
+        patch :update, user: { skills_attributes: skills_attributes }
+        results = bobby.skills.map {|x| [x.category, x.confidence]}
+        expect(results.count).to eql(2)
+        expect(results).to include(["web_programming", 2])
+        expect(results).to include(["voice_acting/directing", 8])
+      end
     end
 
     it "throws a errors with mismatched passwords" do
