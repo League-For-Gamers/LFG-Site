@@ -110,7 +110,12 @@ class UserController < ApplicationController
     user_params["tags_attributes"] = build_the_tag_attributes
 
     # Blank skills should be destroyed.
-    user_params["skills_attributes"].each_with_index {|x, i| user_params["skills_attributes"]["#{i}"]["_destroy"] = '1' if x[1]["category"].empty? } unless user_params["skills_attributes"].blank?
+    unless user_params["skills_attributes"].blank?
+      user_params['skills_attributes'].map { |x| x[1] }.each do |skill|
+        skill["_destroy"] = '1' if skill[:category].empty?
+      end
+    end
+
     @current_user.assign_attributes(user_params)
     # Fill out the game list of the user
     unless game_params.nil?
