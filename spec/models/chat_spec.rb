@@ -36,4 +36,12 @@ RSpec.describe Chat, type: :model do
       expect(chat.new_messages_since(Time.now - 5.minutes, bobby)).to eq(1)
     end
   end
+
+  context 'when a chat between two users already exists' do
+    it 'should throw a validation error' do
+      chat.save
+      newchat = FactoryGirl.build(:chat, users: [bobby, admin_bobby])
+      expect(newchat).to_not be_valid
+    end
+  end
 end

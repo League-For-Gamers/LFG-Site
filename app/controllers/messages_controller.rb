@@ -19,6 +19,10 @@ class MessagesController < ApplicationController
     message_params = params.require(:private_message).permit(:body, {user: :id})
     @users = User.find(message_params["user"].map { |x| x[1]["id"] })
     @users << @current_user
+
+    existing_chat = Chat.existing_chat?(@users.first, @users.last)
+    redirect_to "/messages/#{existing_chat.first.id}" and return unless existing_chat.empty?
+
     chat = Chat.new(users: @users)
     chat.save
     @message = PrivateMessage.new(chat: @chat, body: message_params["body"], user: @current_user)
