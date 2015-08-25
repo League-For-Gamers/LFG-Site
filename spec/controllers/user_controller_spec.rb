@@ -269,7 +269,7 @@ RSpec.describe UserController, :type => :controller do
     end
 
     it "throws an error on an invalid tag entry" do
-      patch :update, user: {tags: "new tag" }
+      patch :update, user: {tags: "new tag!!!!" }
       expect(assigns(:current_user).errors).to_not be_empty
       expect(response).to_not redirect_to("/account")
     end
