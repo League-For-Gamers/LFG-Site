@@ -16,5 +16,17 @@ RSpec.describe Tag, :type => :model do
     skill = FactoryGirl.build(:tag, name: "hash tag!!@@")
     expect(skill).to_not be_valid
   end
+
+  it "can have spaces" do
+    tag = FactoryGirl.build(:tag, name: 'voice acting')
+    expect(tag).to be_valid
+
+    tag.name = 'another one'
+    expect(tag).to be_valid
+
+    tag.name = 'ok give it up we got it'
+    expect(tag).to be_valid
+  end
+
 end
 
