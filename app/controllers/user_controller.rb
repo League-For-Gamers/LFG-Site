@@ -203,7 +203,7 @@ class UserController < ApplicationController
   def direct_message
     flash[:warning] = "You do not have permission to send messages" and redirect_to root_url and return unless @current_user.has_permission? "can_send_private_messages"
     # oh jesus this query.
-    existing_chat = Chat.existing_chat?(@current_user, @user)
+    existing_chat = Chat.existing_chat?([@current_user, @user])
     redirect_to "/messages/#{existing_chat.first.id}" and return unless existing_chat.empty?
     flash[:info] = "You can't send a message to yourself." and redirect_to root_url and return if @user == @current_user
     @users = [@user]

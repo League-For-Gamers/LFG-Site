@@ -31,14 +31,23 @@ class Chat < ActiveRecord::Base
     self.private_messages.where('created_at > ?', timestamp).where('user_id != ?', user.id).count
   end
 
-  def self.existing_chat?(user1, user2)
-    Chat.find_by_sql ["SELECT DISTINCT chats.* FROM chats, chats_users WHERE chats.id IN ( SELECT chat_id FROM chats_users WHERE chats_users.user_id = ? INTERSECT ALL SELECT chat_id FROM chats_users WHERE chats_users.user_id = ? EXCEPT SELECT chat_id FROM chats_users WHERE chats_users.user_id != ? AND chats_users.user_id != ?)", user1.id, user2.id, user1.id, user2.id]
+  def self.existing_chat?(users)
+    selection = ""
+    exception = "EXCEPT "
+    users.each_with_index do |user,i|
+      selection << "INTERSECT ALL " if i != 0
+      selection << "SELECT chat_id FROM chats_users WHERE chats_users.user_id = #{user.id} "
+      exception << "SELECT chat_id FROM chats_users WHERE " if i == 0
+      exception << "AND " if i != 0
+      exception << "chats_users.user_id != #{user.id} "
+    end
+    query = "SELECT DISTINCT chats.* FROM chats, chats_users WHERE chats.id IN ( #{selection} #{exception })"
+    Chat.find_by_sql [query]
   end
 
   private
-    # Currently doesn't scale to multi-user. Needs to be fixed.
     def validates_chat_user_uniqueness
-      return if Chat.existing_chat?(self.users.first, self.users.last).empty?
+      return if Chat.existing_chat?(self.users).empty?
       errors.add(:chat, "already exists") 
     end
 end

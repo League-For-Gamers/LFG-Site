@@ -20,7 +20,7 @@ class MessagesController < ApplicationController
     @users = User.find(message_params["user"].map { |x| x[1]["id"] })
     @users << @current_user
 
-    existing_chat = Chat.existing_chat?(@users.first, @users.last)
+    existing_chat = Chat.existing_chat?(@users)
     redirect_to "/messages/#{existing_chat.first.id}" and return unless existing_chat.empty?
 
     chat = Chat.new(users: @users)
