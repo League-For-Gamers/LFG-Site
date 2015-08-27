@@ -1,5 +1,5 @@
 get_new_messages = (id, url) ->
-  if url == window.location
+  if url == window.location.pathname
     latest_timestamp = Foundation.utils.S(".chat-card").children().first().data("timestamp")
     $.ajax
       url: "/messages/#{id}/newer"
@@ -7,7 +7,7 @@ get_new_messages = (id, url) ->
       dataType: 'html'
       data: {'timestamp': latest_timestamp}
       complete: (data) ->
-        if url == window.location
+        if url == window.location.pathname
           Foundation.utils.S(".chat-card").prepend(data.responseText)
           window.setTimeout(get_new_messages, 30000, id, url)
 
@@ -41,4 +41,4 @@ $ ->
             loading_messages = false
             Foundation.utils.S("#loading-message").hide()
 
-    get_new_messages(chat_id, window.location) 
+    get_new_messages(chat_id, window.location.pathname) 
