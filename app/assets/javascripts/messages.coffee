@@ -7,8 +7,9 @@ get_new_messages = (id, url) ->
       dataType: 'html'
       data: {'timestamp': latest_timestamp}
       complete: (data) ->
-        Foundation.utils.S(".chat-card").prepend(data.responseText)
-        window.setTimeout(get_new_messages, 30000, id, url)
+        if url == window.location
+          Foundation.utils.S(".chat-card").prepend(data.responseText)
+          window.setTimeout(get_new_messages, 30000, id, url)
 
 $ ->
   if window.location.pathname.match(/\/messages\/\d+/i)
