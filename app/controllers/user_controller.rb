@@ -45,7 +45,6 @@ class UserController < ApplicationController
 
   # GET /user/forgot_password/:activation_id
   def reset_password
-    # This could probably be done in a single query but ehhhhhh
     @user = User.find_by(verification_digest: params[:activation_id])
     @user = nil if @user.nil? or @user.verification_active < Time.now 
     render "reset_password_invalid" and return if @user.nil?
@@ -202,7 +201,6 @@ class UserController < ApplicationController
   # GET /user/:user_id/message
   def direct_message
     flash[:warning] = "You do not have permission to send messages" and redirect_to root_url and return unless @current_user.has_permission? "can_send_private_messages"
-    # oh jesus this query.
     existing_chat = Chat.existing_chat?([@current_user, @user])
     redirect_to "/messages/#{existing_chat.first.id}" and return unless existing_chat.empty?
     flash[:info] = "You can't send a message to yourself." and redirect_to root_url and return if @user == @current_user
@@ -233,9 +231,9 @@ class UserController < ApplicationController
 
     def user_params
       params.require(:user).permit(:old_password, :password, :password_confirmation, :bio, :display_name, :avatar, :tags, :skill_notes,
-                                   {games: :name}, 
-                                   social: [:portfolio, :website, :link_facebook, :link_googleplus, :link_instagram, :link_linkedin, :link_twitter, :link_youtube],
-                                   skills_attributes: [:id, :category, :confidence, :note])
+             {games: :name},
+             social: [:portfolio, :website, :link_facebook, :link_googleplus, :link_instagram, :link_linkedin, :link_twitter, :link_youtube],
+             skills_attributes: [:id, :category, :confidence, :note])
     end
 
     def build_the_tag_attributes

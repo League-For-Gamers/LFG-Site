@@ -24,7 +24,6 @@ RSpec.describe MessagesController, type: :controller do
       expect(assigns(:chat)).to eq(chat)
     end
     it 'should throw a 404 when the user does not belong in the chat' do
-      
       new_chat = FactoryGirl.create(:chat, users: [third_user, admin_bobby])
       get :show, id: new_chat.id
       expect(response.status).to eq(404)
@@ -64,11 +63,14 @@ RSpec.describe MessagesController, type: :controller do
     end
 
     it 'should reject the message if its invalid' do
+      new_post = FactoryGirl.create(:private_message, user: admin_bobby, chat: chat, created_at: Time.now)
       body = ""
       500.times { body << "test " }
       put :create_message, id: chat.id, private_message: { body: body }
       expect(response).to_not redirect_to("/messages/#{chat.id}")
       expect(flash[:alert]).to be_present
+      expect(assigns(:messages)).to be_present
+      expect(assigns(:messages).map(&:decrypted_body)).to_not include(body)
       expect(response).to render_template(:show)
     end
   end

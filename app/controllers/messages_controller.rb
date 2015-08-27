@@ -83,6 +83,7 @@ class MessagesController < ApplicationController
           flash[:alert] = message.errors.full_messages.join("\n")
           set_title "Chat between #{@chat.users.map(&:username).join(", ")}"
           @chat.update_timestamp(@current_user.id)
+          @messages = @chat.private_messages.offset(0).limit(25)
           render action: 'show'
         }
         format.json { render json: @current_user.errors, status: :unprocessable_entity }
