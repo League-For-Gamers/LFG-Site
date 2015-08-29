@@ -33,7 +33,8 @@ class MessagesController < ApplicationController
         format.html { redirect_to "/messages/#{chat.id}" }
         format.json { head :no_content }
       else
-        chat.delete
+        @message.body = @message.decrypted_body # If we don't do this, the message field on the template is filled with garbage.
+        chat.destroy
         @users = @users - [@current_user]
         format.html {
           flash[:alert] = @message.errors.full_messages.join("\n")
@@ -55,10 +56,14 @@ class MessagesController < ApplicationController
   # GET /messages/:id/newer
   def new_messages
     # This is a stupid workaround BUT IT WORKS SO WHO CARES
-    @messages = @chat.private_messages.where("created_at > timestamp with time zone ? + interval '1 second'", params[:timestamp]).limit(25)
-    MessageCountResolveJob.perform_later(@chat, @current_user, @chat.last_viewed(@current_user))
-    @chat.update_timestamp(@current_user.id)
-    render :raw_messages, layout: false
+    if !!params[:timestamp]
+      @messages = @chat.private_messages.where("created_at > timestamp with time zone ? + interval '1 second'", params[:timestamp]).limit(25)
+      MessageCountResolveJob.perform_later(@chat, @current_user, @chat.last_viewed(@current_user))
+      @chat.update_timestamp(@current_user.id)
+      render :raw_messages, layout: false
+    else
+      head :ok
+    end
   end
 
   # GET /messages/:id/older
@@ -92,7 +97,6 @@ class MessagesController < ApplicationController
   end
 
   # TODO: Mark all as read button
-  # TODO: Infinite scrolling type loading. Don't load all messages at once.
 
   private
     def set_chat
