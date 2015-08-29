@@ -5,6 +5,7 @@ class PrivateMessage < ActiveRecord::Base
   validates :user, :chat, :body, presence: true
   validates :decrypted_body, length: { maximum: 512 }
   validate :validates_user_authority
+  validate :duplicate_check
 
   before_save :encrypt_body
 
@@ -34,5 +35,10 @@ class PrivateMessage < ActiveRecord::Base
   private
     def validates_user_authority
       errors.add(:user, "is not part of the chat") unless self.chat.users.include? self.user
+    end
+
+    def duplicate_check
+      last = self.chat.private_messages.first
+      errors.add(:private_message, "is a duplicate") if self.decrypted_body == last.decrypted_body and (Time.now - last.created_at) < 15
     end
 end
