@@ -40,7 +40,7 @@ class PrivateMessage < ActiveRecord::Base
     def duplicate_check
       if self.chat.private_messages.count > 0 and !Rails.env.test?
         last = self.chat.private_messages.first
-        errors.add(:private_message, "is a duplicate") if self.decrypted_body == last.decrypted_body and (Time.now - last.created_at) < 15 and self != last
+        errors.add(:private_message, "is a duplicate") if self.decrypted_body == last.decrypted_body and (Time.now - last.created_at) < 15 and self != last and self.user == last.user
       end
     end
 end
