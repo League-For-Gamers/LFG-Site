@@ -153,9 +153,9 @@ class UserController < ApplicationController
       unless @query.blank?
         search = PgSearch.multisearch(@query).with_pg_search_rank
 
-        tag_search = search.map {|x| [x.searchable_id, x.rank] if x.searchable_type == "Tag"}.compact
+        tag_search = search.map {|x| [x.searchable_id, x.pg_search_rank] if x.searchable_type == "Tag"}.compact
         tag_list = Tag.includes(user: [:skills]).where(id: tag_search.map{|x|x[0]}).map{|x|x.user}
-        user_search = search.map {|x| [x.searchable_id, x.rank] if x.searchable_type == "User"}.compact
+        user_search = search.map {|x| [x.searchable_id, x.pg_search_rank] if x.searchable_type == "User"}.compact
         user_list = User.includes(:skills).where(id: user_search.map{|x|x[0]})
 
         user_list.each_with_index do |u,i|
