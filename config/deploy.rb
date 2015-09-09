@@ -52,6 +52,7 @@ namespace :deploy do
     on roles(:app) do
       upload! "config/database.#{fetch(:rails_env)}.yml", "#{shared_path}/config/database.yml"
       upload! "config/application.#{fetch(:rails_env)}.yml", "#{shared_path}/config/application.yml"
+      upload! "config/newrelic.yml", "#{shared_path}/config/newrelic.yml"
       upload! "config/s3cfg_file", "#{shared_path}/config/s3cfg_file"
       execute :sudo, "ln -nfs #{shared_path}/config/s3cfg_file /etc/s3cmd"
     end

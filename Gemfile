@@ -32,6 +32,7 @@ gem 'foundation-rails'
 
 group :staging, :production do
   gem 'puma'
+  gem 'newrelic_rpm'
 end
 
 group :development, :test do
