@@ -63,7 +63,7 @@
   </nav>
 
   <div class="main row">
-    <%= yield %>
+    <%= yield.force_encoding(Encoding::UTF_8) %>
   </div>
 
   <nav class="bottom-nav-bar">

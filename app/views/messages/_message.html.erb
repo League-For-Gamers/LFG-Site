@@ -3,6 +3,6 @@
     <%= link_to image_tag(message.user.avatar.url(:thumb), class: "avatar"), "/user/#{message.user.username}" %>
   </div>
   <p class="body">
-    <%= message.decrypted_body %>
+    <%= message.decrypted_body.force_encoding(Encoding::UTF_8) %>
   </p>
 </div>
