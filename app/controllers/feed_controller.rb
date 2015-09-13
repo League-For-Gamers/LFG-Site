@@ -121,7 +121,10 @@ class FeedController < ApplicationController
     end
     post_params["user"] = @current_user
     post = Post.create(post_params)
-    flash[:alert] = post.errors.full_messages.join("\n") unless post.valid?
+    unless post.valid?
+      flash[:last_body] = params[:body]
+      flash[:alert] = post.errors.full_messages.join("\n")
+    end
     redirect_to request.referrer || root_url
   end
 
