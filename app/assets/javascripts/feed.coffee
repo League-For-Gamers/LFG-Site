@@ -5,7 +5,7 @@ $ ->
   $('#body').keyup ->
     text_length = $('#body').val().length
     text_remaining = text_max - text_length
-    $('#body_feedback').html(text_remaining + ' characters remaining')
+    $('#body_feedback').html text_remaining
   $('#body').keyup()
 
   if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$/i)
