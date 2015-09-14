@@ -1,4 +1,13 @@
 $ ->
+  text_max = 512
+  $('#body_feedback').html(text_max + ' characters remaining')
+
+  $('#body').keyup ->
+    text_length = $('#body').val().length
+    text_remaining = text_max - text_length
+    $('#body_feedback').html(text_remaining + ' characters remaining')
+  $('#body').keyup()
+
   if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$/i)
     Foundation.utils.S('.edit-post').click ->
       # This is less terrible!
