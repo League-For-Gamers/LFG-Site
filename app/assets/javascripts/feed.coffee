@@ -1,15 +1,4 @@
 $ ->
-  $('textarea[maxlength]').each (_, item) ->
-    item = $(item)
-    text_max = parseInt item.attr('maxlength')
-    if $("##{item.attr('id')}_feedback").length == 1
-      feedback = ->
-        text_length = item.val().length
-        text_remaining = text_max - text_length
-        $("##{item.attr('id')}_feedback").html text_remaining
-      item.keyup feedback
-      feedback()
-
   if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$/i)
     Foundation.utils.S('.edit-post').click ->
       # This is less terrible!

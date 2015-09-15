@@ -14,3 +14,16 @@ $ ->
   $('#login-button').click (e) -> 
     e.preventDefault()
     $('#login-form').slideToggle(200);
+
+  # wire up the remaining characters
+  $('textarea[maxlength]').each (_, item) ->
+    item = $(item)
+    text_max = parseInt item.attr('maxlength')
+    if $("##{item.attr('id')}_feedback").length == 1
+      feedback = ->
+        text_length = item.val().length
+        text_remaining = text_max - text_length
+        $("##{item.attr('id')}_feedback").html text_remaining
+      item.keyup feedback
+      feedback()
+
