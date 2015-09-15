@@ -68,7 +68,7 @@ $ ->
           feedback = ->
             text_length = item.val().length
             text_remaining = text_max - text_length
-            $("##{item.attr('id')}_feedback").html text_remaining
+            $("##{item.attr('id')}_feedback").html "#{text_remaining} chars left"
           item.keyup feedback
           feedback()
 
