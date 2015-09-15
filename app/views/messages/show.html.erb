@@ -16,9 +16,9 @@
 <% if @current_user.has_permission? "can_send_private_messages" -%>
   <div class="large-6 small-12 center text-card pad lfg-form">
     <%= form_for PrivateMessage.new, url: {controller: "messages", action: "create_message" }, method: 'put' do |f| -%>
-      <label>New Message
-        <%= f.text_area "body", class: "quick-submit" %>
-      </label>
+      <label id="private_message_body_feedback" style="float:right"></label>
+      <label>New Message</label>
+      <%= f.text_area "body", class: "quick-submit", maxlength: "512" %>
       <input type="submit" class="btn small" value="Send" />
     <% end %>
   </div>
