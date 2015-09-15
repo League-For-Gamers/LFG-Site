@@ -5,6 +5,8 @@ $ ->
       # Why, jQuery. Why.
       t = Foundation.utils.S(this)
 
+      this_control = $(this)
+
       global_parent = Foundation.utils.S(this).parent().parent().parent().parent()
       id = global_parent.data("id")
       user_id = global_parent.find(".user").data("id")
@@ -30,7 +32,7 @@ $ ->
       original_html = post.html()
       text_height = post.height()
 
-      post.replaceWith $("<textarea class='edit-box'>#{original_text}</textarea>")
+      post.replaceWith $("<textarea id=\"#{this_control.attr('id')}\" maxlength=\"512\" class='edit-box'>#{original_text}</textarea>")
       text_area = global_parent.find("textarea")
       text_area.height text_height
       default_controls.hide()
@@ -57,6 +59,18 @@ $ ->
           error: (data) ->
             console.log data.responseJSON.errors.join("\n")
             alert("An error occured editing your post:\n#{data.responseJSON.errors.join("\n")}")
+#
+      # wire up the remaining characters
+      $('textarea[maxlength]').each (_, item) ->
+        item = $(item)
+        text_max = parseInt item.attr('maxlength')
+        if $("##{item.attr('id')}_feedback").length == 1
+          feedback = ->
+            text_length = item.val().length
+            text_remaining = text_max - text_length
+            $("##{item.attr('id')}_feedback").html text_remaining
+          item.keyup feedback
+          feedback()
 
     Foundation.utils.S('.delete-post').click ->
       global_parent = Foundation.utils.S(this).parent().parent().parent().parent()

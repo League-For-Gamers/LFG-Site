@@ -8,9 +8,10 @@
           <a class="cancel-post">Cancel</a>
         </div>
         <div class="default-controls">
-          <a class="edit-post">Edit</a>
+          <a class="edit-post" id="edit_post_<%= post.id %>">Edit</a>
           <a class="delete-post"></a>
         </div>
+        <div id="edit_post_<%= post.id %>_feedback"></div>
       </div>
     <% end -%>
     <% if post.official -%>
