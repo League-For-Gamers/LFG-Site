@@ -59,18 +59,8 @@ $ ->
           error: (data) ->
             console.log data.responseJSON.errors.join("\n")
             alert("An error occured editing your post:\n#{data.responseJSON.errors.join("\n")}")
-#
-      # wire up the remaining characters
-      $('textarea[maxlength]').each (_, item) ->
-        item = $(item)
-        text_max = parseInt item.attr('maxlength')
-        if $("##{item.attr('id')}_feedback").length == 1
-          feedback = ->
-            text_length = item.val().length
-            text_remaining = text_max - text_length
-            $("##{item.attr('id')}_feedback").html "#{text_remaining} chars left"
-          item.keyup feedback
-          feedback()
+
+      $.wire_up_the_remaining_characters()
 
     Foundation.utils.S('.delete-post').click ->
       global_parent = Foundation.utils.S(this).parent().parent().parent().parent()
