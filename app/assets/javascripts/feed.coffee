@@ -1,18 +1,11 @@
 $ ->
-  text_max = 512
-  $('#body_feedback').html(text_max + ' characters remaining')
-
-  $('#body').keyup ->
-    text_length = $('#body').val().length
-    text_remaining = text_max - text_length
-    $('#body_feedback').html(text_remaining + ' characters remaining')
-  $('#body').keyup()
-
   if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$/i)
     Foundation.utils.S('.edit-post').click ->
       # This is less terrible!
       # Why, jQuery. Why.
       t = Foundation.utils.S(this)
+
+      this_control = $(this)
 
       global_parent = Foundation.utils.S(this).parent().parent().parent().parent()
       id = global_parent.data("id")
@@ -39,7 +32,7 @@ $ ->
       original_html = post.html()
       text_height = post.height()
 
-      post.replaceWith $("<textarea class='edit-box'>#{original_text}</textarea>")
+      post.replaceWith $("<textarea id=\"#{this_control.attr('id')}\" maxlength=\"512\" class='edit-box'>#{original_text}</textarea>")
       text_area = global_parent.find("textarea")
       text_area.height text_height
       default_controls.hide()
@@ -66,6 +59,8 @@ $ ->
           error: (data) ->
             console.log data.responseJSON.errors.join("\n")
             alert("An error occured editing your post:\n#{data.responseJSON.errors.join("\n")}")
+
+      $.wire_up_the_remaining_characters()
 
     Foundation.utils.S('.delete-post').click ->
       global_parent = Foundation.utils.S(this).parent().parent().parent().parent()
