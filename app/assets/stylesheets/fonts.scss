@@ -3,7 +3,10 @@
   font-style: normal;
   font-weight: 300;
   src: font_url('Oswald-Light.eot');
-  src: font_url('Oswald-Light.eot?#iefix') format('embedded-opentype'),
+  src: local('Oswald'),
+       local('Oswald Light'),
+       local('Oswald-Light'),
+       font_url('Oswald-Light.eot?#iefix') format('embedded-opentype'),
        font_url('Oswald-Light.woff2') format('woff2'),
        font_url('Oswald-Light.woff') format('woff'),
        font_url('Oswald-Light.ttf') format('truetype'),
@@ -15,7 +18,10 @@
   font-style: normal;
   font-weight: 400;
   src: font_url('Oswald-Regular.eot');
-  src: font_url('Oswald-Regular.eot?#iefix') format('embedded-opentype'),
+  src: local('Oswald Regular Regular'),
+       local('Oswald Regular'),
+       local('Oswald-Regular'),
+       font_url('Oswald-Regular.eot?#iefix') format('embedded-opentype'),
        font_url('Oswald-Regular.woff2') format('woff2'),
        font_url('Oswald-Regular.woff') format('woff'),
        font_url('Oswald-Regular.ttf') format('truetype'),
@@ -26,7 +32,10 @@
   font-style: italic;
   font-weight: 400;
   src: font_url('Oswald-RegularItalic.eot');
-  src: font_url('Oswald-RegularItalic.eot?#iefix') format('embedded-opentype'),
+  src: local('Oswald'),
+       local('Oswald RegularItalic'),
+       local('Oswald-RegularItalic'),
+       font_url('Oswald-RegularItalic.eot?#iefix') format('embedded-opentype'),
        font_url('Oswald-RegularItalic.woff2') format('woff2'),
        font_url('Oswald-RegularItalic.woff') format('woff'),
        font_url('Oswald-RegularItalic.ttf') format('truetype'),
@@ -38,7 +47,10 @@
   font-style: normal;
   font-weight: 500;
   src: font_url('Oswald-Medium.eot');
-  src: font_url('Oswald-Medium.eot?#iefix') format('embedded-opentype'),
+  src: local('Oswald'),
+       local('Oswald Medium'),
+       local('Oswald-Medium'),
+       font_url('Oswald-Medium.eot?#iefix') format('embedded-opentype'),
        font_url('Oswald-Medium.woff2') format('woff2'),
        font_url('Oswald-Medium.woff') format('woff'),
        font_url('Oswald-Medium.ttf') format('truetype'),
@@ -50,7 +62,10 @@
   font-style: normal;
   font-weight: 600;
   src: font_url('Oswald-DemiBold.eot');
-  src: font_url('Oswald-DemiBold.eot?#iefix') format('embedded-opentype'),
+  src: local('Oswald'),
+       local('Oswald Demibold'),
+       local('Oswald-Demibold'),
+       font_url('Oswald-DemiBold.eot?#iefix') format('embedded-opentype'),
        font_url('Oswald-DemiBold.woff2') format('woff2'),
        font_url('Oswald-DemiBold.woff') format('woff'),
        font_url('Oswald-DemiBold.ttf') format('truetype'),
@@ -62,7 +77,10 @@
   font-style: italic;
   font-weight: 600;
   src: font_url('Oswald-Demi-BoldItalic.eot');
-  src: font_url('Oswald-Demi-BoldItalic.eot?#iefix') format('embedded-opentype'),
+  src: local('Oswald'),
+       local('Oswald Demi-BoldItalic'),
+       local('Oswald-Demi-BoldItalic'),
+       font_url('Oswald-Demi-BoldItalic.eot?#iefix') format('embedded-opentype'),
        font_url('Oswald-Demi-BoldItalic.woff2') format('woff2'),
        font_url('Oswald-Demi-BoldItalic.woff') format('woff'),
        font_url('Oswald-Demi-BoldItalic.ttf') format('truetype'),
@@ -74,9 +92,13 @@
   font-style: normal;
   font-weight: 700;
   src: font_url('Oswald-Bold.eot');
-  src: font_url('Oswald-Bold.eot?#iefix') format('embedded-opentype'),
+  src: local('Oswald'),
+       local('Oswald Bold'),
+       local('Oswald-Bold'),
+       font_url('Oswald-Bold.eot?#iefix') format('embedded-opentype'),
        font_url('Oswald-Bold.woff2') format('woff2'),
        font_url('Oswald-Bold.woff') format('woff'),
        font_url('Oswald-Bold.ttf') format('truetype'),
        font_url('Oswald-Bold.svg') format('svg');
 }
+  
