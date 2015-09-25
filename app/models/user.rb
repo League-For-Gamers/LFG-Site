@@ -22,7 +22,7 @@ class User < ActiveRecord::Base
   has_many :bans, -> { order 'id DESC'}, dependent: :destroy
 
   validates :username, :display_name, length: { maximum: 25 }
-  validates_format_of :username, with: /\A([a-zA-Z](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.
+  validates_format_of :username, with: /\A([a-zA-Z0-9_](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.
   validates :bio, length: { maximum: 512 }
   validates :decrypted_email, length: {maximum: 325}, on: :create # A bit over what should be the maximum, just incase.
   validates :hashed_email, uniqueness: true
