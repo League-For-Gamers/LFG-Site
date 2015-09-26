@@ -3,6 +3,9 @@
 #= require jquery.turbolinks
 #= require jquery_ujs
 #= require jquery-placeholder
+#= require jquery.ui.widget
+#= require jquery.iframe-transport
+#= require jquery.fileupload
 
 #= require foundation/foundation
 # require foundation/foundation.abide

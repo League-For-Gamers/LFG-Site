@@ -125,6 +125,10 @@ class FeedController < ApplicationController
     redirect_to request.referrer || root_url
   end
 
+  # POST /upload_photo
+  def upload_photo
+  end
+
   private
     def set_post
       begin
