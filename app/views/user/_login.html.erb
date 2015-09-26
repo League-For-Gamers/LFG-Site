@@ -13,7 +13,13 @@
   <div class="small-12 submit">
     <%= submit_tag "Log In", class: "btn" %>
   </div>
-  <div class="small-12 forgot">
+  <div class="small-6 colums left">
+    <label>
+      <input type="checkbox" name="remember">
+      Remember Me?
+    </label>
+  </div>
+  <div class="small-6 columns forgot right">
     <a href="/user/forgot_password">I forgot my password!</a>
   </div>
 <% end -%>

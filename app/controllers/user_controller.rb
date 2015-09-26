@@ -16,6 +16,7 @@ class UserController < ApplicationController
 
     unless user.nil? or !user # Nil if there's no results, false if failed authentication
       login_user(user)
+      remember_user(user, request) if !!login_params[:remember]
       redirect_to root_url
     else
       flash[:warning] = "Invalid username or password."
@@ -28,6 +29,7 @@ class UserController < ApplicationController
   def logout
     flash[:info] = "Successfully logged out"
     logout_user and redirect_to "/signup" and return
+    render plain: "" # You should never be able to get here but sometimes you can AND I DONT FUCKING KNOW WHY
   end
 
   # GET /user/forgot_password
@@ -222,7 +224,7 @@ class UserController < ApplicationController
     end
 
     def login_params
-      params.permit(:username, :password)
+      params.permit(:username, :password, :remember)
     end
 
     def signup_params

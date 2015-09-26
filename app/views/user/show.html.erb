@@ -4,7 +4,7 @@
       <div class="edit-section">
       </div>
     <% end %>
-    <%= image_tag @user.avatar.url(:med), class: "avatar" %>
+    <%= link_to image_tag(@user.avatar.url(:med), class: "avatar"), @user.avatar.url(:original), title: (@user.display_name || "@" + @user.username) %>
     <span class="title <%= "long" if display_name(@user).length > 18 %>"><%= display_name(@user) %></span>
     <p><%= replace_urls @user.bio %></p>
     <div class="bottom">
