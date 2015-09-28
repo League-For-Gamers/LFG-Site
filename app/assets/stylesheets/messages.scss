@@ -1,6 +1,15 @@
 @import "foundation/functions";
 @import "mixins";
 
+.body::selection {
+	color: $primary-lighter-red;
+	background-color: $primary-cream;
+}
+.body::-moz-selection {
+	color: $primary-lighter-red;
+	background-color: $primary-cream;
+}
+
 .avatar-container {
 	display: inline-block;
 	margin: 0 auto;
@@ -41,16 +50,17 @@
 	.body {
 		display: inline-block;
 		min-height: rem-calc(40);
-		max-width: 45%;
+		max-width: 75%;
 		float: left;
 		text-align: justify;
+		white-space: pre-wrap;
 
 		margin-bottom: 0;
-		padding: rem-calc(5);
+		padding: rem-calc(8) rem-calc(12);
 
-		background-color: $primary-lighter-red;
 		color: $primary-cream;
-		border: rem-calc(1) solid scale-color($primary-lighter-red, $lightness: -14%);
+		background-color: scale-color($primary-lighter-red, $lightness: -30%, $saturation: 0%);
+		border: rem-calc(2) solid scale-color($primary-lighter-red, $lightness: -30%, $saturation: 0%);
 	}
 	&.own {
 		float: right;
@@ -61,9 +71,13 @@
 		}
 		.body {
 			float: right;
-			background-color: $primary-red;
-			border-color: scale-color($primary-red, $lightness: -14%);
+			background-color: scale-color($primary-red, $lightness: -30%);
+			border-color: scale-color($primary-red, $lightness: -30%, $saturation: -0%);
 		}
+	}
+	&:selection {
+		background-color: #0F0;
+		color: #FFF;
 	}
 }
 .chat {
