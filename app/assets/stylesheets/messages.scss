@@ -2,12 +2,12 @@
 @import "mixins";
 
 .body::selection {
-	color:white;
-	background-color: scale-color($primary-lighter-red, $lightness: -35%);
+	color: $primary-lighter-red;
+	background-color: $primary-cream;
 }
 .body::-moz-selection {
-	color:white;
-	background-color: scale-color($primary-lighter-red, $lightness: -35%);
+	color: $primary-lighter-red;
+	background-color: $primary-cream;
 }
 
 .avatar-container {
@@ -56,11 +56,11 @@
 		white-space: pre-wrap;
 
 		margin-bottom: 0;
-		padding: rem-calc(5);
+		padding: rem-calc(8) rem-calc(12);
 
-		color: $primary-text;
-		background-color: scale-color($primary-red, $lightness: +90%, $saturation: -55%);
-		border: rem-calc(2) solid scale-color($primary-lighter-red, $lightness: 80%, $saturation: -55%);
+		color: $primary-cream;
+		background-color: scale-color($primary-lighter-red, $lightness: -30%, $saturation: 0%);
+		border: rem-calc(2) solid scale-color($primary-lighter-red, $lightness: -30%, $saturation: 0%);
 	}
 	&.own {
 		float: right;
@@ -71,9 +71,8 @@
 		}
 		.body {
 			float: right;
-			background-color: scale-color($primary-lighter-red, $lightness: +98.5%);
-			/*background-color: white;*/
-			border-color: scale-color($primary-lighter-red, $lightness: 85%, $saturation: -85%);
+			background-color: scale-color($primary-red, $lightness: -30%);
+			border-color: scale-color($primary-red, $lightness: -30%, $saturation: -0%);
 		}
 	}
 	&:selection {
