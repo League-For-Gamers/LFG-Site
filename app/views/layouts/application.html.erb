@@ -84,6 +84,10 @@
     <%= radio_button_tag(:ban_duration, "perm") %>
     <%= label_tag(:ban_duration_perm, "permanent") %>
 
+    <%= radio_button_tag(:ban_duration, "other") %>
+    <%= label_tag(:ban_duration_other, "other:") %>
+    <%= datetime_local_field_tag(:ban_duration_datepicker, 48.hours.from_now, min:Time.now ) %>
+
     <%= text_field "", :reason, required: true, placeholder: "reason for ban (required)" %>
 
     <%= submit_tag "DROP ZE HAMMAH", class: 'button small' %>

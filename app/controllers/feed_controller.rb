@@ -119,6 +119,8 @@ class FeedController < ApplicationController
       duration = 48.hours.from_now
     when "perm"
       duration = nil
+    when "other"
+      duration = params[:ban_duration_datepicker]
     else
       render plain: "Ban duration is unset or invalid", status: 403 and return
     end
@@ -148,7 +150,7 @@ class FeedController < ApplicationController
     def set_post
       begin
         @post = Post.includes(:user, :bans).find_by(id: params[:post_id]) or not_found
-      rescue ActionController::RoutingError 
+      rescue ActionController::RoutingError
         render :template => 'shared/not_found', :status => 404
       end
     end
