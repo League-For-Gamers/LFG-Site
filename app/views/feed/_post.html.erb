@@ -25,9 +25,12 @@
     <p><%= replace_urls post.body -%></p>
     <% unless post.bans.empty? -%>
       <div class="bans">
-        <% post.bans.each do |ban| -%>
-          <p title="Banned until <%= ban.end_date.nil? ? "heat death of universe." : ban.end_date %>">User was banned for this post: <%= ban.reason %></p>
-        <% end -%>
+        <p>User was banned for this post:</p>
+        <ul class="bans">
+          <% post.bans.each do |ban| -%>
+            <li title="Ban lifted at <%= ban.end_date.nil? ? "the end of time." : ban.end_date %>"><%= ban.reason %></li>
+          <% end -%>
+        </ul>
       </div>
     <% end %>
     <span class="time-ago"><%= post_time_ago(post) -%></span>
