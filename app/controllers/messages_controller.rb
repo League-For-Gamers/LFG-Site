@@ -1,6 +1,18 @@
 class MessagesController < ApplicationController
   before_action :set_chat, only: [:show, :older_messages, :new_messages, :create_message]
   before_action :required_log_in
+
+  # For some unexplained reason, there is a bleed in the errors on flash messages.
+  # To replicate, try sending these messages in quick succession to another user:
+  # TEST1 # (posts "TEST1" message)
+  # TEST1 # (duplicate error message shown, and the duplicate "TEST1" is not posted)
+  # TEST2 # (duplicate error message shown, and "TEST2" is posted)
+  #
+  # I do not know why, but "touching" flash in this way changes the behavior to:
+  # TEST1 # (posts "TEST1" message)
+  # TEST1 # (duplicate error message shown, and the duplicate "TEST1" is not posted)
+  # TEST2 # (posts "TEST1" message)
+  before_action { flash }
   
   # GET /messages
   def index
