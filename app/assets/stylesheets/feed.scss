@@ -16,11 +16,23 @@
 	}
 }
 
+#new-posts-button {
+	display: none;
+	text-align: center;
+	background-color: $primary-red;
+	color: $primary-cream;
+	padding: rem-calc(3) 0;
+	cursor: pointer;
+}
+
 .streamPost {
 	display: inline-block;
 	width: 100%;
 	min-height: rem-calc(235);
 	margin: rem-calc(10) 0;
+	&:first-child {
+		margin-top: rem-calc(25);
+	}
 	&.official {
 		border: rem-calc(4) solid $primary-red;
 	}

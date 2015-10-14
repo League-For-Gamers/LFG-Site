@@ -1,4 +1,5 @@
 $ ->
+  @original_title = Foundation.utils.S("title").text()
   $('.quick-submit').keydown (e) ->
     if e.ctrlKey and e.keyCode == 13
       $(this).closest("form").submit()

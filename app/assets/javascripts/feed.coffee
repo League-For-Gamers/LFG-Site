@@ -1,17 +1,30 @@
+new_posts = []
+latest_id = null
 get_new_posts = (feed, url) ->
   if window.location.pathname == url
-    latest_id = Foundation.utils.S('#feed-posts').children().first().data("id")
     $.ajax
       url: "/timeline"
       type: 'GET'
-      dataType: 'html'
+      dataType: 'json'
       data: {'feed': feed, 'id': latest_id, 'direction': 'newer'}
-      complete: (data) ->
-        Foundation.utils.S('#feed-posts').prepend(data.responseText)
+      success: (data) ->
+        #console.log "New post(s)."
+        latest_id = data.latest_id
+        new_posts = new_posts.concat(data.posts)
+        update_new_posts_button()
+      complete: (data) -> 
         window.setTimeout(get_new_posts, 10000, feed, url)
+
+update_new_posts_button = () ->
+  button = Foundation.utils.S("#new-posts-button")
+  Foundation.utils.S("#new-posts-button .num").text(new_posts.length)
+  Foundation.utils.S("title").text("(#{new_posts.length}) #{@original_title}")
+  if button.is(':hidden')
+    button.slideDown(200)
 
 $ ->
   if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$/i)
+    new_posts = []
     loading_messages = false
     end_of_stream = false
     
@@ -35,14 +48,14 @@ $ ->
         $.ajax
           url: "/timeline"
           type: 'GET'
-          dataType: 'html'
+          dataType: 'json'
           data: {'feed': feed_type, 'id': last_id, 'direction': 'older'}
-          complete: (data) ->
-            if data.responseText.length == 0
-              end_of_stream = true
-            Foundation.utils.S('#feed-posts').append(data.responseText)
+          success: (data) ->
+            Foundation.utils.S('#feed-posts').append(data.posts)
             loading_messages = false
             Foundation.utils.S("#loading-message").hide()
+          failure: (data) ->
+            end_of_stream = true
 
     Foundation.utils.S('.edit-post').click ->
       # This is less terrible!
@@ -124,4 +137,14 @@ $ ->
           error: (data) ->
             alert("An error occured deleting your post: #{data.statusText}")
 
+    latest_id = Foundation.utils.S('#feed-posts').children().first().data("id")
     get_new_posts(feed_type, window.location.pathname)
+
+    Foundation.utils.S('#new-posts-button').click ->
+      Foundation.utils.S(this).hide()
+      Foundation.utils.S('title').text(original_title)
+      posts = new_posts
+      new_posts = []
+      for post in posts # Why does the 'do' have to be a on a newline? wtf coffeescript?
+        do ->
+          Foundation.utils.S('#feed-posts').prepend(post)

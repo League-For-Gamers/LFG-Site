@@ -27,7 +27,7 @@ class FeedController < ApplicationController
   # GET /timeline
   def timeline
     render plain: "Feed parameter is missing", status: 403 and return if params[:feed].blank?
-    render plain: "ID paramteter is missing", status: 403 and return if params[:id].blank?
+    render plain: "ID parameter is missing", status: 403 and return if params[:id].blank?
     render plain: "Direction paramteter is missing", status: 403 and return if params[:direction].blank?
     case params[:direction]
     when "older"
@@ -35,6 +35,11 @@ class FeedController < ApplicationController
       when "main"
         render plain: "Must be logged in to view feed", status: 403 and return unless logged_in?
         generate_personal_feed_posts(30, { last_id: params[:id] })
+      when "official"
+        @posts = Post.where("official = ?", true).where("id < ?", params[:id]).includes(:user, :bans).limit(30).order("id DESC")
+      when /user\/([\w\d\/]*)/i
+        user = User.includes(:posts).where("lower(username) = ?", $1.downcase).first or (render plain: "Cannot find user", status: 404 and return)
+        @posts = Post.where("user_id = ?", user.id).where("id < ?", params[:id]).limit(30).order("id DESC").includes(:user, :bans)
       else
         render plain: "Invalid feed parameter", status: 403 and return
       end
@@ -43,13 +48,27 @@ class FeedController < ApplicationController
       when "main"
         render plain: "Must be logged in to view feed", status: 403 and return unless logged_in?
         generate_personal_feed_posts(0, { latest_id: params[:id] })
+      when "official"
+        @posts = Post.where("official = ?", true).where("id > ?", params[:id]).includes(:user, :bans).order("id DESC")
+      when /user\/([\w\d\/]*)/i
+        user = User.includes(:posts).where("lower(username) = ?", $1.downcase).first or (render plain: "Cannot find user", status: 404 and return)
+        @posts = Post.where("user_id = ?", user.id).where("id > ?", params[:id]).order("id DESC").includes(:user, :bans)
       else
         render plain: "Invalid feed parameter", status: 403 and return
       end
     else
       render plain: "Invalid direction parameter", status: 403 and return
     end
-    render :raw_posts, layout: false
+    posts = []
+    @posts.each do |post|
+      posts << render_to_string(partial: "post", locals: {post: post, user: post.user})
+    end
+    if posts.empty?
+      render nothing: true
+    else
+      render json: {latest_id: @posts.first.id, posts: posts.reverse}
+    end
+    #render :raw_posts, layout: false
   end
 
   # GET /feed/user/:user_id
@@ -62,8 +81,6 @@ class FeedController < ApplicationController
         per_page = 30
         from = (@page * per_page)
         @posts = Post.where("user_id = ?", @user.id).includes(:user, :bans).order("id DESC").limit(per_page).offset(from)
-        count = @user.posts.count
-        @num_of_pages = (count + per_page - 1) / per_page
       }
       # No json currently, I want draper for when I do that.
       format.rss {
@@ -85,8 +102,6 @@ class FeedController < ApplicationController
         per_page = 30
         from = (@page * per_page)
         @posts = Post.where("official = ?", true).includes(:user, :bans).order("id DESC").limit(per_page).offset(from)
-        count = Post.where("official = ?", true).count
-        @num_of_pages = (count + per_page - 1) / per_page
       }
       # No json currently, I want draper for when I do that.
       format.rss { 
