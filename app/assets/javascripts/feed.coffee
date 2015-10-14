@@ -53,7 +53,10 @@ $ ->
           dataType: 'json'
           data: {'feed': feed_type, 'id': last_id, 'direction': 'older'}
           success: (data) ->
-            Foundation.utils.S('#feed-posts').append(data.posts)
+            for post in data.posts
+              do ->
+                Foundation.utils.S('#feed-posts').append(post)
+                Foundation.utils.S(".time-ago a").last().timeago()
             loading_messages = false
             Foundation.utils.S("#loading-message").hide()
           failure: (data) ->
