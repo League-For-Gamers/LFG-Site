@@ -22,6 +22,8 @@ class User < ActiveRecord::Base
   has_many :bans, -> { order 'id DESC'}, dependent: :destroy
   has_many :follows, dependent: :destroy
   has_many :followers, class_name: 'Follow', foreign_key: 'following_id', dependent: :destroy
+  has_many :group_memberships
+  has_many :groups, through: :group_memberships
 
   validates :username, :display_name, length: { maximum: 25 }
   validates_format_of :username, with: /\A([a-zA-Z](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.

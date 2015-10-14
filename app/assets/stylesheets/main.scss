@@ -147,12 +147,13 @@ a {
 }
 
 .top-nav-bar, .bottom-nav-bar {
-	padding: 0 rem-calc(25);
+	padding: 0 rem-calc(15);
 	ul {
 		line-height: 1.95;
 		font-size: 12pt;
 		font-style: italic;
 		text-transform: uppercase;
+		margin: 0;
 		li {
 			display: inline-block;
 			list-style: none;

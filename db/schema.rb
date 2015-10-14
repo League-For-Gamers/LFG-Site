@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150818124010) do
+ActiveRecord::Schema.define(version: 20151014211332) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -74,6 +74,33 @@ ActiveRecord::Schema.define(version: 20150818124010) do
 
   add_index "games_users", ["user_id", "game_id"], name: "index_games_users_on_user_id_and_game_id", unique: true, using: :btree
 
+  create_table "group_memberships", force: :cascade do |t|
+    t.integer  "group_id"
+    t.integer  "user_id"
+    t.integer  "role",                       null: false
+    t.boolean  "verified",   default: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "group_memberships", ["group_id"], name: "index_group_memberships_on_group_id", using: :btree
+  add_index "group_memberships", ["user_id"], name: "index_group_memberships_on_user_id", using: :btree
+
+  create_table "groups", force: :cascade do |t|
+    t.string   "title",               limit: 100,              null: false
+    t.string   "slug",                limit: 100,              null: false
+    t.string   "description",         limit: 1000
+    t.integer  "privacy",                          default: 0, null: false
+    t.integer  "comment_privacy",                  default: 0, null: false
+    t.integer  "membership",                       default: 0, null: false
+    t.string   "banner_file_name"
+    t.string   "banner_content_type"
+    t.integer  "banner_file_size"
+    t.datetime "banner_updated_at"
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
+  end
+
   create_table "permissions", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at", null: false
@@ -103,8 +130,11 @@ ActiveRecord::Schema.define(version: 20150818124010) do
     t.boolean  "official"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "group_id"
+    t.boolean  "pinned"
   end
 
+  add_index "posts", ["group_id"], name: "index_posts_on_group_id", using: :btree
   add_index "posts", ["user_id"], name: "index_posts_on_user_id", using: :btree
 
   create_table "private_messages", force: :cascade do |t|
@@ -176,6 +206,9 @@ ActiveRecord::Schema.define(version: 20150818124010) do
   add_foreign_key "bans", "users"
   add_foreign_key "follows", "users"
   add_foreign_key "follows", "users", column: "following_id"
+  add_foreign_key "group_memberships", "groups"
+  add_foreign_key "group_memberships", "users"
+  add_foreign_key "posts", "groups"
   add_foreign_key "posts", "users"
   add_foreign_key "private_messages", "chats"
   add_foreign_key "private_messages", "users"

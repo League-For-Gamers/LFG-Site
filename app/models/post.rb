@@ -1,6 +1,7 @@
 class Post < ActiveRecord::Base
   include Postable
   belongs_to :user
+  belongs_to :group
 
   validates :body, length: { maximum: 512 }
   validates :user, :body, presence: true
