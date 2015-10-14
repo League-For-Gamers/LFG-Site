@@ -27,6 +27,8 @@ $ ->
     new_posts = []
     loading_messages = false
     end_of_stream = false
+
+    Foundation.utils.S(".time-ago a").timeago()
     
     if window.location.pathname.match(/^\/$/)
       feed_type = "main"
@@ -148,3 +150,4 @@ $ ->
       for post in posts # Why does the 'do' have to be a on a newline? wtf coffeescript?
         do ->
           Foundation.utils.S('#feed-posts').prepend(post)
+          Foundation.utils.S(".time-ago a").first().timeago()

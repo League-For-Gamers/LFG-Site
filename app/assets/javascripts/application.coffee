@@ -5,6 +5,7 @@
 #= require jquery.turbolinks
 #= require jquery_ujs
 #= require jquery-placeholder
+#= require jquery.timeago
 
 #= require foundation/foundation
 # require foundation/foundation.abide
