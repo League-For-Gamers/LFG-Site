@@ -14,7 +14,7 @@ class Group < ActiveRecord::Base
 
   has_many :group_memberships
   has_many :users, through: :group_memberships
-  has_many :posts
+  has_many :posts, -> { order 'created_at DESC' }, dependent: :destroy
 
   validates :title, :slug, uniqueness: {case_sensitive: false}, length: { maximum: 100 }
   validates :description, allow_blank: true, allow_nil: true, length: { maximum: 1000 }

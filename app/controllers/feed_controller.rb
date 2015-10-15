@@ -36,10 +36,13 @@ class FeedController < ApplicationController
         render plain: "Must be logged in to view feed", status: 403 and return unless logged_in?
         generate_personal_feed_posts(30, { last_id: params[:id] })
       when "official"
-        @posts = Post.where("official = ?", true).where("id < ?", params[:id]).includes(:user, :bans).limit(30).order("id DESC")
+        @posts = Post.where("official = ?", true).where("id < ?", params[:id]).where("group_id IS NULL").includes(:user, :bans).limit(30).order("id DESC")
       when /user\/([\w\d\/]*)/i
         user = User.includes(:posts).where("lower(username) = ?", $1.downcase).first or (render plain: "Cannot find user", status: 404 and return)
         @posts = Post.where("user_id = ?", user.id).where("id < ?", params[:id]).limit(30).order("id DESC").includes(:user, :bans)
+      when /group\/([\w\d]*)/i
+        group = Group.includes(:users, :posts).find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
+        @posts = group.posts.where("id < ?", params[:id]).limit(30).order("id DESC").includes(:user, :bans)
       else
         render plain: "Invalid feed parameter", status: 403 and return
       end
@@ -49,10 +52,13 @@ class FeedController < ApplicationController
         render plain: "Must be logged in to view feed", status: 403 and return unless logged_in?
         generate_personal_feed_posts(0, { latest_id: params[:id] })
       when "official"
-        @posts = Post.where("official = ?", true).where("id > ?", params[:id]).includes(:user, :bans).order("id DESC")
+        @posts = Post.where("official = ?", true).where("id > ?", params[:id]).where("group_id IS NULL").includes(:user, :bans).order("id DESC")
       when /user\/([\w\d\/]*)/i
         user = User.includes(:posts).where("lower(username) = ?", $1.downcase).first or (render plain: "Cannot find user", status: 404 and return)
         @posts = Post.where("user_id = ?", user.id).where("id > ?", params[:id]).order("id DESC").includes(:user, :bans)
+      when /group\/([\w\d]*)/i
+        group = Group.includes(:users, :posts).find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
+        @posts = group.posts.where("id > ?", params[:id]).order("id DESC").includes(:user, :bans)
       else
         render plain: "Invalid feed parameter", status: 403 and return
       end
@@ -101,11 +107,11 @@ class FeedController < ApplicationController
         @page = 0 if @page < 0
         per_page = 30
         from = (@page * per_page)
-        @posts = Post.where("official = ?", true).includes(:user, :bans).order("id DESC").limit(per_page).offset(from)
+        @posts = Post.where("official = ?", true).where("group_id IS NULL").includes(:user, :bans).order("id DESC").limit(per_page).offset(from)
       }
       # No json currently, I want draper for when I do that.
       format.rss { 
-        @posts = Post.where("official = ?", true).includes(:user, :bans).order("id DESC").limit(50)
+        @posts = Post.where("official = ?", true).where("group_id IS NULL").includes(:user, :bans).order("id DESC").limit(50)
         @feed_url = "official.rss"
         @feed_source = "official"
         render action: "rss.html.erb", content_type: "application/rss", layout: false
@@ -179,9 +185,9 @@ class FeedController < ApplicationController
 
     def build_main_feed_query
       # Good god...
-      official_query = "(SELECT * FROM posts WHERE official)"
-      own_query = "UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id})"
-      following_query = "UNION (SELECT * FROM posts WHERE user_id IN (#{@current_user.follows.map(&:following_id).join(",")}))"
+      official_query = "(SELECT * FROM posts WHERE official AND group_id IS NULL)"
+      own_query = "UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id} AND group_id IS NULL)"
+      following_query = "UNION (SELECT * FROM posts WHERE user_id IN (#{@current_user.follows.map(&:following_id).join(",")}) AND group_id IS NULL)"
 
       Post.connection.unprepared_statement { "(#{official_query} #{own_query} #{following_query if @current_user.follows.count > 0}) as posts" }
     end

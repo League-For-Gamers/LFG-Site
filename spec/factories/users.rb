@@ -22,6 +22,7 @@ FactoryGirl.define do
         user.games << FactoryGirl.create(:game)
       end
     end
+
     factory :administrator_user do
       username "admin_bobby"
       password "admin bobby tables's very secure password"

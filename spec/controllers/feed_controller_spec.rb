@@ -2,6 +2,10 @@ require 'rails_helper'
 
 RSpec.describe FeedController, type: :controller do
   let(:bobby) { FactoryGirl.create(:user) }
+  let(:group) { FactoryGirl.create(:group) }
+  before do
+    FactoryGirl.create(:group_membership, user: bobby, group: group)
+  end
   describe "GET /" do
     context "when not logged in" do
       it "redirects to signup page" do
@@ -84,6 +88,14 @@ RSpec.describe FeedController, type: :controller do
           expect(assigns(:posts)).to include(Post.all.order("created_at DESC").first)
         end
       end
+      context 'on a group feed' do
+        it 'should respond with posts newer than the last' do
+          30.times { FactoryGirl.create(:post, user: bobby, group: group)}
+          get :timeline, feed: "group/#{group.slug}", id: Post.all.order("created_at DESC")[1], direction: 'newer'
+          expect(response.status).to_not eq(403)
+          expect(assigns(:posts)).to include(Post.all.order("created_at DESC").first)
+        end
+      end
     end
     context 'when retrieving older posts' do
       before { session[:user] = bobby.id }
@@ -109,6 +121,14 @@ RSpec.describe FeedController, type: :controller do
         it 'should respond with posts older than the last' do
           30.times { FactoryGirl.create(:post, user: bobby)}
           get :timeline, feed: "user/#{bobby.username}", id: Post.all.order("created_at DESC")[1], direction: 'older'
+          expect(response.status).to_not eq(403)
+          expect(assigns(:posts)).to include(Post.all.order("created_at DESC").last)
+        end
+      end
+      context 'on a group feed' do
+        it 'should respond with posts older than the last' do
+          30.times { FactoryGirl.create(:post, user: bobby, group: group)}
+          get :timeline, feed: "group/#{group.slug}", id: Post.all.order("created_at DESC")[1], direction: 'older'
           expect(response.status).to_not eq(403)
           expect(assigns(:posts)).to include(Post.all.order("created_at DESC").last)
         end

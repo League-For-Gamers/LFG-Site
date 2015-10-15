@@ -2,7 +2,7 @@ class CreateGroups < ActiveRecord::Migration
   def change
     create_table :groups do |t|
       t.string :title, limit: 100, unique: true, null: false
-      t.string :slug, limit: 100, unique: true, null: false # URL Slug, eg: "league_for_gamers"
+      t.string :slug, limit: 100, unique: true, null: false, index: true # URL Slug, eg: "league_for_gamers"
       t.string :description, limit: 1000
       t.integer :privacy, default: 0, null: false
       t.integer :comment_privacy, default: 0, null: false
@@ -22,6 +22,5 @@ class CreateGroups < ActiveRecord::Migration
     end
 
     add_reference :posts, :group, index: true, foreign_key: true
-    add_column :posts, :pinned, :boolean
   end
 end

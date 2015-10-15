@@ -34,6 +34,11 @@ Rails.application.routes.draw do
     delete '/user/:user_id/:id', action: 'delete'
   end
 
+  namespace :group, path: 'group' do
+    get  ':id', action: 'show'
+    post ':id/new_post', action: 'create_post'
+  end
+
   namespace :user, path: 'user' do
     get '/forgot_password', action: 'forgot_password'
     post '/forgot_password', action: 'forgot_password_check'

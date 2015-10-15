@@ -23,7 +23,7 @@ update_new_posts_button = () ->
     button.slideDown(200)
 
 $ ->
-  if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$/i)
+  if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$|^\/group\/([\w\d]*)$/i)
     new_posts = []
     loading_messages = false
     end_of_stream = false
@@ -32,6 +32,8 @@ $ ->
     
     if window.location.pathname.match(/^\/$/)
       feed_type = "main"
+    else if window.location.pathname.match(/^\/group\/([\w\d]*)$/)
+      feed_type = "group/#{RegExp.$1}"
     else
       feed_type = window.location.pathname.match(/^\/feed\/([\w\d\/]*)$/i)[1]
 
