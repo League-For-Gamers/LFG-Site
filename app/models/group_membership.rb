@@ -2,7 +2,7 @@ class GroupMembership < ActiveRecord::Base
   belongs_to :group
   belongs_to :user
 
-  enum role: [:owner, :moderator, :member, :banned]
+  enum role: [:owner, :moderator, :member, :banned, :unverified]
 
   validates :role, presence: true
 
@@ -26,6 +26,9 @@ class GroupMembership < ActiveRecord::Base
 
     case membership.group.privacy
     when "public_group", "members_only_post"
+      if ["unverified"].include? membership.role
+        permissions << Permission.find_by(name: "can_edit_own_posts")
+      end
       if ["member", "moderator", "owner"].include? membership.role
         permissions << Permission.find_by(name: "can_create_post")
         permissions << Permission.find_by(name: "can_edit_own_posts")
@@ -37,7 +40,7 @@ class GroupMembership < ActiveRecord::Base
         permissions << Permission.find_by(name: "can_create_official_posts")
       end
     when "manangement_only_post"
-      if ["member", "moderator", "owner"].include? membership.role
+      if ["member", "moderator", "owner", "unverified"].include? membership.role
         permissions << Permission.find_by(name: "can_edit_own_posts")
       end
       if ["moderator", "owner"].include? membership.role

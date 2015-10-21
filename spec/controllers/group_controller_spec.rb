@@ -39,14 +39,15 @@ RSpec.describe GroupController, type: :controller do
       context "while being an administrator and passing the official flag" do
         let(:admin_bobby) { FactoryGirl.create(:administrator_user) }
         before do
-          FactoryGirl.create(:group_membership, user: admin_bobby, group: group)
+          FactoryGirl.create(:group_membership, user: admin_bobby, group: group, role: :owner)
           session[:user] = admin_bobby.id
         end
         it 'should create an official group post' do
           body = "Test post body"
           post :create_post, {id: group.slug, body: body, official: true}
-          expect(group.posts.last.body).to eq(body)
-          expect(group.posts.last.official).to be(true)
+          post = group.posts.where(official: true).last
+          expect(post.body).to eq(body)
+          expect(post.official).to be(true)
         end
       end
     end

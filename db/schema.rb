@@ -80,10 +80,9 @@ ActiveRecord::Schema.define(version: 20151020231750) do
   create_table "group_memberships", force: :cascade do |t|
     t.integer  "group_id"
     t.integer  "user_id"
-    t.integer  "role",                       null: false
-    t.boolean  "verified",   default: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.integer  "role",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_index "group_memberships", ["group_id"], name: "index_group_memberships_on_group_id", using: :btree

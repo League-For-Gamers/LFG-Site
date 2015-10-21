@@ -50,8 +50,10 @@
     <%= @group.description %>
     <% if !!@current_user and !@membership and ["public_membership", "owner_verified"].include? @group.membership %>
       <a href="/group/<%= @group.slug %>/join" class="btn">Join Group</a>
-    <% elsif !!@membership %>
+    <% elsif !!@membership and @membership.role != "unverified" %>
       <a href="/group/<%= @group.slug %>/leave" class="btn">Leave Group</a>
+    <% elsif !!@membership and @membership.role == "unverified" %>
+      <a href="/group/<%= @group.slug %>/leave" class="btn">Revoke join request</a>
     <% end -%>
   </div>
   <div class="large-6 small-12 left columns">

@@ -23,12 +23,12 @@ class GroupController < ApplicationController
   def join
     flash[:warning] = "This group is invite only. Please message the owner of the group to request access" and redirect_to request.referrer || root_url and return if @group.membership == "invite_only"
     flash[:warning] = "You are already part of this group" and redirect_to request.referrer || root_url and return if !!@membership
-    g = GroupMembership.new(user: @current_user, group: @group, role: :member)
+    g = GroupMembership.new(user: @current_user, group: @group)
     if @group.membership == "owner_verified"
-      g.verified = false
+      g.role = :unverified
       flash[:info] = "You have requested to join this group. You will be notified when you are accepted"
     else
-      g.verified = true
+      g.role = :member
       flash[:info] = "You have successfully joined the group"
     end
     g.save
