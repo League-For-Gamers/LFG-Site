@@ -1,26 +1,23 @@
-<div class="streamPost text-card <%= 'official' if post.official -%>" id="post-<%= post.id %>" data-id="<%= post.id %>">
+<div class="streamPost text-card" id="post-<%= post.id %>" data-id="<%= post.id %>">
   <div class="large-2 small-3 columns user" data-id="<%= user.username %>">
     <%= link_to image_tag(user.avatar(:med), class: "avatar"), "/user/#{user.username}" %>
-    <% if !!@membership and ((@membership.has_permission? "can_edit_own_posts", @permissions or @membership.has_permission? "can_delete_own_posts", @permissions) or @membership.has_permission? "can_edit_all_users_posts", @permissions or @membership.has_permission? "can_delete_all_posts", @permissions) -%>
+    <% if !!@permissions and ((GroupMembership.has_permission? "can_edit_own_posts", @permissions or GroupMembership.has_permission? "can_delete_own_posts", @permissions) or GroupMembership.has_permission? "can_edit_all_users_posts", @permissions or GroupMembership.has_permission? "can_delete_all_posts", @permissions) -%>
       <div class="user-controls">
-        <% if @membership.has_permission? "can_edit_own_posts", @permissions or @membership.has_permission? "can_edit_all_users_posts", @permissions -%>
+        <% if GroupMembership.has_permission? "can_edit_own_posts", @permissions or GroupMembership.has_permission? "can_edit_all_users_posts", @permissions -%>
           <div class="edit-controls">
             <a class="submit-post">Submit</a>
             <a class="cancel-post">Cancel</a>
           </div>
         <% end -%>
         <div class="default-controls">
-          <% if @membership.has_permission? "can_edit_own_posts", @permissions or @membership.has_permission? "can_edit_all_users_posts", @permissions -%>
+          <% if GroupMembership.has_permission? "can_edit_own_posts", @permissions or GroupMembership.has_permission? "can_edit_all_users_posts", @permissions -%>
             <a class="edit-post">Edit</a>
           <% end -%>
-          <% if @membership.has_permission? "can_edit_own_posts", @permissions or @membership.has_permission? "can_delete_all_posts", @permissions -%>
+          <% if GroupMembership.has_permission? "can_edit_own_posts", @permissions or GroupMembership.has_permission? "can_delete_all_posts", @permissions -%>
             <a class="delete-post"></a>
           <% end -%>
         </div>
       </div>
-    <% end -%>
-    <% if post.official -%>
-      <%= image_tag 'ui/official-shield.png', class: 'official-shield' %>
     <% end -%>
   </div>
   <div class="large-10 small-9 columns body">

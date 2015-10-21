@@ -6,30 +6,54 @@ class GroupMembership < ActiveRecord::Base
 
   validates :role, presence: true
 
-  def get_permission()
+  def self.get_permission(membership, group = nil)
     permissions = []
 
     # Permissions are inherited by higher roles. 
     # I'm pretty sure this can be cleaner.
-    if ["banned"].include? self.role
+    if !membership
+      if group.privacy == "public_group"
+        permissions << Permission.find_by(name: "can_create_post")
+        permissions << Permission.find_by(name: "can_edit_own_posts")
+      end
+      # If we go any further, we'll run into methods for classes that don't exist.
+      return permissions
     end
-    if ["member", "moderator", "owner"].include? self.role
-      permissions << Permission.find_by(name: "can_create_post")
-      permissions << Permission.find_by(name: "can_edit_own_posts")
+    if ["banned"].include? membership.role
+      # Return empty permissions
+      return permissions
     end
-    if ["moderator", "owner"].include? self.role
-      permissions << Permission.find_by(name: "can_ban_users")
-    end
-    if ["owner"].include? self.role
-      permissions << Permission.find_by(name: "can_create_official_posts")
+
+    case membership.group.privacy
+    when "public_group", "members_only_post"
+      if ["member", "moderator", "owner"].include? membership.role
+        permissions << Permission.find_by(name: "can_create_post")
+        permissions << Permission.find_by(name: "can_edit_own_posts")
+      end
+      if ["moderator", "owner"].include? membership.role
+        permissions << Permission.find_by(name: "can_ban_users")
+      end
+      if ["owner"].include? membership.role
+        permissions << Permission.find_by(name: "can_create_official_posts")
+      end
+    when "manangement_only_post"
+      if ["member", "moderator", "owner"].include? membership.role
+        permissions << Permission.find_by(name: "can_edit_own_posts")
+      end
+      if ["moderator", "owner"].include? membership.role
+        permissions << Permission.find_by(name: "can_create_post")
+        permissions << Permission.find_by(name: "can_ban_users")
+      end
+      if ["owner"].include? membership.role
+        permissions << Permission.find_by(name: "can_create_official_posts")
+      end
     end
     permissions
   end
 
-  def has_permission?(permission, list = nil)
-    p = list || self.get_permission
-    return false if p.nil? or p.empty?
-    p.map(&:name).include? permission
+  def self.has_permission?(permission, list)
+    return false if list.empty?
+    list.map(&:name).include? permission
   end
 
   def ban(reason, end_date, post = nil)

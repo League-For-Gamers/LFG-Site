@@ -4,8 +4,8 @@
     <%= image_tag @group.banner.url(:large), class: "banner" %>
   <% end -%>
 </div>
-<% if !!@membership -%>
-  <% if @membership.role == "banned" -%>
+<% if !!@membership or @group.privacy == "public_group" -%>
+  <% if !!@membership and @membership.role == "banned" -%>
     <div class="row">
       <div class="large-6 small-12 text-card pad banned-message">
       <h1>You are banned</h1>
@@ -22,14 +22,14 @@
       </div>
     </div>
   <% end -%>
-  <% if @membership.has_permission? "can_create_post", @permissions -%>
+  <% if GroupMembership.has_permission? "can_create_post", @permissions -%>
     <div class="row">
       <div class="large-6 small-12 text-card pad lfg-form new-post-form">
         <%= form_tag "/group/#{@group.slug}/new_post" do -%>
           <label>New post
             <%= text_area_tag "body", nil, class: "quick-submit" %>
           </label>
-          <% if @membership.has_permission? "can_create_official_posts", @permissions %>
+          <% if GroupMembership.has_permission? "can_create_official_posts", @permissions %>
             <label style="float: right;">Pinned?
               <%= check_box_tag "official" %>
             </label>
@@ -46,13 +46,18 @@
   </div>
 </div>
 <div class="row">
-  <div class="large-6 small-12 right" id="description">
+  <div class="large-6 small-12 right columns" id="description">
     <%= @group.description %>
+    <% if !!@current_user and !@membership and ["public_membership", "owner_verified"].include? @group.membership %>
+      <a href="/group/<%= @group.slug %>/join" class="btn">Join Group</a>
+    <% elsif !!@membership %>
+      <a href="/group/<%= @group.slug %>/leave" class="btn">Leave Group</a>
+    <% end -%>
   </div>
-  <div class="large-6 small-12 left">
+  <div class="large-6 small-12 left columns">
     <div class="small-12 left" id="pinned-posts">
       <% @group.posts.where(official: true).each do |post| -%>
-        <%= render partial: "feed/post", locals: {post: post, user: post.user} %>
+        <%= render partial: "post", locals: {post: post, user: post.user} %>
       <% end -%>
     </div>
     <div class="small-12 left" id="new-posts-button">

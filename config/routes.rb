@@ -37,6 +37,8 @@ Rails.application.routes.draw do
   namespace :group, path: 'group' do
     get  ':id', action: 'show'
     post ':id/new_post', action: 'create_post'
+    get  ':id/join', action: 'join'
+    get  ':id/leave', action: 'leave'
   end
 
   namespace :user, path: 'user' do
