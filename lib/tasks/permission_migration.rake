@@ -13,6 +13,7 @@ namespace :db do
     p4 = Permission.find_or_create_by(name: "can_create_post")
     p5 = Permission.find_or_create_by(name: "can_edit_own_posts")
     p6 = Permission.find_or_create_by(name: "can_send_private_messages")
+    p7 = Permission.find_or_create_by(name: "can_delete_all_posts")
 
     # Admin permissions
     admin.permissions << p1 unless admin.permissions.map(&:name).include? p1.name
@@ -29,6 +30,7 @@ namespace :db do
     moderator.permissions << p4 unless moderator.permissions.map(&:name).include? p4.name
     moderator.permissions << p5 unless moderator.permissions.map(&:name).include? p5.name
     moderator.permissions << p6 unless moderator.permissions.map(&:name).include? p6.name
+    moderator.permissions << p7 unless moderator.permissions.map(&:name).include? p7.name
     moderator.save
 
     # Default permissions

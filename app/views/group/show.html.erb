@@ -4,8 +4,8 @@
     <%= image_tag @group.banner.url(:large), class: "banner" %>
   <% end -%>
 </div>
-<% if !!@current_user -%>
-  <% if @current_user.role.name == "banned" or (@current_user.group_memberships.find_by(group: @group) and @current_user.group_memberships.find_by(group: @group).role == "banned") -%>
+<% if !!@membership -%>
+  <% if @membership.role == "banned" -%>
     <div class="row">
       <div class="large-6 small-12 text-card pad banned-message">
       <h1>You are banned</h1>
@@ -22,15 +22,15 @@
       </div>
     </div>
   <% end -%>
-  <% if @current_user.has_permission? "can_create_post" -%>
+  <% if @membership.has_permission? "can_create_post", @permissions -%>
     <div class="row">
       <div class="large-6 small-12 text-card pad lfg-form new-post-form">
         <%= form_tag "/group/#{@group.slug}/new_post" do -%>
           <label>New post
             <%= text_area_tag "body", nil, class: "quick-submit" %>
           </label>
-          <% if @current_user.has_permission? "can_create_official_posts" %>
-            <label style="float: right;">Official?
+          <% if @membership.has_permission? "can_create_official_posts", @permissions %>
+            <label style="float: right;">Pinned?
               <%= check_box_tag "official" %>
             </label>
           <% end %>
@@ -40,6 +40,11 @@
     </div>
   <% end -%>
 <% end -%>
+<div class="row">
+  <div class="large-6 small-12 center" id="new-posts-button">
+  View <span class="num"></span> new posts
+  </div>
+</div>
 <div class="row">
   <div class="large-6 small-12 right" id="description">
     <%= @group.description %>
@@ -55,7 +60,7 @@
     </div>
     <div class="small-12 left" id="feed-posts">
       <% @group.posts.each do |post| -%>
-        <%= render partial: "feed/post", locals: {post: post, user: post.user} %>
+        <%= render partial: "post", locals: {post: post, user: post.user} %>
       <% end -%>
     </div>
   </div>

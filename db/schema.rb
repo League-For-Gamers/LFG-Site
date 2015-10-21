@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151014211332) do
+ActiveRecord::Schema.define(version: 20151020231750) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,8 +25,11 @@ ActiveRecord::Schema.define(version: 20151014211332) do
     t.date     "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "group_id"
+    t.text     "group_role"
   end
 
+  add_index "bans", ["group_id"], name: "index_bans_on_group_id", using: :btree
   add_index "bans", ["post_id"], name: "index_bans_on_post_id", using: :btree
   add_index "bans", ["role_id"], name: "index_bans_on_role_id", using: :btree
   add_index "bans", ["user_id"], name: "index_bans_on_user_id", using: :btree
@@ -101,6 +104,8 @@ ActiveRecord::Schema.define(version: 20151014211332) do
     t.datetime "updated_at",                                   null: false
   end
 
+  add_index "groups", ["slug"], name: "index_groups_on_slug", using: :btree
+
   create_table "permissions", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at", null: false
@@ -130,6 +135,7 @@ ActiveRecord::Schema.define(version: 20151014211332) do
     t.boolean  "official"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean  "pinned"
     t.integer  "group_id"
   end
 
@@ -201,6 +207,7 @@ ActiveRecord::Schema.define(version: 20151014211332) do
 
   add_index "users", ["role_id"], name: "index_users_on_role_id", using: :btree
 
+  add_foreign_key "bans", "groups"
   add_foreign_key "bans", "posts"
   add_foreign_key "bans", "users"
   add_foreign_key "follows", "users"

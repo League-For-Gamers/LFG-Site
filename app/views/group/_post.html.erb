@@ -1,19 +1,19 @@
 <div class="streamPost text-card <%= 'official' if post.official -%>" id="post-<%= post.id %>" data-id="<%= post.id %>">
   <div class="large-2 small-3 columns user" data-id="<%= user.username %>">
     <%= link_to image_tag(user.avatar(:med), class: "avatar"), "/user/#{user.username}" %>
-    <% if !@current_user.nil? and ((user == @current_user and (@current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_own_posts")) or @current_user.has_permission? "can_edit_all_users_posts" or @current_user.has_permission? "can_delete_all_posts") -%>
+    <% if !!@membership and ((@membership.has_permission? "can_edit_own_posts", @permissions or @membership.has_permission? "can_delete_own_posts", @permissions) or @membership.has_permission? "can_edit_all_users_posts", @permissions or @membership.has_permission? "can_delete_all_posts", @permissions) -%>
       <div class="user-controls">
-        <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
+        <% if @membership.has_permission? "can_edit_own_posts", @permissions or @membership.has_permission? "can_edit_all_users_posts", @permissions -%>
           <div class="edit-controls">
             <a class="submit-post">Submit</a>
             <a class="cancel-post">Cancel</a>
           </div>
         <% end -%>
         <div class="default-controls">
-          <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
+          <% if @membership.has_permission? "can_edit_own_posts", @permissions or @membership.has_permission? "can_edit_all_users_posts", @permissions -%>
             <a class="edit-post">Edit</a>
           <% end -%>
-          <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_all_posts" -%>
+          <% if @membership.has_permission? "can_edit_own_posts", @permissions or @membership.has_permission? "can_delete_all_posts", @permissions -%>
             <a class="delete-post"></a>
           <% end -%>
         </div>
@@ -33,6 +33,6 @@
         <% end -%>
       </div>
     <% end %>
-    <%= post_time_ago(post) -%>
+    <%= group_post_time_ago(post) -%>
   </div>
 </div>
