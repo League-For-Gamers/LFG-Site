@@ -96,6 +96,7 @@ class User < ActiveRecord::Base
     end
   end
 
+  # Why is this a function
   def generate_password_reset_link
     "http://leagueforgamers.com/user/forgot_password/#{self.verification_digest}"
   end

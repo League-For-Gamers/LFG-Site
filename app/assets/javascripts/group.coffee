@@ -1,3 +1,6 @@
-# Place all the behaviors and hooks related to the matching controller here.
-# All this logic will automatically be available in application.js.
-# You can use CoffeeScript in this file: http://coffeescript.org/
+$ ->
+	$(".group-burger-button").click ->
+		node = Foundation.utils.S(this)
+		n = node.next(".group-control-panel")
+		n.toggleClass("shown")
+		n.removeClass("hidden")

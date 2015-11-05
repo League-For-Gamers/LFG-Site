@@ -1,10 +1,10 @@
 $ ->
   @original_title = Foundation.utils.S("title").text()
-  $('.quick-submit').keydown (e) ->
+  Foundation.utils.S('.quick-submit').keydown (e) ->
     if e.ctrlKey and e.keyCode == 13
       $(this).closest("form").submit()
     return
-  $('.show_hidden').click ->
+  Foundation.utils.S('.show_hidden').click ->
     node = Foundation.utils.S(this)
     id = node.data("id")
     Foundation.utils.S("#hidden-#{id}").toggle()
@@ -12,6 +12,6 @@ $ ->
       node.text node.text().replace(/show/i, "Hide")
     else
       node.text node.text().replace(/hide/i, "Show")
-  $('#login-button').click (e) -> 
+  Foundation.utils.S('#login-button').click (e) -> 
     e.preventDefault()
-    $('#login-form').slideToggle(200);
+    Foundation.utils.S('#login-form').slideToggle(200);

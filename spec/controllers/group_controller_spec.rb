@@ -7,6 +7,17 @@ RSpec.describe GroupController, type: :controller do
     FactoryGirl.create(:group_membership, user: bobby, group: group)
   end
 
+  describe 'Test the unban system' do
+    context 'when banned' do
+      before do
+        FactoryGirl.create(:ban, user: bobby, group: group, group_role: "owner")
+      end
+      it 'should unban the user when their ban period is up' do
+        get :show, id: group.slug
+      end
+    end
+  end
+
   describe "GET /group/:id" do
     it 'should set the group and show the group template' do
       get :show, id: group.slug

@@ -1,11 +1,42 @@
 class GroupController < ApplicationController
-  before_action :required_log_in, only: [:create_post, :join, :leave]
-  before_action :set_group
+  before_action :required_log_in, only: [:create_post, :join, :leave, :create, :new]
+  before_action :set_group, except: [:new, :create]
 
+  # GET /group/new
+  def new
+    flash[:warning] = "You don't have permission to create a group." and redirect_to request.referrer || root_url and return if !@current_user.has_permission? "can_create_group"
+    @group = Group.new
+    set_title "Create Group"
+  end
+
+  # POST /group/new
+  def create
+    flash[:warning] = "You don't have permission to create a group." and redirect_to request.referrer || root_url and return if !@current_user.has_permission? "can_create_group"
+    @group = Group.new(create_params)
+    membership = GroupMembership.new(user: @current_user, group: @group, role: :owner)
+    respond_to do |format|
+      if @group.valid?
+        membership.save
+        format.html { redirect_to "/group/#{@group.slug}", notice: 'Group was successfully created.' }
+        format.json { render json: { status: 'ok' } }
+      else
+        format.html { render action: 'new' }
+        format.json { render json: @group.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # GET /group/:id
   def show
     set_title @group.title
   end
 
+  # PATCH /group/:id
+  def update
+    flash[:warning] = "You don't have permission to update this group." and redirect_to request.referrer || root_url and return if !GroupMembership.has_permission? "can_create_post", @permissions
+  end
+
+  # POST /group/:id/new_post
   def create_post
     flash[:warning] = "You don't have permission to create a post." and redirect_to request.referrer || root_url and return if !GroupMembership.has_permission? "can_create_post", @permissions
     if GroupMembership.has_permission? "can_create_official_posts", @permissions
@@ -20,6 +51,7 @@ class GroupController < ApplicationController
     redirect_to request.referrer || root_url
   end
 
+  # GET /group/:id/join
   def join
     flash[:warning] = "This group is invite only. Please message the owner of the group to request access" and redirect_to request.referrer || root_url and return if @group.membership == "invite_only"
     flash[:warning] = "You are already part of this group" and redirect_to request.referrer || root_url and return if !!@membership
@@ -35,6 +67,7 @@ class GroupController < ApplicationController
     redirect_to request.referrer || root_url
   end
 
+  # GET /group/:id/leave
   def leave
     flash[:warning] = "You are not a part of this group" and redirect_to request.referrer || root_url and return if !@membership
     # Tricky people try to leave and rejoin to get unbanned. BUT I'M BETTER THAN YOUUUU
@@ -53,7 +86,7 @@ class GroupController < ApplicationController
         # Group unban mechanism
         if !!@current_user and !!@membership and @membership.role == "banned"
           if @current_user.bans.where(group: @group).first.end_date != nil and @current_user.bans.where(group: @group).first.end_date < Time.now 
-            @membership.role = @current_user.bans.where(group: @group).first.role
+            @membership.role = @current_user.bans.where(group: @group).first.group_role
             @membership.save
           else
             @group_ban = @current_user.bans.where(group: @group).first
@@ -64,5 +97,9 @@ class GroupController < ApplicationController
       rescue ActionController::RoutingError 
         render :template => 'shared/not_found', :status => 404
       end
+    end
+
+    def create_params
+      params.require(:group).permit(:title, :description, :membership, :privacy, :comment_privacy)
     end
 end

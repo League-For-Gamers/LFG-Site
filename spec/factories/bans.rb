@@ -1,8 +1,7 @@
 FactoryGirl.define do
   factory :ban do
-    user nil
-reason "MyString"
-end_date "2015-07-18"
+    reason "Is a dick."
+    end_date 2.weeks.from_now
   end
 
 end

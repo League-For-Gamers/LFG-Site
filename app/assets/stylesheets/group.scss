@@ -1,0 +1,54 @@
+@import "foundation/functions";
+@import "mixins";
+
+.group-control-panel {
+	display: none;
+	&.shown {
+		position: absolute;
+		display: block;
+		margin-top: rem-calc(-159);
+		right: rem-calc(13);
+		z-index: 999;
+		background-color: $primary-red;
+		$shadow-settings: 0 rem-calc(-15) rem-calc(15) rem-calc(-15) rgba(0,0,0,0.5), rem-calc(15) 0 rem-calc(15) rem-calc(-15) rgba(0,0,0,0.5), rem-calc(-15) 0 rem-calc(15) rem-calc(-15) rgba(0,0,0,0.5);
+		-webkit-box-shadow: $shadow-settings;
+		-moz-box-shadow: $shadow-settings;
+		box-shadow: $shadow-settings;
+	}
+	h2 {
+		margin: 0;
+		font-weight: 400;
+		font-style: italic;
+		font-size: 16pt;
+		background-color: $primary-dark-red;
+		padding: rem-calc(5) rem-calc(10);
+		$shadow-settings: 0 rem-calc(4) rem-calc(4) rgba(0, 0, 0, 0.55);
+		-webkit-box-shadow: $shadow-settings;
+		-moz-box-shadow: $shadow-settings;
+		box-shadow: $shadow-settings;
+	}
+	ul {
+		margin: 0;
+		li {
+			padding: 0 rem-calc(10) !important;
+			display: block !important;
+			list-style: none;
+
+			color: white;
+			font-size: 16pt;
+			font-weight: 600;
+			
+			&:nth-child(even) {
+				background-color: scale-color($primary-red, $lightness: -30%);
+			}
+		}
+	}
+	
+}
+.group-burger-button {
+	font-size: 22pt;
+	font-style: normal;
+	color: white;
+	line-height: 1.8rem;
+	float: right;
+}

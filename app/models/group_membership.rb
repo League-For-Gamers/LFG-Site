@@ -2,7 +2,7 @@ class GroupMembership < ActiveRecord::Base
   belongs_to :group
   belongs_to :user
 
-  enum role: [:owner, :moderator, :member, :banned, :unverified]
+  enum role: [:owner, :administrator, :moderator, :member, :banned, :unverified]
 
   validates :role, presence: true
 
@@ -12,7 +12,7 @@ class GroupMembership < ActiveRecord::Base
     # Permissions are inherited by higher roles. 
     # I'm pretty sure this can be cleaner.
     if !membership
-      if group.privacy == "public_group"
+      if group.privacy == "public_group" and group.membership != "owner_verified"
         permissions << Permission.find_by(name: "can_create_post")
         permissions << Permission.find_by(name: "can_edit_own_posts")
       end
@@ -29,26 +29,40 @@ class GroupMembership < ActiveRecord::Base
       if ["unverified"].include? membership.role
         permissions << Permission.find_by(name: "can_edit_own_posts")
       end
-      if ["member", "moderator", "owner"].include? membership.role
+      if ["member", "moderator", "owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_post")
         permissions << Permission.find_by(name: "can_edit_own_posts")
       end
-      if ["moderator", "owner"].include? membership.role
+      if ["moderator", "owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_ban_users")
       end
-      if ["owner"].include? membership.role
+      if ["owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_official_posts")
+        permissions << Permission.find_by(name: "can_update_group")
       end
-    when "manangement_only_post"
-      if ["member", "moderator", "owner", "unverified"].include? membership.role
+    when "management_only_post"
+      if ["member", "moderator", "owner", "unverified", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_edit_own_posts")
       end
-      if ["moderator", "owner"].include? membership.role
+      if ["moderator", "owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_post")
         permissions << Permission.find_by(name: "can_ban_users")
       end
-      if ["owner"].include? membership.role
+      if ["owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_official_posts")
+        permissions << Permission.find_by(name: "can_update_group")
+      end
+    when "private_group"
+      if ["member", "moderator", "owner", "administrator"].include? membership.role
+        permissions << Permission.find_by(name: "can_create_post")
+        permissions << Permission.find_by(name: "can_edit_own_posts")
+      end
+      if ["moderator", "owner", "administrator"].include? membership.role
+        permissions << Permission.find_by(name: "can_ban_users")
+      end
+      if ["owner", "administrator"].include? membership.role
+        permissions << Permission.find_by(name: "can_create_official_posts")
+        permissions << Permission.find_by(name: "can_update_group")
       end
     end
     permissions
@@ -61,7 +75,7 @@ class GroupMembership < ActiveRecord::Base
 
   def ban(reason, end_date, post = nil)
     if self.role == "banned"
-      old_role = Ban.where(user: self.user, group: self.user).where.not(group_role: "banned").order("end_date DESC").first.group_role
+      old_role = Ban.where(user: self.user, group: self.group).where.not(group_role: "banned").order("end_date DESC").first.group_role
     else
       old_role = self.role
     end
