@@ -1,7 +1,7 @@
 new_posts = []
 latest_id = null
-get_new_posts = (feed, url) ->
-  if window.location.pathname == url
+get_new_posts = (feed, uid) ->
+  if Foundation.utils.S("meta[name='unique']").attr('content') == uid
     $.ajax
       url: "/timeline"
       type: 'GET'
@@ -13,7 +13,7 @@ get_new_posts = (feed, url) ->
         new_posts = new_posts.concat(data.posts)
         update_new_posts_button()
       complete: (data) -> 
-        window.setTimeout(get_new_posts, 10000, feed, url)
+        window.setTimeout(get_new_posts, 10000, feed, uid)
 
 update_new_posts_button = () ->
   button = Foundation.utils.S("#new-posts-button")
@@ -145,7 +145,7 @@ $ ->
             alert("An error occured deleting your post: #{data.statusText}")
 
     latest_id = Foundation.utils.S('#feed-posts').children().first().data("id")
-    get_new_posts(feed_type, window.location.pathname)
+    get_new_posts(feed_type, Foundation.utils.S("meta[name='unique']").attr('content'))
 
     Foundation.utils.S('#new-posts-button').click ->
       Foundation.utils.S(this).hide()
