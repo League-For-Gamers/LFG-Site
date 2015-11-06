@@ -1,0 +1,55 @@
+<% if !!@group and (@current_user.has_permission? "can_update_group" or GroupMembership.has_permission? "can_create_post", @permissions) %>
+  <span class="group-burger-button">&#9776;</span>
+  <div class="group-control-panel clearfix hidden">
+    <h2>Admin</h2>
+    <ul class="accordion" data-accordion>
+      <li class="accordion-navigation">
+        <a href="#desc">Edit Description</a>
+        <div id="desc" class="content">
+          <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
+            <%= f.text_area :description, class: "quick-submit", rows: 8 %>
+            <%= f.submit 'Update', class: "btn small center" %>
+          <% end -%>
+        </div>
+      </li>
+      <li class="accordion-navigation">
+        <a href="#privacy">Group Privacy</a>
+        <div id="privacy" class="content">
+          <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
+            <% Group.privacies.keys.each do |key| %>
+              <label>
+                <%= f.radio_button :privacy, key %>
+                <%= key.titleize %>
+              </label>
+            <% end %>
+            <%= f.submit 'Update', class: "btn small center" %>
+          <% end -%>
+        </div>
+      </li>
+      <li class="accordion-navigation">
+        <a href="#membership">Membership Privacy</a>
+        <div id="membership" class="content">
+          <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
+            <% Group.memberships.keys.each do |key| %>
+              <label>
+                <%= f.radio_button :membership, key %>
+                <%= key.titleize %>
+              </label>
+            <% end %>
+            <%= f.submit 'Update', class: "btn small center" %>
+          <% end -%>
+        </div>
+      </li>
+      <li class="accordion-navigation">
+        <a href="#banner">Change Banner</a>
+        <div id="banner" class="content">
+          <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
+            <%= f.file_field :banner %>
+            <%= f.submit 'Upload', class: "btn small center" %>
+          <% end -%>
+        </div>
+      </li>
+    </ul>
+  </div>
+  
+<% end %>

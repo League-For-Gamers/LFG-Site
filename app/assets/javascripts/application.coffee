@@ -9,7 +9,7 @@
 
 #= require foundation/foundation
 # require foundation/foundation.abide
-# require foundation/foundation.accordion
+#= require foundation/foundation.accordion
 #= require foundation/foundation.alert
 # require foundation/foundation.clearing
 # require foundation/foundation.dropdown

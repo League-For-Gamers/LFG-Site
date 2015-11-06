@@ -2,7 +2,7 @@ $ ->
   @original_title = Foundation.utils.S("title").text()
   Foundation.utils.S('.quick-submit').keydown (e) ->
     if e.ctrlKey and e.keyCode == 13
-      $(this).closest("form").submit()
+      Foundation.utils.S(this).closest("form").submit()
     return
   Foundation.utils.S('.show_hidden').click ->
     node = Foundation.utils.S(this)

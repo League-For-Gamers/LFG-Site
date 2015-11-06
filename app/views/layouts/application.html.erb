@@ -74,18 +74,7 @@
       <li><a href="https://leagueforgamers.atlassian.net/projects/LFG/issues">Report a Bug</a></li>
     </ul>
     <ul class="right">
-      <% if !!@group and (@current_user.has_permission? "can_update_group" or GroupMembership.has_permission? "can_create_post", @permissions) %>
-        <span class="group-burger-button">&#9776;</span>
-        <div class="group-control-panel clearfix hidden">
-          <h2>Admin</h2>
-          <ul>
-            <li><a href="#">Edit About</a></li>
-            <li><a href="#">Membership</a></li>
-            <li><a href="#">Change Banner</a></li>
-          </ul>
-        </div>
-        
-      <% end %>
+      <%= render "group/admin_menu" %>
     </ul>
   </nav>
 

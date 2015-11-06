@@ -3,10 +3,11 @@
 
 .group-control-panel {
 	display: none;
+	min-width: rem-calc(200);
 	&.shown {
 		position: absolute;
 		display: block;
-		margin-top: rem-calc(-159);
+		bottom: rem-calc(32);
 		right: rem-calc(13);
 		z-index: 999;
 		background-color: $primary-red;
@@ -14,6 +15,9 @@
 		-webkit-box-shadow: $shadow-settings;
 		-moz-box-shadow: $shadow-settings;
 		box-shadow: $shadow-settings;
+	}
+	&.expanded {
+		min-width: rem-calc(400);
 	}
 	h2 {
 		margin: 0;
@@ -41,9 +45,17 @@
 			&:nth-child(even) {
 				background-color: scale-color($primary-red, $lightness: -30%);
 			}
+			
+			.content {
+				label {
+					color: $primary-cream;
+				}
+				&#desc textarea {
+					width: rem-calc(350);
+				}
+			}
 		}
-	}
-	
+	}	
 }
 .group-burger-button {
 	font-size: 22pt;
@@ -51,4 +63,11 @@
 	color: white;
 	line-height: 1.8rem;
 	float: right;
+}
+@media only screen and (max-width: 26em) {
+	.group-control-panel {
+		ul li .content#desc textarea {
+			width: rem-calc(270);
+		}
+	}
 }

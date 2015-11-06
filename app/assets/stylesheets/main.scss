@@ -129,12 +129,12 @@ a {
 }
 
 .main-logo {
-	position: absolute;
-	width: rem-calc(360);
-	left: 0;
+	position: fixed;
+	width: rem-calc(220);
+	left: rem-calc(10);
 	right: 0;
 	margin: 0 auto;
-	padding-top: rem-calc(20);
+	padding-top: rem-calc(10);
 	text-align: center;
 	z-index: 999;
 	&.left {
@@ -166,13 +166,13 @@ a {
 }
 
 .top-nav-bar {
-	position: absolute;
-	margin-top: rem-calc(83);
+	position: fixed;
 	height: rem-calc(86);
 	width: 100%;
 	background-color: $primary-red;
+	z-index: 998;
 	.search {
-		margin-left: rem-calc(330);
+		margin-left: rem-calc(225);
 		margin-top: rem-calc(25);
 		input[type="text"] {
 			background-image: image-url('ui/search-icon.png');
@@ -192,9 +192,13 @@ a {
 		font-size: 24pt;
 	}
 }
-
+.main {
+	padding-top: rem-calc(100);
+	padding-bottom: rem-calc(40) !important;
+}
 @media only screen and (max-width: 64.688em) {
 	.main-logo {
+		position: absolute;
 		width: rem-calc(200);
 		margin-top: rem-calc(50) !important;
 	}
@@ -210,6 +214,8 @@ a {
 		padding: 0 rem-calc(15);
 	}
 	.top-nav-bar {
+		position: absolute;
+		margin-top: rem-calc(83);
 		ul {
 			line-height: 2.5;
 			font-size: 16pt;
@@ -223,6 +229,9 @@ a {
 			width: 100% !important;
 		}
 	}
+	.main {
+		padding-top: rem-calc(170);
+	}
 }
 
 .bottom-nav-bar {
@@ -235,15 +244,16 @@ a {
 }
 @media only screen and (max-width: 90em) {
 	.main {
-		padding: 0 rem-calc(25);
+		padding-left: rem-calc(25);
+		padding-right: rem-calc(25);
 	}
 }
-@media only screen and (max-width: 51.9em) {
-	.bottom-nav-bar {
-		position: relative;
-		display: block;
-	}
-}
+// @media only screen and (max-width: 51.9em) {
+// 	.bottom-nav-bar {
+// 		position: relative;
+// 		display: block;
+// 	}
+// }
 // Landscape mobile
 @media only screen and (max-width: 51.875em) {
 	.main-logo {
@@ -280,10 +290,7 @@ a {
 		}
 	}
 }
-.main {
-	padding-top: rem-calc(200);
-	padding-bottom: rem-calc(40) !important;
-}
+
 
 input[type="text"], input[type="password"], input[type="date"], 
 input[type="datetime"], input[type="datetime-local"], input[type="month"], 
@@ -378,4 +385,14 @@ a, button {
 	content: " ";
 	clear: both;
 	height: 0;
+}
+
+// Manual accordion
+.accordion {
+	.content {
+		display: none;
+		&.active {
+			display: block;
+		}
+	}
 }

@@ -18,7 +18,7 @@ class GroupController < ApplicationController
       if @group.valid?
         membership.save
         format.html { redirect_to "/group/#{@group.slug}", notice: 'Group was successfully created.' }
-        format.json { render json: { status: 'ok' } }
+        format.json { head :no_content }
       else
         format.html { render action: 'new' }
         format.json { render json: @group.errors, status: :unprocessable_entity }
@@ -33,7 +33,18 @@ class GroupController < ApplicationController
 
   # PATCH /group/:id
   def update
-    flash[:warning] = "You don't have permission to update this group." and redirect_to request.referrer || root_url and return if !GroupMembership.has_permission? "can_create_post", @permissions
+    flash[:warning] = "You don't have permission to update this group." and redirect_to request.referrer || root_url and return if !GroupMembership.has_permission? "can_update_group", @permissions
+    @group.assign_attributes(update_params)
+    respond_to do |format|
+      if @group.valid?
+        @group.save
+        format.html { redirect_to "/group/#{@group.slug}", notice: 'Group was successfully updated.' }
+        format.json { head :no_content }
+      else
+        format.html { render action: 'show', notice: "Error updating group: #{@group.errors.join("\n")}" }
+        format.json { render json: @group.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
   # POST /group/:id/new_post
@@ -101,5 +112,9 @@ class GroupController < ApplicationController
 
     def create_params
       params.require(:group).permit(:title, :description, :membership, :privacy, :comment_privacy)
+    end
+
+    def update_params
+      params.require(:group).permit(:description, :membership, :privacy, :banner)
     end
 end
