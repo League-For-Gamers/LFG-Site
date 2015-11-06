@@ -1,5 +1,5 @@
 class GroupController < ApplicationController
-  before_action :required_log_in, only: [:create_post, :join, :leave, :create, :new]
+  before_action :required_log_in, except: [:show]
   before_action :set_group, except: [:new, :create]
 
   # GET /group/new
@@ -33,7 +33,7 @@ class GroupController < ApplicationController
 
   # PATCH /group/:id
   def update
-    flash[:warning] = "You don't have permission to update this group." and redirect_to request.referrer || root_url and return if !GroupMembership.has_permission? "can_update_group", @permissions
+    flash[:warning] = "You don't have permission to update this group." and redirect_to request.referrer || root_url and return if (!GroupMembership.has_permission? "can_update_group", @permissions and !@current_user.has_permission? "can_update_group")
     @group.assign_attributes(update_params)
     respond_to do |format|
       if @group.valid?
@@ -41,7 +41,7 @@ class GroupController < ApplicationController
         format.html { redirect_to "/group/#{@group.slug}", notice: 'Group was successfully updated.' }
         format.json { head :no_content }
       else
-        format.html { render action: 'show', notice: "Error updating group: #{@group.errors.join("\n")}" }
+        format.html { render action: 'show', notice: "Error updating group: #{@group.errors.full_messages.join("\n")}" }
         format.json { render json: @group.errors, status: :unprocessable_entity }
       end
     end
@@ -49,8 +49,8 @@ class GroupController < ApplicationController
 
   # POST /group/:id/new_post
   def create_post
-    flash[:warning] = "You don't have permission to create a post." and redirect_to request.referrer || root_url and return if !GroupMembership.has_permission? "can_create_post", @permissions
-    if GroupMembership.has_permission? "can_create_official_posts", @permissions
+    flash[:warning] = "You don't have permission to create a post." and redirect_to request.referrer || root_url and return if (!GroupMembership.has_permission? "can_create_post", @permissions and !@current_user.has_permission? "can_update_group")
+    if GroupMembership.has_permission? "can_create_official_posts", @permissions or @current_user.has_permission? "can_create_official_posts"
       post_params = params.permit(:body, :official)
     else
       post_params = params.permit(:body)
@@ -64,6 +64,7 @@ class GroupController < ApplicationController
 
   # GET /group/:id/join
   def join
+    flash[:warning] = "You cannot join groups while globally banned" and redirect_to request.referrer || root_url and return if !@current_user.has_permission? "can_join_group"
     flash[:warning] = "This group is invite only. Please message the owner of the group to request access" and redirect_to request.referrer || root_url and return if @group.membership == "invite_only"
     flash[:warning] = "You are already part of this group" and redirect_to request.referrer || root_url and return if !!@membership
     g = GroupMembership.new(user: @current_user, group: @group)

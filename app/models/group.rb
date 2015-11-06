@@ -16,12 +16,15 @@ class Group < ActiveRecord::Base
   has_many :users, through: :group_memberships
   has_many :posts, -> { order 'created_at DESC' }, dependent: :destroy
 
-  validates :title, :slug, uniqueness: {case_sensitive: false}, length: { maximum: 100 }
+  validates :title, :slug, presence: true, uniqueness: {case_sensitive: false}, length: { maximum: 100 }
   validates :description, allow_blank: true, allow_nil: true, length: { maximum: 1000 }
   validates_attachment :banner, content_type: { content_type: ['image/jpeg', 'image/png', 'image/bmp'] },
                        attachment_size: { less_than: 1024.kilobytes }
+  validates :privacy, :comment_privacy, presence: true
 
   before_validation do
     self.slug = title.parameterize('_') unless title.blank?
   end
+
+  # TODO: Group reserved names
 end

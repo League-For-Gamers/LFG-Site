@@ -3,17 +3,87 @@ require 'rails_helper'
 RSpec.describe GroupController, type: :controller do
   let(:bobby) { FactoryGirl.create(:user) }
   let(:group) { FactoryGirl.create(:group) }
-  before do
-    FactoryGirl.create(:group_membership, user: bobby, group: group)
-  end
+  let(:membership) { FactoryGirl.create(:group_membership, user: bobby, group: group) }
 
   describe 'Test the unban system' do
     context 'when banned' do
       before do
-        FactoryGirl.create(:ban, user: bobby, group: group, group_role: "owner")
+        session[:user] = bobby.id
       end
       it 'should unban the user when their ban period is up' do
+        membership.ban("dick", 2.weeks.from_now)
+        expect(GroupMembership.find(membership.id).role).to eq("banned")
         get :show, id: group.slug
+        expect(GroupMembership.find(membership.id).role).to eq("banned")
+        membership.ban("dick", 2.weeks.ago)
+        get :show, id: group.slug
+        expect(GroupMembership.find(membership.id).role).to_not eq("banned")
+      end
+    end
+  end
+
+  describe "GET /group/new" do
+    context 'when not logged in' do
+      it 'should gracefully fail' do
+        get :new
+        expect(response).to_not render_template(:new)
+        expect(response).to redirect_to('/signup')
+      end
+    end
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+      end
+      context 'and banned' do
+        it 'should gracefully fail' do
+          bobby.ban("dick", 2.weeks.from_now)
+          get :new
+          expect(response).to_not render_template(:new)
+          expect(response).to redirect_to(root_url)
+          expect(flash[:warning]).to be_present
+        end
+      end
+      it 'should render the new template' do
+        get :new
+        expect(response).to render_template(:new)
+      end
+      
+    end
+  end
+
+  describe "POST /group/new" do
+    context 'when not logged in' do
+      it 'should gracefully fail' do
+        post :create, group: {title: "newgroup", description: "", membership: "public_membership", privacy: "public_group" }
+        expect(assigns(:group)).to_not be_present
+        expect(response).to_not redirect_to('/group/newgroup')
+        expect(response).to redirect_to('/signup')
+      end
+    end
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+      end
+      context 'and banned' do
+        it 'should gracefully fail' do
+          bobby.ban("dick", 2.weeks.from_now)
+          post :create, group: {title: "newgroup", description: "", membership: "public_membership", privacy: "public_group" }
+          expect(assigns(:group)).to_not be_present
+          expect(response).to_not redirect_to('/group/newgroup')
+          expect(flash[:warning]).to be_present
+        end
+      end
+      it 'should create the group and assign the user as owner' do
+        post :create, group: {title: "newgroup", description: "", membership: "public_membership", privacy: "public_group" }
+        expect(response).to redirect_to('/group/newgroup')
+        expect(Group.last.title).to eq("newgroup")
+        expect(Group.last.group_memberships.first.user).to eq(bobby)
+        expect(Group.last.group_memberships.first.role).to eq("owner")
+      end
+      it 'should fail when parameters are missing' do
+        post :create, group: {description: ""}
+        expect(response).to_not redirect_to('/group/newgroup')
+        expect(assigns(:group).valid?).to eq(false)
       end
     end
   end
@@ -31,6 +101,60 @@ RSpec.describe GroupController, type: :controller do
       end
     end
   end
+
+  describe "PATCH /group/:id" do
+    context 'when not logged in' do
+      it 'should fail gracefully' do
+        patch :update, id: group.slug, group: { description: "Dicks" }
+        expect(response).to redirect_to('/signup')
+      end
+    end
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+      end
+      context 'and banned' do
+        it 'should fail gracefully' do
+          membership.ban("dick", 2.weeks.from_now)
+          post :update, id: group.slug, group: { description: "dicks", membership: "owner_verified", privacy: "management_only_post" }
+          expect(response).to_not redirect_to("/group/#{group.slug}")
+          expect(flash[:warning]).to be_present
+          expect(Group.find(group.id).description).to_not eq("dicks")
+        end
+      end
+      context 'and the user is the owner' do |variable|
+        before do
+          membership.role = "owner"
+          membership.save
+        end
+
+        it 'should update the group when passed new parameters' do
+          old_desc = group.description
+          post :update, id: group.slug, group: { description: "dicks"}
+          expect(response).to redirect_to("/group/#{group.slug}")
+          expect(Group.find(group.id).description).to_not eq(old_desc)
+          expect(Group.find(group.id).description).to eq("dicks")
+        end
+
+        it 'should fail gracefully when invalid parameters are passed' do
+          new_desc = SecureRandom.hex(2000)
+          post :update, id: group.slug, group: { description: new_desc}
+          expect(response).to render_template("show")
+          expect(Group.find(group.id).description).to_not eq(new_desc)
+        end
+      end
+      it 'should fail gracefully as the user lacks the permission' do
+          old_desc = group.description
+          post :update, id: group.slug, group: { description: "dicks"}
+          expect(response).to redirect_to(root_url)
+          expect(response).to_not redirect_to("/group/#{group.slug}")
+          expect(flash[:warning]).to be_present
+          expect(Group.find(group.id).description).to eq(old_desc)
+          expect(Group.find(group.id).description).to_not eq("dicks")
+      end
+    end
+  end
+
   describe "POST /group/:id/new_post" do
     context 'when not logged in' do
       it 'should fail gracefully' do
@@ -63,4 +187,28 @@ RSpec.describe GroupController, type: :controller do
       end
     end
   end
+
+  describe "GET /group/:id/join" do
+    context 'when not logged in' do
+      it 'should fail gracefully' do
+        get :join, id: group.slug
+        expect(response).to redirect_to('/signup')
+      end
+    end
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+        membership.delete
+      end
+      context 'and globally banned' do
+        it 'should reject the user from joining' do
+          bobby.ban("dick", 2.weeks.from_now)
+          get :join, id: group.slug
+          expect(group.group_memberships.map(&:user)).to_not include(bobby)
+        end
+      end
+      # TODO: Invite only group, already joined group, valid conditions for join
+    end
+  end
+  # TODO: GET /group/:id/leave
 end

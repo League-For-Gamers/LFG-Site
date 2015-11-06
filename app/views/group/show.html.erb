@@ -29,7 +29,7 @@
           <label>New post
             <%= text_area_tag "body", nil, class: "quick-submit" %>
           </label>
-          <% if GroupMembership.has_permission? "can_create_official_posts", @permissions %>
+          <% if GroupMembership.has_permission? "can_create_official_posts", @permissions or @current_user.has_permission? "can_create_official_posts" %>
             <label style="float: right;">Pinned?
               <%= check_box_tag "official" %>
             </label>

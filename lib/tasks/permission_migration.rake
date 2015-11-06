@@ -7,15 +7,16 @@ namespace :db do
     banned = Role.find_or_create_by(id: 4, name: "banned")
 
     # Permissions
-    p1 = Permission.find_or_create_by(name: "can_create_official_posts")
-    p2 = Permission.find_or_create_by(name: "can_edit_all_users_posts")
-    p3 = Permission.find_or_create_by(name: "can_ban_users")
-    p4 = Permission.find_or_create_by(name: "can_create_post")
-    p5 = Permission.find_or_create_by(name: "can_edit_own_posts")
-    p6 = Permission.find_or_create_by(name: "can_send_private_messages")
-    p7 = Permission.find_or_create_by(name: "can_delete_all_posts")
-    p8 = Permission.find_or_create_by(name: "can_create_group")
-    p9 = Permission.find_or_create_by(name: "can_update_group")
+    p1  = Permission.find_or_create_by(name: "can_create_official_posts")
+    p2  = Permission.find_or_create_by(name: "can_edit_all_users_posts")
+    p3  = Permission.find_or_create_by(name: "can_ban_users")
+    p4  = Permission.find_or_create_by(name: "can_create_post")
+    p5  = Permission.find_or_create_by(name: "can_edit_own_posts")
+    p6  = Permission.find_or_create_by(name: "can_send_private_messages")
+    p7  = Permission.find_or_create_by(name: "can_delete_all_posts")
+    p8  = Permission.find_or_create_by(name: "can_create_group")
+    p9  = Permission.find_or_create_by(name: "can_update_group")
+    p10 = Permission.find_or_create_by(name: "can_join_group")
     
 
     # Admin permissions
@@ -28,6 +29,7 @@ namespace :db do
     admin.permissions << p7 unless admin.permissions.map(&:name).include? p7.name
     admin.permissions << p8 unless admin.permissions.map(&:name).include? p8.name
     admin.permissions << p9 unless admin.permissions.map(&:name).include? p9.name
+    admin.permissions << p10 unless admin.permissions.map(&:name).include? p10.name
     admin.save
 
     # Moderator permissions
@@ -38,6 +40,7 @@ namespace :db do
     moderator.permissions << p6 unless moderator.permissions.map(&:name).include? p6.name
     moderator.permissions << p7 unless moderator.permissions.map(&:name).include? p7.name
     moderator.permissions << p8 unless moderator.permissions.map(&:name).include? p8.name
+    moderator.permissions << p10 unless moderator.permissions.map(&:name).include? p10.name
     moderator.save
 
     # Default permissions
@@ -45,6 +48,7 @@ namespace :db do
     default.permissions << p5 unless default.permissions.map(&:name).include? p5.name
     default.permissions << p6 unless default.permissions.map(&:name).include? p6.name
     default.permissions << p8 unless default.permissions.map(&:name).include? p8.name
+    default.permissions << p10 unless default.permissions.map(&:name).include? p10.name
     default.save
   end
   task :set_default_user_role => :environment do
