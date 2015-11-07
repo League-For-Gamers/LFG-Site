@@ -2,6 +2,9 @@ new_posts = []
 latest_id = null
 get_new_posts = (feed, uid) ->
   if Foundation.utils.S("meta[name='unique']").attr('content') == uid
+    if latest_id == undefined or latest_id == null
+      latest_id = 0
+
     $.ajax
       url: "/timeline"
       type: 'GET'
@@ -23,7 +26,7 @@ update_new_posts_button = () ->
     button.slideDown(200)
 
 $ ->
-  if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$|^\/group\/([\w\d]+)$/i)
+  if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$|^\/group\/([^search][\w\d]+)$/i)
     new_posts = []
     loading_messages = false
     end_of_stream = false
@@ -49,6 +52,8 @@ $ ->
         loading_messages = true
         Foundation.utils.S("#loading-message").show()
         last_id = Foundation.utils.S('#feed-posts').children().last().data("id")
+        if last_id == undefined or last_id == null
+          last_id = 0
         $.ajax
           url: "/timeline"
           type: 'GET'
