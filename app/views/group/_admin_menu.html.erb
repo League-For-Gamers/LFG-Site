@@ -1,4 +1,4 @@
-<% if !!@group and !@group.new_record? and (@current_user.has_permission? "can_update_group" or GroupMembership.has_permission? "can_create_post", @permissions) %>
+<% if !!@group and !@group.new_record? and !!@current_user and (@current_user.has_permission? "can_update_group" or GroupMembership.has_permission? "can_create_post", @permissions) %>
   <span class="group-burger-button">&#9776;</span>
   <div class="group-control-panel clearfix hidden">
     <h2>Admin</h2>
@@ -44,7 +44,7 @@
         <a href="#banner">Change Banner</a>
         <div id="banner" class="content">
           <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
-            <label>Recommended size: 1500x400.<br>Will be cropped and resized to 356x200, center focus.</label>
+            <label>Recommended size: 1500x400.<br>Will be cropped and resized to 1500x400 and 356x200, center focus.</label>
             <%= f.file_field :banner %>
             <%= f.submit 'Upload', class: "btn small center" %>
           <% end -%>

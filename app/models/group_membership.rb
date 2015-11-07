@@ -70,7 +70,7 @@ class GroupMembership < ActiveRecord::Base
   end
 
   def self.has_permission?(permission, list)
-    return false if list.empty?
+    return false if list.blank?
     list.map(&:name).include? permission
   end
 

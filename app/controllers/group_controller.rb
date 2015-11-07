@@ -58,6 +58,7 @@ class GroupController < ApplicationController
 
   # PATCH /group/:id
   def update
+    # TODO: Delete group by global admin, or by owner IF there's no members in the group.
     flash[:warning] = "You don't have permission to update this group." and redirect_to request.referrer || root_url and return if (!GroupMembership.has_permission? "can_update_group", @permissions and !@current_user.has_permission? "can_update_group")
     @group.assign_attributes(update_params)
     respond_to do |format|
@@ -150,8 +151,9 @@ class GroupController < ApplicationController
         render :raw_cards, layout: false and return if params[:raw]
       end
     end
-    
   end
+
+  # TODO: Group membership pages, with management
 
   private
     def set_group

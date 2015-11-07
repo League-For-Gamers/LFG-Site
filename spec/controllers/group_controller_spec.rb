@@ -155,6 +155,7 @@ RSpec.describe GroupController, type: :controller do
       get :show, id: group.slug
       expect(response).to render_template(:show)
       expect(assigns(:group)).to eq(group)
+      expect(response.status).to eq(200)
     end
     context 'when passed an invalid group' do
       it 'should create a 404 error' do
