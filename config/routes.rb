@@ -39,6 +39,7 @@ Rails.application.routes.draw do
     post  '/', action: 'index_ajax'
     get   'new', action: 'new'
     post  'new', action: 'create'
+    get   '/search', action: 'search'
     get   ':id', action: 'show'
     patch ':id', action: 'update'
     post  ':id/new_post', action: 'create_post'

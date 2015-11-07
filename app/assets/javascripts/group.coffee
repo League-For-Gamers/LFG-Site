@@ -10,6 +10,7 @@ $ ->
 			node = this
 			dir = Foundation.utils.S(this).data("dir")
 			source = Foundation.utils.S(this).parent().data("source")
+			url = Foundation.utils.S(this).parent().data("url")
 			collection = Foundation.utils.S(this).parent().parent().parent().next(".collection")
 			page = collection.data("page")
 			collection.height(collection.height())
@@ -24,10 +25,10 @@ $ ->
 				loading_cards[dir] = true
 				console.log "Loading page: #{page}"
 				$.ajax
-					url: "/group"
+					url: url
 					type: 'POST'
 					dataType: 'html'
-					data: {'source': source, 'page': page}
+					data: {'source': source, 'page': page, 'raw': true}
 					complete: (data) ->
 						collection.html(data.responseText)
 						collection.data("page", page)

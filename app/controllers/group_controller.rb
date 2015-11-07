@@ -1,6 +1,6 @@
 class GroupController < ApplicationController
-  before_action :required_log_in, except: [:show, :index, :index_ajax]
-  before_action :set_group, except: [:new, :create, :index, :index_ajax]
+  before_action :required_log_in, except: [:show, :index, :index_ajax, :search]
+  before_action :set_group, except: [:new, :create, :index, :index_ajax, :search]
 
   # GET /group
   def index
@@ -122,6 +122,35 @@ class GroupController < ApplicationController
     @membership.destroy
     flash[:info] = "You have successfully left the group"
     redirect_to request.referrer || root_url
+  end
+
+  # GET /group/search
+  def search
+    set_title "Search"
+    search_params = params.permit(:query, :sort, :page)
+
+    unless search_params["query"].blank? and search_params["sort"].blank?
+      @group_query = search_params["query"]
+      @sort = search_params["sort"]
+      unless @group_query.blank?
+        @groups = Group.search_by_title(@group_query).with_pg_search_rank
+
+        # I'm not sure how sort is going to be used, or if it really will but I want it to be at least open to it
+        if @sort.blank?
+          @groups = @groups.sort { |x,y| y.confidence <=> x.confidence }
+        end
+
+        per_page = 10
+        @count = @groups.size
+        @page_num = search_params["page"].to_i || 0
+        offset = @page_num * per_page
+        @num_of_pages = @count / per_page
+        start_num = 0 + offset
+        @groups = @groups[start_num...start_num + per_page]
+        render :raw_cards, layout: false and return if params[:raw]
+      end
+    end
+    
   end
 
   private

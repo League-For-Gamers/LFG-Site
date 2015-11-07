@@ -378,4 +378,22 @@ RSpec.describe GroupController, type: :controller do
       end
     end
   end
+
+  describe "GET /group/search" do
+    it 'should return groups when searched for' do
+      get :search, query: group.title
+      expect(response).to_not redirect_to('/signup')
+      expect(assigns(:groups)).to_not be_nil
+      expect(assigns(:groups).map(&:title)).to include(group.title)
+      expect(response).to render_template('search')
+    end
+
+    it 'should return groups using the raw cards template when the raw parameter is passed' do
+      get :search, query: group.title, raw: true
+      expect(response).to_not redirect_to('/signup')
+      expect(assigns(:groups)).to_not be_nil
+      expect(assigns(:groups).map(&:title)).to include(group.title)
+      expect(response).to render_template('raw_cards')
+    end
+  end
 end

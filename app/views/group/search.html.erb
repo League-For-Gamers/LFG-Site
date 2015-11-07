@@ -1,0 +1,31 @@
+<div class="row">
+  <div class="small-6 text-left columns">
+    <h1>Group Search</h1>
+  </div>
+</div>
+
+<div class="group-collector">
+  <div class="row">
+    <div class="small-12 menu-panel">
+      <div class="small-2 columns">
+        <h2>Results</h2>
+      </div>
+      <div class="small-6 columns">
+        <div class="search">
+          <form method="get" action="/group/search">
+            <input type="text" id="search-bar" name="query" placeholder="Search Groups" value="<%= @group_query %>">
+          </form>
+        </div>
+      </div>
+      <div class="small-3 columns text-right navigator" data-url="/group/search" data-source="all">
+        <a data-dir="prev" class="hidden">&lt;</a>
+        <a data-dir="next" class="<%= 'hidden' if @count < 12 %>">&gt;</a>
+      </div>
+    </div>
+  </div>
+  <div class="row collection" data-page="0">
+    <% @groups.each do |g| %>
+      <%= render partial: "group_card", locals: {group: g} %>
+    <% end %>
+  </div>
+</div>

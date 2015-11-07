@@ -1,4 +1,7 @@
 class Group < ActiveRecord::Base
+  include PgSearch
+  pg_search_scope :search_by_title, against: :title
+
   # Public and private cannot be used for method names as they as reserved
   enum privacy: [:public_group, :management_only_post, :members_only_post, :private_group]
   enum comment_privacy: [:public_comments, :members_only_comment, :private_comments]
