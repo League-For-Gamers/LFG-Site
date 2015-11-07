@@ -8,7 +8,8 @@ class Group < ActiveRecord::Base
   enum membership: [:public_membership, :owner_verified, :invite_only]
 
   has_attached_file :banner,
-                  path: "group/banner/:style/:id.:extension",
+                  default_url: "/group/banner/:style/missing.png",
+                  path: "/group/banner/:style/:id.:extension",
                   styles: {
                     thumb: '356x200#',
                     large: '1500x400#'
