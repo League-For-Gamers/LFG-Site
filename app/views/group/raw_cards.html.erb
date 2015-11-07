@@ -1,0 +1,6 @@
+<% @groups.each do |g| %>
+  <%= render partial: "group_card", locals: {group: g} %>
+<% end %>
+<% if @groups.blank? %>
+  <p class="text-white">Oops! No more groups!</p>
+<% end %>

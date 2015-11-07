@@ -64,6 +64,69 @@
 	line-height: 1.8rem;
 	float: right;
 }
+.group-card {
+	margin-bottom: rem-calc(10);
+	float: left !important;
+	max-width: rem-calc(330);
+	max-height: rem-calc(168);
+	img {
+		border: rem-calc(1) solid #000;
+	}
+	.title {
+		position: absolute;
+		right: rem-calc(20);
+		bottom: rem-calc(5);
+		color: white;
+		font-size: 18pt;
+		font-weight: 600;
+		text-shadow:
+		   rem-calc(-1) rem-calc(-1) 0 #000,  
+			rem-calc(1) rem-calc(-1) 0 #000,
+		   rem-calc(-1)  rem-calc(1) 0 #000,
+			rem-calc(1)  rem-calc(1) 0 #000;
+	}
+	.official-shield {
+		position: absolute;
+		left: rem-calc(5);
+		top: rem-calc(-5);
+		border: none;
+		width: rem-calc(65);
+		height: rem-calc(66);
+	}
+}
+.menu-panel {
+	background-color: $primary-red;
+	padding: 0 rem-calc(5);
+	height: rem-calc(50);
+	margin-bottom: rem-calc(10);
+	h2 {
+		display: inline;
+		margin: 0;
+	}
+	.navigator {
+		a {
+			color: white;
+			font-size: 40pt;
+			line-height: 0.7em;
+		}
+	}
+	.search {
+		line-height: 1em;
+		margin-top: rem-calc(7);
+		input[type="text"] {
+			background-image: image-url('ui/search-icon.png');
+			background-position: 98% 50%;
+			background-repeat: no-repeat;
+			background-color: #390202;
+			border: none;
+			font-style: italic;
+			font-size: 14pt;
+			text-transform: uppercase;
+			width: rem-calc(250);
+			color: #bfbfbf;
+		}
+	}
+}
 @media only screen and (max-width: 26em) {
 	.group-control-panel {
 		ul li .content#desc textarea {

@@ -1,0 +1,56 @@
+<div class="row">
+  <div class="small-6 text-left columns">
+    <h1>Groups</h1>
+  </div>
+  <div class="small-6 text-right columns">
+    <a href="/group/new"><h2>New Group<h2></a>
+  </div>
+</div>
+
+<% if !!@user_groups -%>
+  <div class="group-collector">
+    <div class="row">
+      <div class="small-12 menu-panel">
+        <h2>My Groups</h2>
+        <div class="right navigator" data-source="user">
+          <a data-dir="prev" class="hidden">&lt;</a>
+          <a data-dir="next" class="<%= 'hidden' if @user_groups.size < 12 %>">&gt;</a>
+        </div>
+      </div>
+    </div>
+    <div class="row collection" data-page="0">
+      <% @user_groups.each do |g| -%>
+        <%= render partial: "group_card", locals: {group: g} %>
+      <% end -%>
+      <% if @groups.blank? %>
+        <p class="text-white">You're currently not apart of any groups, go join some!</p>
+      <% end %>
+    </div>
+  </div>
+<% end -%>
+
+<div class="group-collector">
+  <div class="row">
+    <div class="small-12 menu-panel">
+      <div class="small-2 columns">
+        <h2>All Groups</h2>
+      </div>
+      <div class="small-6 columns">
+        <div class="search">
+          <form method="get" action="/group/search">
+            <input type="text" id="search-bar" name="query" placeholder="Search Groups">
+          </form>
+        </div>
+      </div>
+      <div class="small-3 columns text-right navigator" data-source="all">
+        <a data-dir="prev" class="hidden">&lt;</a>
+        <a data-dir="next" class="<%= 'hidden' if @groups.size < 12 %>">&gt;</a>
+      </div>
+    </div>
+  </div>
+  <div class="row collection" data-page="0">
+    <% @groups.each do |g| %>
+      <%= render partial: "group_card", locals: {group: g} %>
+    <% end %>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-<% if !!@group and (@current_user.has_permission? "can_update_group" or GroupMembership.has_permission? "can_create_post", @permissions) %>
+<% if !!@group and !@group.new_record? and (@current_user.has_permission? "can_update_group" or GroupMembership.has_permission? "can_create_post", @permissions) %>
   <span class="group-burger-button">&#9776;</span>
   <div class="group-control-panel clearfix hidden">
     <h2>Admin</h2>
@@ -44,11 +44,37 @@
         <a href="#banner">Change Banner</a>
         <div id="banner" class="content">
           <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
+            <label>Recommended size: 1500x400.<br>Will be cropped and resized to 356x200, center focus.</label>
             <%= f.file_field :banner %>
             <%= f.submit 'Upload', class: "btn small center" %>
           <% end -%>
         </div>
       </li>
+      <% if @current_user.role == Role.find(1) %>
+        <li class="accoridon-navigation">
+          <a href="#title">Change Title</a>
+          <div id="title" class="content">
+            <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
+              <label>Title
+                <%= f.text_field :title, required: true %>
+              </label>
+              <%= f.submit 'Update', class: "btn small center" %>
+            <% end -%>
+          </div>
+        </li>
+        <li class="accordion-navigation">
+          <a href="#official">Official</a>
+          <div id="official" class="content">
+            <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
+              <label>
+                <%= f.check_box :official %>
+                Official
+              </label>
+              <%= f.submit 'Update', class: "btn small center" %>
+            <% end -%>
+          </div>
+        </li>
+      <% end %>
     </ul>
   </div>
   

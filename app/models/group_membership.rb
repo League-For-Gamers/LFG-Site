@@ -1,10 +1,11 @@
 class GroupMembership < ActiveRecord::Base
-  belongs_to :group
+  belongs_to :group, counter_cache: :membership_count
   belongs_to :user
 
   enum role: [:owner, :administrator, :moderator, :member, :banned, :unverified]
 
   validates :role, presence: true
+  validate :validates_ownership_uniqueness
 
   def self.get_permission(membership, group = nil)
     permissions = []
@@ -86,4 +87,9 @@ class GroupMembership < ActiveRecord::Base
     self.role = :banned
     self.save
   end
+
+  private
+    def validates_ownership_uniqueness
+      errors.add(:user, "cannot own more than one group") if self.user.group_memberships.map(&:role).include? "owner" and self.role == "owner"
+    end
 end

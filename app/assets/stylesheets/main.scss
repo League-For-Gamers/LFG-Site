@@ -224,7 +224,7 @@ a {
 	.search {
 		margin-top: rem-calc(15) !important;
 		margin-left: rem-calc(200) !important;
-		width: rem-calc(250) !important;
+		width: rem-calc(200) !important;
 		input[type="text"] {
 			width: 100% !important;
 		}
@@ -314,7 +314,7 @@ button, a.btn {
 		input[type="datetime"], input[type="datetime-local"], input[type="month"], 
 		input[type="week"], input[type="email"], input[type="number"],
 		input[type="search"], input[type="tel"], input[type="time"], 
-		input[type="url"], input[type="color"] {
+		input[type="url"], input[type="color"], textarea {
 			background-color: $primary-cream;
 			border-color: white;
 			box-shadow: none;
@@ -336,6 +336,13 @@ button, a.btn {
 			&::-webkit-input-placeholder {
 				color: $primary-text;
 			}
+			&.white {
+				background-color: white;
+				border-color: $primary-cream;
+			}
+		}
+		.m-top {
+			margin-top: rem-calc(10);
 		}
 	}
 }
@@ -395,4 +402,7 @@ a, button {
 			display: block;
 		}
 	}
+}
+.text-white {
+	color: $primary-cream
 }

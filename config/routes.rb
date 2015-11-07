@@ -35,6 +35,8 @@ Rails.application.routes.draw do
   end
 
   namespace :group, path: 'group' do
+    root action: 'index'
+    post  '/', action: 'index_ajax'
     get   'new', action: 'new'
     post  'new', action: 'create'
     get   ':id', action: 'show'

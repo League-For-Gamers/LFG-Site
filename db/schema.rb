@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151020231750) do
+ActiveRecord::Schema.define(version: 20151107053238) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -89,21 +89,21 @@ ActiveRecord::Schema.define(version: 20151020231750) do
   add_index "group_memberships", ["user_id"], name: "index_group_memberships_on_user_id", using: :btree
 
   create_table "groups", force: :cascade do |t|
-    t.string   "title",               limit: 100,              null: false
-    t.string   "slug",                limit: 100,              null: false
+    t.string   "title",               limit: 100,                  null: false
+    t.string   "slug",                limit: 100,                  null: false
     t.string   "description",         limit: 1000
-    t.integer  "privacy",                          default: 0, null: false
-    t.integer  "comment_privacy",                  default: 0, null: false
-    t.integer  "membership",                       default: 0, null: false
+    t.integer  "privacy",                          default: 0,     null: false
+    t.integer  "comment_privacy",                  default: 0,     null: false
+    t.integer  "membership",                       default: 0,     null: false
     t.string   "banner_file_name"
     t.string   "banner_content_type"
     t.integer  "banner_file_size"
     t.datetime "banner_updated_at"
-    t.datetime "created_at",                                   null: false
-    t.datetime "updated_at",                                   null: false
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
+    t.integer  "membership_count"
+    t.boolean  "official",                         default: false
   end
-
-  add_index "groups", ["slug"], name: "index_groups_on_slug", using: :btree
 
   create_table "permissions", force: :cascade do |t|
     t.string   "name"
@@ -134,8 +134,8 @@ ActiveRecord::Schema.define(version: 20151020231750) do
     t.boolean  "official"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean  "pinned"
     t.integer  "group_id"
+    t.boolean  "pinned"
   end
 
   add_index "posts", ["group_id"], name: "index_posts_on_group_id", using: :btree

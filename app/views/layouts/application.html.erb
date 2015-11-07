@@ -44,6 +44,7 @@
     <% end %>
     <% if !logged_in? %><div class="center lfg-form" id="login-form"><%= render "user/login" %></div><% end -%>
     <ul class="right">
+      <li><a href="/group">Groups</a></li>
       <% if !logged_in? %>
         <li><a href="/login" id="login-button">Login</a></li>
       <% else %>

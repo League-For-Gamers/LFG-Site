@@ -1,6 +1,31 @@
 class GroupController < ApplicationController
-  before_action :required_log_in, except: [:show]
-  before_action :set_group, except: [:new, :create]
+  before_action :required_log_in, except: [:show, :index, :index_ajax]
+  before_action :set_group, except: [:new, :create, :index, :index_ajax]
+
+  # GET /group
+  def index
+    @groups = Group.all.limit(12)
+    @user_groups = @current_user.groups.limit(12) if !!@current_user
+  end
+
+  # POST /group
+  def index_ajax
+    render plain: "Source parameter is missing", status: 403 and return if params[:source].blank?
+    render plain: "Page parameter is missing", status: 403 and return if params[:page].blank?
+    per_page = params[:per_page] || 12
+    page = params[:page].to_i
+    case params[:source]
+    when "all"
+      @groups = Group.all.limit(per_page).offset((page)*per_page)
+      render :raw_cards, layout: false and return
+    when "user"
+      render plain: "You must be logged in", status: 403 and return if !@current_user
+      @groups = @current_user.groups.limit(per_page).offset((page)*per_page)
+      render :raw_cards, layout: false and return
+    else
+      render plain: "Invalid source parameter", status: 403 and return
+    end
+  end
 
   # GET /group/new
   def new
@@ -13,10 +38,10 @@ class GroupController < ApplicationController
   def create
     flash[:warning] = "You don't have permission to create a group." and redirect_to request.referrer || root_url and return if !@current_user.has_permission? "can_create_group"
     @group = Group.new(create_params)
-    membership = GroupMembership.new(user: @current_user, group: @group, role: :owner)
+    @membership = GroupMembership.new(user: @current_user, group: @group, role: :owner)
     respond_to do |format|
-      if @group.valid?
-        membership.save
+      if @group.valid? and @membership.valid?
+        @membership.save
         format.html { redirect_to "/group/#{@group.slug}", notice: 'Group was successfully created.' }
         format.json { head :no_content }
       else
@@ -67,15 +92,24 @@ class GroupController < ApplicationController
     flash[:warning] = "You cannot join groups while globally banned" and redirect_to request.referrer || root_url and return if !@current_user.has_permission? "can_join_group"
     flash[:warning] = "This group is invite only. Please message the owner of the group to request access" and redirect_to request.referrer || root_url and return if @group.membership == "invite_only"
     flash[:warning] = "You are already part of this group" and redirect_to request.referrer || root_url and return if !!@membership
+    message = "You have successfully joined the group"
     g = GroupMembership.new(user: @current_user, group: @group)
     if @group.membership == "owner_verified"
       g.role = :unverified
-      flash[:info] = "You have requested to join this group. You will be notified when you are accepted"
+      message = "You have requested to join this group. You will be notified when you are accepted"
     else
       g.role = :member
-      flash[:info] = "You have successfully joined the group"
     end
-    g.save
+    # I couldn't find a way to make a request genuinely invalid in tests so I have to force it...
+    if Rails.env.test? and params[:invalid]
+      g.role = nil
+    end
+    if g.valid?
+      g.save
+    else
+      message = "There was an error joining the group: #{g.errors.full_messages.join("\n")}"
+    end
+    flash[:info] = message
     redirect_to request.referrer || root_url
   end
 
@@ -116,6 +150,10 @@ class GroupController < ApplicationController
     end
 
     def update_params
-      params.require(:group).permit(:description, :membership, :privacy, :banner)
+      if @current_user.role == Role.find(1)
+        params.require(:group).permit(:title,:description, :membership, :privacy, :banner, :official)
+      else
+        params.require(:group).permit(:description, :membership, :privacy, :banner)
+      end
     end
 end

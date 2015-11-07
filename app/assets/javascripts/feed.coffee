@@ -23,7 +23,7 @@ update_new_posts_button = () ->
     button.slideDown(200)
 
 $ ->
-  if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$|^\/group\/([\w\d]*)$/i)
+  if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$|^\/group\/([\w\d]+)$/i)
     new_posts = []
     loading_messages = false
     end_of_stream = false

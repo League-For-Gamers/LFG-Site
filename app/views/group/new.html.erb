@@ -1,10 +1,13 @@
 <div class="large-5 small-12 center lfg-form">
   <%= form_for @group, url: "/group/new" do |f| %>
-    <% if @group.errors.any? %>
+    <% if @group.errors.any? or (@membership.present? and @membership.errors.any?) %>
       <div data-alert class="alert-box">
-        <strong><%= pluralize(@group.errors.count, "error") %> prohibited this group from being created:</strong>
+        <strong><%= pluralize(@group.errors.count + @membership.errors.count, "error") %> prohibited this group from being created:</strong>
         <ul style="margin-bottom: 0;">
           <% @group.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+          <% @membership.errors.full_messages.each do |msg| %>
             <li><%= msg %></li>
           <% end %>
         </ul>
@@ -20,10 +23,10 @@
     </div>
 
     <div class="small-12">
-      <%= f.text_area :description, placeholder: "Description" %>
+      <%= f.text_area :description, placeholder: "Description", rows: 10 %>
     </div>
     <div class="small-12 columns text-card pad">
-      <div class="small-6 columns">
+      <div class="small-4 columns">
         Privacy
         <% Group.privacies.keys.each do |key| %>
           <label>
@@ -33,7 +36,7 @@
         <% end %>
       </div>
 
-      <div class="small-6 columns">
+      <div class="small-4 columns">
         Membership Rules
         <% Group.memberships.keys.each do |key| %>
           <label>
@@ -42,10 +45,20 @@
           </label>
         <% end %>
       </div>
+
+      <div class="small-4 columns">
+        Comment Privacy
+        <% Group.comment_privacies.keys.each do |key| %>
+          <label>
+            <%= f.radio_button :comment_privacy, key %>
+            <%= key.titleize %>
+          </label>
+        <% end %>
+      </div>
     </div>
 
     <div class="small-4 center">
-      <%= f.submit 'Create', class: "btn center" %>
+      <%= f.submit 'Create', class: "btn center m-top" %>
     </div>
   <% end %>
 </div>

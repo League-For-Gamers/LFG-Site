@@ -2,8 +2,10 @@ require 'rails_helper'
 
 RSpec.describe GroupController, type: :controller do
   let(:bobby) { FactoryGirl.create(:user) }
+  let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
   let(:group) { FactoryGirl.create(:group) }
   let(:membership) { FactoryGirl.create(:group_membership, user: bobby, group: group) }
+  let(:admin_membership) { FactoryGirl.create(:group_membership, user: admin_bobby, group: group)}
 
   describe 'Test the unban system' do
     context 'when banned' do
@@ -18,6 +20,66 @@ RSpec.describe GroupController, type: :controller do
         membership.ban("dick", 2.weeks.ago)
         get :show, id: group.slug
         expect(GroupMembership.find(membership.id).role).to_not eq("banned")
+      end
+    end
+  end
+
+  describe "GET /group" do
+    context 'when not logged in' do
+      it 'should return all groups and no user group variable' do
+        get :index
+        expect(response).to render_template("index")
+        expect(assigns(:groups)).to_not be_nil
+        expect(assigns(:user_groups)).to be_nil
+      end
+    end
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+      end
+      it 'should return all groups and user groups' do
+        get :index
+        expect(response).to render_template("index")
+        expect(assigns(:groups)).to_not be_nil
+        expect(assigns(:user_groups)).to_not be_nil
+      end
+    end
+  end
+
+  describe "POST /group" do
+    context 'when not logged in' do
+      it 'should return groups when requesting source all' do
+        get :index_ajax, {source: "all", page: 0}
+        expect(assigns(:groups)).to include(group)
+      end
+      it 'should fail gracefully when missing a page parameter' do
+        get :index_ajax, {source: "all"}
+        expect(response.status).to eq(403)
+        expect(assigns(:groups)).to be_nil
+      end
+      it 'should fail gracefully when requesting source user' do
+        get :index_ajax, {source: "user", page: 0}
+        expect(response.status).to eq(403)
+        expect(assigns(:groups)).to be_nil
+      end
+    end
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+      end
+      it 'should fail gracefully when passed an invalid source parameter' do
+        get :index_ajax, {source: "invalid", page: 0}
+        expect(response.status).to eq(403)
+        expect(assigns(:groups)).to be_nil
+      end
+      it 'should return groups when requesting source all' do
+        get :index_ajax, {source: "all", page: 0}
+        expect(assigns(:groups)).to include(group)
+      end
+      it 'should return groups the user is a member of when requesting source user' do
+        membership.valid? # It fails if this isn't called. What in the fuck, factory girl?
+        get :index_ajax, {source: "user", page: 0}
+        expect(assigns(:groups)).to include(group)
       end
     end
   end
@@ -122,7 +184,7 @@ RSpec.describe GroupController, type: :controller do
           expect(Group.find(group.id).description).to_not eq("dicks")
         end
       end
-      context 'and the user is the owner' do |variable|
+      context 'and the user is the owner' do
         before do
           membership.role = "owner"
           membership.save
@@ -144,13 +206,26 @@ RSpec.describe GroupController, type: :controller do
         end
       end
       it 'should fail gracefully as the user lacks the permission' do
-          old_desc = group.description
-          post :update, id: group.slug, group: { description: "dicks"}
-          expect(response).to redirect_to(root_url)
-          expect(response).to_not redirect_to("/group/#{group.slug}")
-          expect(flash[:warning]).to be_present
-          expect(Group.find(group.id).description).to eq(old_desc)
-          expect(Group.find(group.id).description).to_not eq("dicks")
+        old_desc = group.description
+        post :update, id: group.slug, group: { description: "dicks"}
+        expect(response).to redirect_to(root_url)
+        expect(response).to_not redirect_to("/group/#{group.slug}")
+        expect(flash[:warning]).to be_present
+        expect(Group.find(group.id).description).to eq(old_desc)
+        expect(Group.find(group.id).description).to_not eq("dicks")
+      end
+    end
+    context 'and the user is a global admin' do
+      before do
+        session[:user] = admin_bobby.id
+      end
+      it 'should let the user change otherwise unchangable parameters' do
+        newtitle = SecureRandom.hex(5)
+        post :update, id: group.slug, group: { title: newtitle, official: true}
+        slug = newtitle.parameterize('_')
+        expect(response).to redirect_to("/group/#{slug}")
+        expect(Group.find(group.id).title).to eq(newtitle)
+        expect(Group.find(group.id).official).to eq(true)
       end
     end
   end
@@ -207,8 +282,100 @@ RSpec.describe GroupController, type: :controller do
           expect(group.group_memberships.map(&:user)).to_not include(bobby)
         end
       end
-      # TODO: Invite only group, already joined group, valid conditions for join
+      context 'and the group is invite only' do
+        before do
+          group.membership = :invite_only
+          group.save
+        end
+        it 'should reject the user from joining' do
+          get :join, id: group.slug
+          expect(group.group_memberships.map(&:user)).to_not include(bobby)
+        end
+      end
+      context 'and the user is already part of the group' do
+        before do
+          session[:user] = admin_bobby.id
+        end
+        it 'should reject the user from joining' do
+          get :join, id: group.slug
+          expect(group.group_memberships.map(&:user)).to_not include(bobby)
+        end
+      end
+      context 'and the group is owner verified' do
+        before do
+          group.membership = :owner_verified
+          group.save
+        end
+        it 'should join the group but be marked as an unverified user' do
+          get :join, id: group.slug
+          expect(group.group_memberships.map(&:user)).to include(bobby)
+          expect(group.group_memberships.last.role).to eq("unverified")
+        end
+      end
+      context 'when the membership conditions are invalid' do
+        it 'should generate an error' do
+          get :join, id: group.slug, invalid: true
+          expect(group.group_memberships.map(&:user)).to_not include(bobby)
+          expect(flash[:info]).to include("error")
+        end
+      end
+      it 'should join the group' do
+        get :join, id: group.slug
+        expect(group.group_memberships.map(&:user)).to include(bobby)
+        expect(group.group_memberships.last.role).to eq("member")
+      end
     end
   end
-  # TODO: GET /group/:id/leave
+
+  describe "GET /group/:id/leave" do
+    context 'when not logged in' do
+      it 'should fail gracefully' do
+        get :leave, id: group.slug
+        expect(response).to redirect_to('/signup')
+      end
+    end
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+      end
+      context 'when not member of group' do
+        before do
+          membership.delete
+        end
+        it 'should gracefully fail' do
+          get :leave, id: group.slug
+          expect(response).to redirect_to(root_url)
+          expect(flash[:warning]).to be_present
+        end
+      end
+      context 'when banned from group' do
+        it 'should fail gracefully' do
+          membership.ban("dick", 2.weeks.from_now)
+          get :leave, id: group.slug
+          expect(response).to redirect_to(root_url)
+          expect(flash[:warning]).to be_present
+          expect(GroupMembership.find(membership.id)).to be_present
+        end
+      end
+      context 'when owner of the group' do
+        before do
+          membership.role = :owner
+          membership.save
+        end
+        it 'should fail gracefully' do
+          get :leave, id: group.slug
+          expect(response).to redirect_to(root_url)
+          expect(flash[:warning]).to be_present
+          expect(flash[:warning]).to include("owner")
+          expect(GroupMembership.find(membership.id)).to be_present
+        end        
+      end
+      it 'should destroy the membership of the user' do
+        expect(GroupMembership.find(membership.id)).to be_present
+        get :leave, id: group.slug
+        expect(response).to redirect_to(root_url)
+        expect { GroupMembership.find(membership.id) }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
 end
