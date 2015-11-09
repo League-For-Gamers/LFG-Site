@@ -45,6 +45,7 @@ Rails.application.routes.draw do
     post  ':id/new_post', action: 'create_post'
     get   ':id/join', action: 'join'
     get   ':id/leave', action: 'leave'
+    post  ':id/delete', action: 'delete'
   end
 
   namespace :user, path: 'user' do

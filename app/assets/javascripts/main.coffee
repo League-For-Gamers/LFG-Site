@@ -15,3 +15,14 @@ $ ->
   Foundation.utils.S('#login-button').click (e) -> 
     e.preventDefault()
     Foundation.utils.S('#login-form').slideToggle(200);
+  Foundation.utils.S('.requires-confirmation').on 'submit', (e) ->
+    r = window.confirm("Are you sure? This can't be undone.")
+    if !r
+      e.preventDefault()
+  Foundation.utils.S('.requires-confirmation').find('#confirmation').on 'keyup', ->
+    required = Foundation.utils.S(this).attr("placeholder").toLowerCase()
+    button = Foundation.utils.S(this).parent().parent().find("input[type='submit']")
+    if Foundation.utils.S(this).val().toLowerCase() == required
+      button.removeAttr('disabled')
+    else
+      button.attr('disabled', 'disabled')

@@ -109,7 +109,6 @@ RSpec.describe GroupController, type: :controller do
         get :new
         expect(response).to render_template(:new)
       end
-      
     end
   end
 
@@ -146,6 +145,67 @@ RSpec.describe GroupController, type: :controller do
         post :create, group: {description: ""}
         expect(response).to_not redirect_to('/group/newgroup')
         expect(assigns(:group).valid?).to eq(false)
+      end
+    end
+  end
+
+  describe "POST /group/:id/delete" do
+    context 'when not logged in' do
+      it 'should fail gracefully' do
+        post :delete, id: group.slug, confirmation: group.title
+        expect(response).to redirect_to('/signup')
+      end
+    end
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+      end
+      context 'but not the owner of the group' do
+        it 'should fail gracefully' do
+          post :delete, id: group.slug, confirmation: group.title
+          expect(response).to redirect_to(root_url)
+          expect(flash[:warning]).to be_present
+          expect(Group.find(group.id)).to_not be_blank
+        end
+      end
+      context 'and is the owner of the group' do
+        before do
+          membership.role = :owner
+          membership.save
+        end
+        context 'and the group has other users in it' do
+          before do
+            # Ensure they're recognised.
+            membership.valid?
+            admin_membership.valid?
+          end
+          it 'should fail gracefully' do
+            post :delete, id: group.slug, confirmation: group.title
+            expect(response).to redirect_to(root_url)
+            expect(flash[:warning]).to be_present
+            expect(Group.find(group.id)).to_not be_blank
+          end
+        end
+        context 'and the group has no other users in it' do
+          before do
+            admin_membership.destroy
+          end
+          context 'and the confirmation does not match the title' do
+            it 'should fail gracefully' do
+              post :delete, id: group.slug, confirmation: group.title + "blah"
+              expect(response).to redirect_to(root_url)
+              expect(flash[:warning]).to be_present
+              expect(Group.find(group.id)).to_not be_blank
+            end
+          end
+          it 'should delete the group' do
+            post :delete, id: group.slug, confirmation: group.title
+            expect(Group.where(slug: group.slug)).to be_blank
+            expect(response).to_not redirect_to(root_url)
+            expect(response).to redirect_to("/group")
+            expect(flash[:warning]).to_not be_present
+          end
+        end
       end
     end
   end

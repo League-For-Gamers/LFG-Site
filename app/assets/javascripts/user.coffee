@@ -17,7 +17,7 @@ $ ->
       return
   if window.location.pathname.match(/\/user\/([\d\w]*)/i)
     Foundation.utils.S('.edit-section .hide').click -> 
-      section = $(this).data('section')
+      section = Foundation.utils.S(this).data('section')
       t = this
       $.ajax
         url: '/ajax/user/hide'
@@ -33,4 +33,4 @@ $ ->
     Foundation.utils.S('#search-filter').change ->
       Foundation.utils.S('#filtered-search-form').submit()
     Foundation.utils.S('#search-bar').on 'propertychange change keyup paste input', ->
-      Foundation.utils.S('#hidden-search-field').val($(this).val())
+      Foundation.utils.S('#hidden-search-field').val(Foundation.utils.S(this).val())

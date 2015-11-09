@@ -75,6 +75,27 @@
           </div>
         </li>
       <% end %>
+      <% if @current_user.role == Role.find(1) or @membership.role == "owner" %>
+        <li class="accordion-navigation">
+          <a href="#delete">Delete Group</a>
+          <div id="delete" class="content">
+            <% if @current_user.has_permission? "can_delete_group" or (GroupMembership.has_permission? "can_delete_group", @permissions and @group.group_memberships.size <= 1) %>
+              <%= form_tag "/group/#{@group.slug}/delete", method: "post", class: "requires-confirmation" do %>
+                <label>Enter the name of the group to confirm
+                  <%= text_field_tag :confirmation, nil, {required: true, placeholder: @group.title} %> 
+                </label>
+                <%= submit_tag 'Delete', class: "btn small center", disabled: "disabled" %>
+              <% end -%>
+            <% else %>
+              <span>The group needs to have no members to be deleted</span>
+              <label>Enter the name of the group to confirm
+                <input type="text" disabled="disabled" placeholder="League for Gamers">
+              </label>
+              <input type="submit" value="Delete" class="btn small center">
+            <% end %>
+          </div>
+        </li>
+      <% end %>
     </ul>
   </div>
   

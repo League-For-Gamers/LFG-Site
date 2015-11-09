@@ -365,6 +365,10 @@ a, button {
 			font-size: 16pt;
 			padding: rem-calc(2) rem-calc(12);
 		}
+		&[disabled] {
+			background-color: mix($primary-red, #c4c4c4, 15%);
+			cursor: default;
+		}
 	}
 }
 @media only screen and (max-width: 26em) {

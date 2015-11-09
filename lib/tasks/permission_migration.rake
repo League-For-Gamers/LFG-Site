@@ -17,6 +17,7 @@ namespace :db do
     p8  = Permission.find_or_create_by(name: "can_create_group")
     p9  = Permission.find_or_create_by(name: "can_update_group")
     p10 = Permission.find_or_create_by(name: "can_join_group")
+    p11 = Permission.find_or_create_by(name: "can_delete_group")
     
 
     # Admin permissions
@@ -30,6 +31,7 @@ namespace :db do
     admin.permissions << p8 unless admin.permissions.map(&:name).include? p8.name
     admin.permissions << p9 unless admin.permissions.map(&:name).include? p9.name
     admin.permissions << p10 unless admin.permissions.map(&:name).include? p10.name
+    admin.permissions << p11 unless admin.permissions.map(&:name).include? p11.name
     admin.save
 
     # Moderator permissions

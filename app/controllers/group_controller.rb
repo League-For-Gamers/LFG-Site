@@ -4,6 +4,7 @@ class GroupController < ApplicationController
 
   # GET /group
   def index
+    set_title "Groups"
     @groups = Group.all.limit(12)
     @user_groups = @current_user.groups.limit(12) if !!@current_user
   end
@@ -49,6 +50,15 @@ class GroupController < ApplicationController
         format.json { render json: @group.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  # POST /group/:id/delete
+  def delete
+    flash[:warning] = "You don't have permission to delete this group." and redirect_to request.referrer || root_url and return if (!GroupMembership.has_permission? "can_delete_group", @permissions and !@current_user.has_permission? "can_delete_group")
+    flash[:warning] = "The group needs to have no members before you can delete it." and redirect_to request.referrer || root_url and return if (@group.group_memberships.size > 1 and !@current_user.has_permission? "can_delete_group")
+    flash[:warning] = "The confirmation title does not match the group title." and redirect_to request.referrer || root_url and return if params[:confirmation].downcase != @group.title.downcase
+    @group.destroy
+    redirect_to "/group", notice: "Group was successfully been deleted"
   end
 
   # GET /group/:id

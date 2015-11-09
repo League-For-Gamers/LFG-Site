@@ -47,6 +47,10 @@
 			}
 			
 			.content {
+				span {
+					font-size: 12pt;
+					font-weight: 400;
+				}
 				label {
 					color: $primary-cream;
 				}
@@ -55,7 +59,7 @@
 				}
 			}
 		}
-	}	
+	}
 }
 .group-burger-button {
 	font-size: 22pt;
@@ -74,7 +78,10 @@
 	}
 	.title {
 		position: absolute;
-		right: rem-calc(20);
+		width: 90%;
+		word-wrap: break-word;
+		text-align: right;
+		padding: 0 rem-calc(5);
 		bottom: rem-calc(5);
 		color: white;
 		font-size: 18pt;
@@ -84,6 +91,9 @@
 			rem-calc(1) rem-calc(-1) 0 #000,
 		   rem-calc(-1)  rem-calc(1) 0 #000,
 			rem-calc(1)  rem-calc(1) 0 #000;
+		&.small {
+			font-size: 14pt;
+		}
 	}
 	.official-shield {
 		position: absolute;
@@ -110,7 +120,7 @@
 			line-height: 0.7em;
 		}
 	}
-	.search {
+	.group-search {
 		line-height: 1em;
 		margin-top: rem-calc(7);
 		input[type="text"] {
@@ -122,15 +132,51 @@
 			font-style: italic;
 			font-size: 14pt;
 			text-transform: uppercase;
-			width: rem-calc(250);
+			width: 100%;
 			color: #bfbfbf;
 		}
 	}
 }
 @media only screen and (max-width: 26em) {
+	.group-card {
+		.title {
+			padding: 0 rem-calc(15);
+			font-size: 12pt;
+			&.small {
+				font-size: 9pt;
+			}
+		}
+		.official-shield {
+			width: rem-calc(42);
+			height: rem-calc(43);
+		}
+	}
+	.menu-panel {
+		h2 {
+			font-size: 14pt;
+			line-height: 2.8em;
+		}
+		.group-search {
+			input[type="text"] {
+				font-size: 11pt;
+			}
+		}
+	}
 	.group-control-panel {
 		ul li .content#desc textarea {
 			width: rem-calc(270);
+		}
+	}
+}
+@media only screen and (max-width: 23.438em) {
+	.menu-panel {
+		h2 {
+			font-size: 13pt;
+		}
+		.group-search {
+			input[type="text"] {
+				font-size: 9pt;
+			}
 		}
 	}
 }

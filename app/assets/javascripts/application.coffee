@@ -33,7 +33,7 @@
 
 $ ->
   $(document).foundation()
-  $('input, textarea').placeholder()
+  Foundation.utils.S('input, textarea').placeholder()
   Turbolinks.enableProgressBar()
   Turbolinks.enableTransitionCache()
   return

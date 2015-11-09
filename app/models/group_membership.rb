@@ -41,6 +41,9 @@ class GroupMembership < ActiveRecord::Base
         permissions << Permission.find_by(name: "can_create_official_posts")
         permissions << Permission.find_by(name: "can_update_group")
       end
+      if ["owner"].include? membership.role
+        permissions << Permission.find_by(name: "can_delete_group")
+      end
     when "management_only_post"
       if ["member", "moderator", "owner", "unverified", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_edit_own_posts")
@@ -53,6 +56,9 @@ class GroupMembership < ActiveRecord::Base
         permissions << Permission.find_by(name: "can_create_official_posts")
         permissions << Permission.find_by(name: "can_update_group")
       end
+      if ["owner"].include? membership.role
+        permissions << Permission.find_by(name: "can_delete_group")
+      end
     when "private_group"
       if ["member", "moderator", "owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_post")
@@ -64,6 +70,9 @@ class GroupMembership < ActiveRecord::Base
       if ["owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_official_posts")
         permissions << Permission.find_by(name: "can_update_group")
+      end
+      if ["owner"].include? membership.role
+        permissions << Permission.find_by(name: "can_delete_group")
       end
     end
     permissions
@@ -90,6 +99,7 @@ class GroupMembership < ActiveRecord::Base
 
   private
     def validates_ownership_uniqueness
+      return if self.user.role == Role.find_by(name: "administrator") # Global admins can own as many as they want.
       errors.add(:user, "cannot own more than one group") if self.user.group_memberships.map(&:role).include? "owner" and self.role == "owner"
     end
 end
