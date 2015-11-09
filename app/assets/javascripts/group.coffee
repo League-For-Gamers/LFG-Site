@@ -13,6 +13,7 @@ $ ->
 			url = Foundation.utils.S(this).parent().data("url")
 			collection = Foundation.utils.S(this).parent().parent().parent().next(".collection")
 			page = collection.data("page")
+			per_page = Foundation.utils.S(this).data("per")
 			collection.height(collection.height())
 			switch dir
 				when "next"
@@ -35,6 +36,6 @@ $ ->
 							Foundation.utils.S(node).parent().children("a[data-dir='prev']").removeClass("hidden")
 						if page == 0
 							Foundation.utils.S(node).parent().children("a[data-dir='prev']").addClass("hidden")
-						if collection.children().length < 12 or (collection.children().length == 12 and Foundation.utils.S(node).parent().children("a[data-dir='next']").hasClass("hidden"))
+						if collection.children().length < per_page or (collection.children().length == per_page and Foundation.utils.S(node).parent().children("a[data-dir='next']").hasClass("hidden"))
 							Foundation.utils.S(node).parent().children("a[data-dir='next']").toggleClass("hidden")
 						loading_cards[dir] = false

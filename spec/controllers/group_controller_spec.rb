@@ -32,6 +32,13 @@ RSpec.describe GroupController, type: :controller do
         expect(assigns(:groups)).to_not be_nil
         expect(assigns(:user_groups)).to be_nil
       end
+      it 'should not return private groups' do
+        group.privacy = :private_group
+        group.save
+        get :index
+        expect(response).to render_template("index")
+        expect(assigns(:groups)).to_not include(Group.find(group.id))
+      end
     end
     context 'when logged in' do
       before do
@@ -51,6 +58,12 @@ RSpec.describe GroupController, type: :controller do
       it 'should return groups when requesting source all' do
         get :index_ajax, {source: "all", page: 0}
         expect(assigns(:groups)).to include(group)
+      end
+      it 'should not return private groups' do
+        group.privacy = :private_group
+        group.save
+        get :index_ajax, {source: "all", page: 0}
+        expect(assigns(:groups)).to_not include(Group.find(group.id))
       end
       it 'should fail gracefully when missing a page parameter' do
         get :index_ajax, {source: "all"}
@@ -287,6 +300,81 @@ RSpec.describe GroupController, type: :controller do
         expect(response).to redirect_to("/group/#{slug}")
         expect(Group.find(group.id).title).to eq(newtitle)
         expect(Group.find(group.id).official).to eq(true)
+      end
+    end
+  end
+
+  describe "GET /group/:id/members" do
+    before do 
+      session[:user] = bobby.id
+    end
+    context 'when the group is public' do
+      before do
+        group.privacy = :public_group
+        group.save
+        membership.role = :owner
+        membership.save
+        admin_membership.valid?
+      end
+      it 'should return a hash with members sorted into roles' do
+        get :members, id: group.slug
+        expect(assigns(:members)).to be_present
+        expect(response).to render_template("members")
+        expect(assigns(:members)["owner"]).to include(bobby)
+      end
+    end
+    context 'when the group is private' do
+      before do
+        group.privacy = :private_group
+        group.save
+        membership.role = :owner
+        membership.save
+        admin_membership.valid?
+      end
+      it 'should return a hash with members sorted into roles' do
+        get :members, id: group.slug
+        expect(assigns(:members)).to be_present
+        expect(response).to render_template("members")
+        expect(assigns(:members)["owner"]).to include(bobby)
+      end
+    end
+  end
+
+  describe "POST /group/:id/members" do
+    before do 
+      session[:user] = bobby.id
+    end
+    context 'when the group is public' do
+      before do
+        membership.role = :owner
+        membership.save
+        admin_membership.valid?
+      end
+      it 'should return a hash with members in the role chosen by the source' do
+        get :members_ajax, id: group.slug, source: "owner", page: 0
+        expect(assigns(:members)).to be_present
+        expect(response).to render_template("raw_user_cards")
+        expect(assigns(:members).map(&:user)).to include(bobby)
+      end
+    end
+    context 'when the group is private' do
+      before do
+        group.privacy = :private_group
+        group.save
+        membership.role = :owner
+        membership.save
+        admin_membership.valid?
+      end
+      context 'and the user is logged in' do
+        before do 
+          session[:user] = bobby.id
+        end
+        it 'should return a hash with members in the role chosen by the source' do
+          get :members_ajax, id: group.slug, source: "owner", page: 0
+          expect(assigns(:members)).to be_present
+          expect(response).to render_template("raw_user_cards")
+          expect(assigns(:members).map(&:user)).to include(bobby)
+        end
       end
     end
   end

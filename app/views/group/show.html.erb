@@ -48,6 +48,9 @@
 <div class="row">
   <div class="large-6 small-12 right columns" id="description">
     <%= @group.description %>
+    <% if !!@current_user and (@current_user.has_permission? "can_view_group_members" or GroupMembership.has_permission? "can_view_group_members", @permissions) %>
+      <a href="/group/<%= @group.slug %>/members" class="btn">Member list</a>
+    <% end %>
     <% if !!@current_user and !@membership and ["public_membership", "owner_verified"].include? @group.membership %>
       <a href="/group/<%= @group.slug %>/join" class="btn">Join Group</a>
     <% elsif !!@membership and @membership.role != "unverified" %>

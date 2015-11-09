@@ -5,8 +5,8 @@ class GroupController < ApplicationController
   # GET /group
   def index
     set_title "Groups"
-    @groups = Group.all.limit(12)
     @user_groups = @current_user.groups.limit(12) if !!@current_user
+    @groups = Group.where.not(privacy: Group.privacies[:private_group]).limit(12)
   end
 
   # POST /group
@@ -17,7 +17,7 @@ class GroupController < ApplicationController
     page = params[:page].to_i
     case params[:source]
     when "all"
-      @groups = Group.all.limit(per_page).offset((page)*per_page)
+      @groups = Group.where.not(privacy: Group.privacies[:private_group]).limit(per_page).offset((page)*per_page)
       render :raw_cards, layout: false and return
     when "user"
       render plain: "You must be logged in", status: 403 and return if !@current_user
@@ -81,6 +81,31 @@ class GroupController < ApplicationController
         format.json { render json: @group.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  # GET /group/:id/members
+  def members
+    flash[:warning] = "You don't have permission to view this list." and redirect_to request.referrer || root_url and return if !(GroupMembership.has_permission? "can_view_group_members", @permissions or (!!@current_user and @current_user.has_permission? "can_view_group_members"))
+    @members = {}
+    keys = GroupMembership.roles.keys
+    keys.delete("unverified")
+    keys.each do |k|
+      g = @group.group_memberships.includes(:user).where(role: GroupMembership.roles[k]).limit(10).order("created_at ASC")
+      @members[k] = g.map(&:user) unless g.empty?
+    end
+  end
+
+  def members_ajax
+    render plain: "You don't have permission to view this list.", status: 403 and return if !(GroupMembership.has_permission? "can_view_group_members", @permissions or (!!@current_user and @current_user.has_permission? "can_view_group_members"))
+    render plain: "Source parameter is missing", status: 403 and return if params[:source].blank?
+    render plain: "Page parameter is missing", status: 403 and return if params[:page].blank?
+    per_page = params[:per_page] || 10
+    page = params[:page].to_i
+    keys = GroupMembership.roles.keys
+    keys.delete("unverified")
+    render plain: "Invalid source parameter", status: 403 and return unless keys.include? params[:source]
+    @members = @group.group_memberships.includes(:user).where(role: GroupMembership.roles[params[:source]]).limit(per_page).offset((page)*per_page).order("created_at ASC")
+    render :raw_user_cards, layout: false and return
   end
 
   # POST /group/:id/new_post

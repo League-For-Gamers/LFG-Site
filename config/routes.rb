@@ -42,6 +42,8 @@ Rails.application.routes.draw do
     get   '/search', action: 'search'
     get   ':id', action: 'show'
     patch ':id', action: 'update'
+    get   ':id/members', action: 'members'
+    post  ':id/members', action: 'members_ajax'
     post  ':id/new_post', action: 'create_post'
     get   ':id/join', action: 'join'
     get   ':id/leave', action: 'leave'

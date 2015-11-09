@@ -16,6 +16,7 @@ class GroupMembership < ActiveRecord::Base
       if group.privacy == "public_group" and group.membership != "owner_verified"
         permissions << Permission.find_by(name: "can_create_post")
         permissions << Permission.find_by(name: "can_edit_own_posts")
+        permissions << Permission.find_by(name: "can_view_group_members")
       end
       # If we go any further, we'll run into methods for classes that don't exist.
       return permissions
@@ -29,10 +30,12 @@ class GroupMembership < ActiveRecord::Base
     when "public_group", "members_only_post"
       if ["unverified"].include? membership.role
         permissions << Permission.find_by(name: "can_edit_own_posts")
+        permissions << Permission.find_by(name: "can_view_group_members")
       end
       if ["member", "moderator", "owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_post")
         permissions << Permission.find_by(name: "can_edit_own_posts")
+        permissions << Permission.find_by(name: "can_view_group_members")
       end
       if ["moderator", "owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_ban_users")
@@ -63,6 +66,7 @@ class GroupMembership < ActiveRecord::Base
       if ["member", "moderator", "owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_post")
         permissions << Permission.find_by(name: "can_edit_own_posts")
+        permissions << Permission.find_by(name: "can_view_group_members")
       end
       if ["moderator", "owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_ban_users")

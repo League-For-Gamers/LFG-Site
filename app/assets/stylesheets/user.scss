@@ -39,6 +39,48 @@
 	}
 }
 
+.user-card {
+	max-width: rem-calc(256);
+	max-height: rem-calc(256);
+	margin-bottom: rem-calc(10);
+	float: left !important;
+	img {
+		border: rem-calc(5) solid;
+		border-radius: rem-calc(5);
+		&.owner {
+			border-color: mix($primary-red, gold, 30%);
+		}
+		&.administrator {
+			border-color: scale-color(forestgreen, $lightness: 15%)
+		}
+		&.moderator {
+			border-color: scale-color(cornflowerblue, $lightness: -10%)
+		}
+		&.member {
+			border-color: $primary-red;
+		}
+		&.banned {
+			border-color: scale-color($primary-red, $lightness: -30%);
+		}
+	}
+	.username {
+		position: absolute;
+		width: 90%;
+		word-wrap: break-word;
+		text-align: right;
+		padding: 0 rem-calc(15);
+		bottom: rem-calc(5);
+		color: white;
+		font-size: 18pt;
+		font-weight: 600;
+		text-shadow:
+		   rem-calc(-1) rem-calc(-1) 0 #000,  
+			rem-calc(1) rem-calc(-1) 0 #000,
+		   rem-calc(-1)  rem-calc(1) 0 #000,
+			rem-calc(1)  rem-calc(1) 0 #000;
+	}
+}
+
 .profile-card {
 	min-height: rem-calc(500);
 	margin: rem-calc(15) auto;
