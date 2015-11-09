@@ -45,6 +45,8 @@
 	margin-bottom: rem-calc(10);
 	float: left !important;
 	img {
+		min-width: rem-calc(226);
+		min-height: rem-calc(226);
 		border: rem-calc(5) solid;
 		border-radius: rem-calc(5);
 		&.owner {

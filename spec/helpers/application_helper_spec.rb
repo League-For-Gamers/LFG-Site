@@ -4,7 +4,7 @@ RSpec.describe ApplicationHelper, :type => :helper do
   let(:bobby) { FactoryGirl.create(:user) }
   describe '#logged_in?' do
     it 'returns true when logged in' do
-      session[:user] = {id: 5}
+      session[:user] = bobby.id
       expect(helper.logged_in?).to eq(true)
     end
   end
@@ -33,7 +33,7 @@ RSpec.describe ApplicationHelper, :type => :helper do
       expect(helper.reverse_urlify(url)).to eq("leagueforgamers.com")
     end
   end
-
+  
   describe '#replace_urls' do
     it 'should parse URLs and return a valid HTML link' do
       body = "https://i.imgur.com/Qe6xws5.jpg"

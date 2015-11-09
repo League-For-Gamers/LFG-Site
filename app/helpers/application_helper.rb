@@ -16,7 +16,6 @@ module ApplicationHelper
     url.gsub(/\Ahttp[s]?:\/\//i, '')
   end
 
-
   # I feel like this could be so much simpler...
   def replace_urls(body)
     unless body.blank?

@@ -5,4 +5,11 @@ module GroupHelper
     text = "<span class='time-ago'>#{text}</span>"
     return text.html_safe
   end
+
+
+  def universal_permission_check(permission, options = {})
+    permissions = options[:permissions] || @permissions
+    user = options[:user] || @current_user
+    !!user and (GroupMembership.has_permission? permission, permissions or user.has_permission? permission)
+  end
 end

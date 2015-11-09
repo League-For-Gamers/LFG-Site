@@ -1,4 +1,4 @@
-<% if !!@current_user and (@current_user.has_permission? "can_view_group_members" or GroupMembership.has_permission? "can_view_group_members", @permissions) %>
+<% if universal_permission_check "can_view_group_members" %>
   <div class="row">
     <div class="small-6 text-left columns">
       <h1>Members of <%= @group.title %></h1>
@@ -17,8 +17,10 @@
       </div>
     </div>
     <div class="row collection" data-page="0">
+      <% url_override = '/user/' -%>
+      <% url_override = "/group/#{@group.slug}/members/" if universal_permission_check "can_edit_group_member_roles" -%>
       <% role[1].each do |u| %>
-        <%= render partial: "shared/user_card", locals: {user: u, role: role[0]} %>
+        <%= render partial: "shared/user_card", locals: {user: u, role: role[0], url_override: url_override } %>
       <% end %>
     </div>
   <% end %>

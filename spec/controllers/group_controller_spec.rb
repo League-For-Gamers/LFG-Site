@@ -545,4 +545,23 @@ RSpec.describe GroupController, type: :controller do
       expect(response).to render_template('raw_cards')
     end
   end
+
+  describe '#universal_permission_check' do
+    context 'when a user has a global permission' do
+      it 'should return true' do
+        expect(controller.send(:universal_permission_check, "can_create_post", {user: bobby})).to eq(true)
+      end
+    end
+    context 'when a user has a group permission' do
+      before do
+        membership.role = :owner
+        membership.save
+      end
+
+      it 'should return true' do
+        permissions = GroupMembership.get_permission(membership, group)
+        expect(controller.send(:universal_permission_check, "can_edit_group_member_roles", {permissions: permissions, user: bobby})).to eq(true)
+      end
+    end
+  end
 end

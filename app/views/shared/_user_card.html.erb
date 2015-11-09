@@ -1,5 +1,7 @@
+<% url = url_override + user.username if defined? url_override -%>
+<% url = "/user/#{user.username}" unless defined? url_override -%>
 <div class="large-3 medium-3 small-6 columns user-card">
-  <a href="/user/<%= user.username %>">
+  <a href="<%= url %>">
     <%= image_tag user.avatar(:large), class: "avatar #{role}" %>
     <span class="username"><%= display_name(user) %></span>
   </a>

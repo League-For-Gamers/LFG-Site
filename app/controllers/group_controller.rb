@@ -54,7 +54,7 @@ class GroupController < ApplicationController
 
   # POST /group/:id/delete
   def delete
-    flash[:warning] = "You don't have permission to delete this group." and redirect_to request.referrer || root_url and return if (!GroupMembership.has_permission? "can_delete_group", @permissions and !@current_user.has_permission? "can_delete_group")
+    flash[:warning] = "You don't have permission to delete this group." and redirect_to request.referrer || root_url and return unless universal_permission_check("can_delete_group")
     flash[:warning] = "The group needs to have no members before you can delete it." and redirect_to request.referrer || root_url and return if (@group.group_memberships.size > 1 and !@current_user.has_permission? "can_delete_group")
     flash[:warning] = "The confirmation title does not match the group title." and redirect_to request.referrer || root_url and return if params[:confirmation].downcase != @group.title.downcase
     @group.destroy
@@ -69,7 +69,7 @@ class GroupController < ApplicationController
   # PATCH /group/:id
   def update
     # TODO: Delete group by global admin, or by owner IF there's no members in the group.
-    flash[:warning] = "You don't have permission to update this group." and redirect_to request.referrer || root_url and return if (!GroupMembership.has_permission? "can_update_group", @permissions and !@current_user.has_permission? "can_update_group")
+    flash[:warning] = "You don't have permission to update this group." and redirect_to request.referrer || root_url and return unless universal_permission_check("can_update_group")
     @group.assign_attributes(update_params)
     respond_to do |format|
       if @group.valid?
@@ -85,7 +85,8 @@ class GroupController < ApplicationController
 
   # GET /group/:id/members
   def members
-    flash[:warning] = "You don't have permission to view this list." and redirect_to request.referrer || root_url and return if !(GroupMembership.has_permission? "can_view_group_members", @permissions or (!!@current_user and @current_user.has_permission? "can_view_group_members"))
+    flash[:warning] = "You don't have permission to view this list." and redirect_to request.referrer || root_url and return unless universal_permission_check("can_view_group_members")
+    set_title "Members of #{@group.title}"
     @members = {}
     keys = GroupMembership.roles.keys
     keys.delete("unverified")
@@ -96,7 +97,7 @@ class GroupController < ApplicationController
   end
 
   def members_ajax
-    render plain: "You don't have permission to view this list.", status: 403 and return if !(GroupMembership.has_permission? "can_view_group_members", @permissions or (!!@current_user and @current_user.has_permission? "can_view_group_members"))
+    render plain: "You don't have permission to view this list.", status: 403 and return unless universal_permission_check("can_view_group_members")
     render plain: "Source parameter is missing", status: 403 and return if params[:source].blank?
     render plain: "Page parameter is missing", status: 403 and return if params[:page].blank?
     per_page = params[:per_page] || 10
@@ -110,8 +111,8 @@ class GroupController < ApplicationController
 
   # POST /group/:id/new_post
   def create_post
-    flash[:warning] = "You don't have permission to create a post." and redirect_to request.referrer || root_url and return if (!GroupMembership.has_permission? "can_create_post", @permissions and !@current_user.has_permission? "can_update_group")
-    if GroupMembership.has_permission? "can_create_official_posts", @permissions or @current_user.has_permission? "can_create_official_posts"
+    flash[:warning] = "You don't have permission to create a post." and redirect_to request.referrer || root_url and return unless universal_permission_check("can_create_post")
+    if universal_permission_check("can_create_official_posts")
       post_params = params.permit(:body, :official)
     else
       post_params = params.permit(:body)
@@ -221,5 +222,11 @@ class GroupController < ApplicationController
       else
         params.require(:group).permit(:description, :membership, :privacy, :banner)
       end
+    end
+
+    def universal_permission_check(permission, options = {})
+      permissions = options[:permissions] || @permissions
+      user = options[:user] || @current_user
+      !!user and (GroupMembership.has_permission? permission, permissions or user.has_permission? permission)
     end
 end

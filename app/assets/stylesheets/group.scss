@@ -73,7 +73,9 @@
 	float: left !important;
 	max-width: rem-calc(330);
 	max-height: rem-calc(168);
-	img {
+	img.banner {
+		min-width: rem-calc(297);
+		min-height: rem-calc(168);
 		border: rem-calc(1) solid #000;
 	}
 	.title {
@@ -145,6 +147,10 @@
 			&.small {
 				font-size: 9pt;
 			}
+		}
+		img.banner {
+			min-width: initial;
+			min-height: initial;
 		}
 		.official-shield {
 			width: rem-calc(42);

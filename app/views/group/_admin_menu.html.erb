@@ -1,4 +1,4 @@
-<% if !!@group and !@group.new_record? and !!@current_user and (@current_user.has_permission? "can_update_group" or GroupMembership.has_permission? "can_create_post", @permissions) %>
+<% if !!@group and !@group.new_record? and !!@current_user and universal_permission_check "can_update_group" %>
   <span class="group-burger-button">&#9776;</span>
   <div class="group-control-panel clearfix hidden">
     <h2>Admin</h2>

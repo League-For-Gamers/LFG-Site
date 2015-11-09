@@ -29,7 +29,7 @@
           <label>New post
             <%= text_area_tag "body", nil, class: "quick-submit white" %>
           </label>
-          <% if GroupMembership.has_permission? "can_create_official_posts", @permissions or @current_user.has_permission? "can_create_official_posts" %>
+          <% if universal_permission_check "can_create_official_posts" %>
             <label style="float: right;">Pinned?
               <%= check_box_tag "official" %>
             </label>
@@ -48,7 +48,7 @@
 <div class="row">
   <div class="large-6 small-12 right columns" id="description">
     <%= @group.description %>
-    <% if !!@current_user and (@current_user.has_permission? "can_view_group_members" or GroupMembership.has_permission? "can_view_group_members", @permissions) %>
+    <% if !!@current_user and universal_permission_check "can_view_group_members" %>
       <a href="/group/<%= @group.slug %>/members" class="btn">Member list</a>
     <% end %>
     <% if !!@current_user and !@membership and ["public_membership", "owner_verified"].include? @group.membership %>

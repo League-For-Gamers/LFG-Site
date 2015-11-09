@@ -43,6 +43,7 @@ class GroupMembership < ActiveRecord::Base
       if ["owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_official_posts")
         permissions << Permission.find_by(name: "can_update_group")
+        permissions << Permission.find_by(name: "can_edit_group_member_roles")
       end
       if ["owner"].include? membership.role
         permissions << Permission.find_by(name: "can_delete_group")
@@ -58,6 +59,7 @@ class GroupMembership < ActiveRecord::Base
       if ["owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_official_posts")
         permissions << Permission.find_by(name: "can_update_group")
+        permissions << Permission.find_by(name: "can_edit_group_member_roles")
       end
       if ["owner"].include? membership.role
         permissions << Permission.find_by(name: "can_delete_group")
@@ -74,6 +76,7 @@ class GroupMembership < ActiveRecord::Base
       if ["owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_official_posts")
         permissions << Permission.find_by(name: "can_update_group")
+        permissions << Permission.find_by(name: "can_edit_group_member_roles")
       end
       if ["owner"].include? membership.role
         permissions << Permission.find_by(name: "can_delete_group")
