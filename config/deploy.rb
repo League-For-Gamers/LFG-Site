@@ -26,7 +26,7 @@ set :format, :pretty
 set :pty, true
 
 # Default value for :linked_files is []
-set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/application.yml')
+set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/application.yml', 'config/newrelic.yml')
 
 # Default value for linked_dirs is []
 set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/sessions', 'tmp/sockets','tmp/pids', 'vendor/bundle')
@@ -52,6 +52,7 @@ namespace :deploy do
     on roles(:app) do
       upload! "config/database.#{fetch(:rails_env)}.yml", "#{shared_path}/config/database.yml"
       upload! "config/application.#{fetch(:rails_env)}.yml", "#{shared_path}/config/application.yml"
+      upload! "config/newrelic.yml", "#{shared_path}/config/newrelic.yml"
       upload! "config/s3cfg_file", "#{shared_path}/config/s3cfg_file"
       execute :sudo, "ln -nfs #{shared_path}/config/s3cfg_file /etc/s3cmd"
     end
