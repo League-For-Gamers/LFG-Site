@@ -61,4 +61,21 @@ namespace :db do
   task :set_default_user_role => :environment do
     User.where(role: nil).each{|x| x.role=Role.find_by(name: 'default');x.save}
   end
-end
+
+  task :set_banner_id_to_wingar => :environment do
+    w = User.where("lower(username) = ?", "wingar").first
+    Ban.all.each do |ban|
+      ban.banner_id = w.id
+      ban.save
+    end
+  end
+
+  task :set_ban_duration_string => :environment do
+    require 'action_view'
+    require 'active_support/all'
+    Ban.all.each do |ban|
+      ban.duration_string = ActionView::Base.new.distance_of_time_in_words ban.created_at, ban.end_date
+      ban.save
+    end
+  end
+ end

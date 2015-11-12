@@ -26,7 +26,7 @@
     <% unless post.bans.empty? -%>
       <div class="bans">
         <% post.bans.each do |ban| -%>
-          <p>User was banned for this post: <%= ban.reason %></p>
+          <p><%= ban_string(ban) %></p>
         <% end -%>
       </div>
     <% end %>

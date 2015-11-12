@@ -74,7 +74,7 @@ class GroupController < ApplicationController
     respond_to do |format|
       if @group.valid?
         @group.save
-        format.html { redirect_to "/group/#{@group.slug}", notice: 'Group was successfully updated.' }
+        format.html { redirect_to request.referrer || "/group/#{@group.slug}", notice: 'Group was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: 'show', notice: "Error updating group: #{@group.errors.full_messages.join("\n")}" }
@@ -89,13 +89,14 @@ class GroupController < ApplicationController
     set_title "Members of #{@group.title}"
     @members = {}
     keys = GroupMembership.roles.keys
-    keys.delete("unverified")
+    keys.delete("unverified") unless universal_permission_check "can_edit_group_member_roles"
     keys.each do |k|
-      g = @group.group_memberships.includes(:user).where(role: GroupMembership.roles[k]).limit(10).order("created_at ASC")
+      g = @group.group_memberships.includes(:user).where(role: GroupMembership.roles[k]).limit(10).order("created_at DESC")
       @members[k] = g.map(&:user) unless g.empty?
     end
   end
 
+  # POST /group/:id/members
   def members_ajax
     render plain: "You don't have permission to view this list.", status: 403 and return unless universal_permission_check("can_view_group_members")
     render plain: "Source parameter is missing", status: 403 and return if params[:source].blank?
@@ -107,6 +108,101 @@ class GroupController < ApplicationController
     render plain: "Invalid source parameter", status: 403 and return unless keys.include? params[:source]
     @members = @group.group_memberships.includes(:user).where(role: GroupMembership.roles[params[:source]]).limit(per_page).offset((page)*per_page).order("created_at ASC")
     render :raw_user_cards, layout: false and return
+  end
+
+  # GET /group/:id/members/:user_id
+  def membership
+    flash[:warning] = "You don't have permission to edit this membership." and redirect_to request.referrer || root_url and return unless universal_permission_check("can_edit_group_member_roles")
+    begin
+      @user = User.includes(:skills, :games, :posts).where("lower(username) = ?", params[:user_id].downcase).first or not_found
+      @user_membership = GroupMembership.find_by(user: @user, group: @group) or not_found
+      bans = Ban.where(user: @user_membership.user, group: @user_membership.group).order("created_at DESC")
+      @user_bans = {}
+      bans.each do |ban|
+        time_ago = ActionView::Base.new.time_ago_in_words(ban.created_at) + " ago"
+        @user_bans[time_ago] = [] unless @user_bans.has_key? time_ago
+        @user_bans[time_ago] << ban
+      end
+      set_title "Edit @#{@user.username}"
+    rescue ActionController::RoutingError 
+      render template: 'shared/not_found', status: 404 and return
+    end
+  end
+
+  # PATCH /group/:id/members/:user_id
+  def update_membership
+    flash[:warning] = "You don't have permission to edit this membership." and redirect_to request.referrer || root_url and return unless universal_permission_check("can_edit_group_member_roles")
+    begin
+      @user = User.includes(:skills, :games, :posts).where("lower(username) = ?", params[:user_id].downcase).first or not_found
+      @user_membership = GroupMembership.find_by(user: @user, group: @group) or not_found
+    rescue ActionController::RoutingError 
+      render template: 'shared/not_found', status: 404 and return
+    end
+    flash[:warning] = "Goal parameter missing" and redirect_to request.referrer || root_url and return if params[:goal].blank?
+    case params[:goal]
+    when "role"
+      @user_membership.assign_attributes(membership_update_params)
+    when "promote"
+      flash[:warning] = "User is already the owner" and redirect_to request.referrer || root_url and return if @user_membership.role == "owner"
+      owner = GroupMembership.find_by(group: @group, role: GroupMembership.roles[:owner])
+      owner.role = :administrator
+      @user_membership.role = :owner
+    when "approve"
+      @user_membership.role = :member
+      # Send a notification to the user somehow
+    else
+      flash[:warning] = "Invalid goal parameter" and redirect_to request.referrer || root_url and return
+    end
+    if @user_membership.valid? and (!owner or owner.valid?)
+      @user_membership.save
+      owner.save if params[:goal] == "promote"
+      flash[:info] = "User has been successfully updated!"
+    else
+      flash[:warning] = "An error has occurred when updating this user: #{@user_membership.errors.full_messages.join("\n")}"
+    end
+    redirect_to request.referrer || root_url
+  end
+
+  # POST /group/:id/members/:user_id/ban
+  def ban
+    render plain: "You do not have permission to ban this user", status: 403 and return unless universal_permission_check "can_ban_users"
+    begin
+      @user = User.includes(:skills, :games, :posts).where("lower(username) = ?", params[:user_id].downcase).first or not_found
+      @user_membership = GroupMembership.find_by(user: @user, group: @group) or not_found
+    rescue ActionController::RoutingError 
+      render template: 'shared/not_found', status: 404 and return
+    end
+
+    case params[:duration]
+    when "unban"
+      @user_membership.unban(params[:reason], @current_user)
+      flash[:info] = "User has been successfully unbanned"
+      redirect_to request.referrer || root_url
+      return
+    when "one_day"
+      duration = 1.day.from_now
+    when "three_days"
+      duration = 3.days.from_now
+    when "one_week"
+      duration = 1.week.from_now
+    when "one_month"
+      duration = 1.month.from_now
+    when "perm"
+      duration = nil
+    else
+      flash[:warning] = "Invalid duration parameter" and redirect_to request.referrer || root_url and return
+    end
+
+    begin
+      if @user_membership.ban(params[:reason], duration, @current_user)
+        flash[:info] = "User has been successfully banned"
+      else
+        flash[:warning] = "Could not ban user for unknown reason"
+      end
+    rescue Exception => e
+      flash[:warning] = e.message
+    end
+    redirect_to request.referrer || root_url
   end
 
   # POST /group/:id/new_post
@@ -189,8 +285,6 @@ class GroupController < ApplicationController
     end
   end
 
-  # TODO: Group membership pages, with management
-
   private
     def set_group
       begin
@@ -208,7 +302,7 @@ class GroupController < ApplicationController
         @permissions = GroupMembership.get_permission(@membership, @group) if !!@current_user
         not_found if @group.privacy == "private_group" and !@membership # Private groups are private.
       rescue ActionController::RoutingError 
-        render :template => 'shared/not_found', :status => 404
+        render template: 'shared/not_found', status: 404
       end
     end
 
@@ -222,6 +316,10 @@ class GroupController < ApplicationController
       else
         params.require(:group).permit(:description, :membership, :privacy, :banner)
       end
+    end
+
+    def membership_update_params
+      params.require(:group_membership).permit(:role)
     end
 
     def universal_permission_check(permission, options = {})

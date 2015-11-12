@@ -1,7 +1,10 @@
 <% if universal_permission_check "can_view_group_members" %>
   <div class="row">
-    <div class="small-6 text-left columns">
+    <div class="medium-8 small-12 text-left columns">
       <h1>Members of <%= @group.title %></h1>
+    </div>
+    <div class="medium-4 small-12 text-right columns">
+      <a href="/group/<%= @group.slug %>"><h2>Return to group</h2></a>
     </div>
   </div>
   <% @members.each do |role| %>
@@ -17,10 +20,9 @@
       </div>
     </div>
     <div class="row collection" data-page="0">
-      <% url_override = '/user/' -%>
-      <% url_override = "/group/#{@group.slug}/members/" if universal_permission_check "can_edit_group_member_roles" -%>
+      <% group = true if universal_permission_check "can_edit_group_member_roles" -%>
       <% role[1].each do |u| %>
-        <%= render partial: "shared/user_card", locals: {user: u, role: role[0], url_override: url_override } %>
+        <%= render partial: "shared/user_card", locals: {user: u, role: role[0], group: group} %>
       <% end %>
     </div>
   <% end %>

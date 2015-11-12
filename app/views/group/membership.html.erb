@@ -1,0 +1,92 @@
+<div class="row">
+  <div class="medium-8 small-12 text-left columns">
+    <h1>Edit membership of <%= link_to display_name(@user), "/user/#{@user.username}" %></h1>
+  </div>
+
+  <div class="medium-4 small-12 text-right columns">
+    <a href="/group/<%= @group.slug %>/members"><h2>Return to member list</h2></a>
+  </div>
+</div>
+<div class="row membership-cards">
+  <div class="large-3 medium-6 small-12 columns">
+    <div class="text-card pad user-card">
+      <h3><%= @user_membership.role.titleize %></h3>
+      <%= image_tag @user.avatar(:large), class: "avatar group #{@user_membership.role}" %>
+
+      <% if !["owner", "unverified"].include? @user_membership.role and (@membership.role == "owner" or @current_user.role == Role.find(1)) %>
+        <%= form_for @user_membership, url: "/group/#{@group.slug}/members/#{@user.username}", action: "patch" do |f| %>
+          <%= hidden_field_tag :goal, :promote %>
+          <%= f.submit 'Promote to Owner', class: "btn center small" %>
+        <% end %>
+      <% end %>
+
+      <% if @user_membership.role == "unverified" %>
+        <%= form_for @user_membership, url: "/group/#{@group.slug}/members/#{@user.username}", action: "patch" do |f| %>
+          <%= hidden_field_tag :goal, :approve %>
+          <%= f.submit 'Approve membership', class: "btn center small" %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  <% if @user_membership.role != "owner" %>
+    <div class="large-3 medium-6 small-12 columns">
+      <div class="text-card pad ban-card">
+        <h3>Ban User</h3>
+        <%= form_tag "/group/#{@group.slug}/members/#{@user.username}/ban", action: "post" do %>
+          <label>Reason
+            <%= text_field_tag :reason %>
+          </label>
+          <label class="duration">Duration<br>
+            <label><%= radio_button_tag :duration, :unban %> Unban</label>
+            <label><%= radio_button_tag :duration, :one_day %> 1 Day</label>
+            <label><%= radio_button_tag :duration, :three_days %> 3 Days</label>
+            <label><%= radio_button_tag :duration, :one_week %> 1 week</label>
+            <label><%= radio_button_tag :duration, :one_month %> 1 Month</label>
+            <label><%= radio_button_tag :duration, :perm %> Permanent</label>
+          </label>
+
+          <%= submit_tag 'Ban', class: "btn center small" %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <% if @user_membership.role != "owner" and @user_membership.role != "banned" %>
+    <div class="large-3 medium-6 small-12 columns">
+      <div class="text-card pad">
+        <h3>Set role</h3>
+        <%= form_for @user_membership, url: "/group/#{@group.slug}/members/#{@user.username}", action: "patch" do |f| %>
+          <%= hidden_field_tag :goal, :role %>
+          <% keys = GroupMembership.roles.keys - ["banned", "owner", "unverified"] -%>
+          <% keys.each do |k| %>
+            <label>
+              <%= f.radio_button :role, k %>
+              <%= k.titleize %>
+            </label>
+          <% end %>
+
+          <%= f.submit 'Update', class: "btn center small" %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% unless @user_bans.empty? %>
+    <div class="large-3 medium-6 small-12 columns">
+      <div class="text-card pad ban-card">
+        <h3>Ban History</h3>
+        <ul>
+          <% @user_bans.each do |ban| %>
+            <li><%= ban[0] %>
+              <ul>
+                <% ban[1].each do |b| %>
+                  <li><%= ban_string(b) %></li>
+                <% end %>
+              </ul>
+            </li>
+            
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -2,22 +2,41 @@ require 'rails_helper'
 
 RSpec.describe GroupMembership, type: :model do
   let(:bobby) { FactoryGirl.create(:user) }
+  let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
   let(:group) { FactoryGirl.create(:group)}
   let(:membership) { FactoryGirl.create(:group_membership, user: bobby, group: group) }
+
   describe '#ban' do
     let(:post) { FactoryGirl.create(:post, user: bobby, group: group) }
     it 'should ban the user' do
-      membership.ban("dick", 1.week.from_now, post)
+      membership.ban("dick", 1.week.from_now, admin_bobby, post)
       expect(group.group_memberships.find_by(user: bobby).role).to eq("banned")
     end
     context 'when a ban is extended' do
       it 'should ban the user but preserve their old role in the ban' do
         old_role = membership.role
-        membership.ban("dick", 1.week.from_now, post)
-        membership.ban("serious dick", 2.weeks.from_now, post)
+        membership.ban("dick", 1.week.from_now, admin_bobby, post)
+        membership.ban("serious dick", 2.weeks.from_now, admin_bobby, post)
         expect(group.group_memberships.find_by(user: bobby).role).to eq("banned")
         expect(Ban.where(user: bobby, group: group).first.group_role).to eq(old_role)
       end
+    end
+    it 'should raise an error when a ban cannot be saved' do
+      expect { membership.ban("dick", 1.week.from_now, nil) }.to raise_error(Exception)
+    end
+  end
+
+  describe '#unban' do
+    let(:post) { FactoryGirl.create(:post, user: bobby, group: group) }
+    it 'should unban the user' do
+      membership.ban("dick", 1.week.from_now, admin_bobby, post)
+      expect(group.group_memberships.find_by(user: bobby).role).to eq("banned")
+      membership.unban("not a dick", admin_bobby, post)
+    end
+    it 'should raise an error when a ban cannot be saved' do
+      membership.ban("dick", 1.week.from_now, admin_bobby, post)
+      expect(group.group_memberships.find_by(user: bobby).role).to eq("banned")
+      expect { membership.unban("dick", nil, post) }.to raise_error(Exception)
     end
   end
 

@@ -1,8 +1,9 @@
-<% url = url_override + user.username if defined? url_override -%>
-<% url = "/user/#{user.username}" unless defined? url_override -%>
 <div class="large-3 medium-3 small-6 columns user-card">
-  <a href="<%= url %>">
-    <%= image_tag user.avatar(:large), class: "avatar #{role}" %>
+  <% if defined?(group) and group %>
+    <a class="user-mod" href="/group/<%= @group.slug %>/members/<%= user.username %>"></a>
+  <% end %>
+  <a href="/user/<%= user.username %>">
+    <%= image_tag user.avatar(:large), class: "avatar group #{role}" %>
     <span class="username"><%= display_name(user) %></span>
   </a>
 </div>

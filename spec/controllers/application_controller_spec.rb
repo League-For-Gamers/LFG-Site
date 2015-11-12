@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe ApplicationController, :type => :controller do
   let(:bobby) { FactoryGirl.create(:user) }
+  let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
   describe "user login helpers" do
     context "with user logged in" do
       before do
@@ -18,19 +19,19 @@ RSpec.describe ApplicationController, :type => :controller do
           expect(assigns(:current_user).username).to eq(bobby.username)
         end
         it 'unbans banned users when their date is passed' do
-          bobby.ban("dick", 1.week.ago)
+          bobby.ban("dick", 1.week.ago, admin_bobby)
           expect(User.find(bobby.id).role.name).to eq("banned")
           controller.send(:set_current_user)
           expect(assigns(:current_user).role.name).to_not eq("banned")
         end
         it 'does not unban permabanned users' do
-          bobby.ban("dick", nil)
+          bobby.ban("dick", nil, admin_bobby)
           expect(User.find(bobby.id).role.name).to eq("banned")
           controller.send(:set_current_user)
           expect(assigns(:current_user).role.name).to eq("banned") 
         end
         it 'sets @ban variable when user is banned' do
-          bobby.ban("dick", nil)
+          bobby.ban("dick", nil, admin_bobby)
           expect(User.find(bobby.id).role.name).to eq("banned")
           controller.send(:set_current_user)
           expect(assigns(:ban)).to be_present

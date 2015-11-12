@@ -13,11 +13,11 @@ RSpec.describe GroupController, type: :controller do
         session[:user] = bobby.id
       end
       it 'should unban the user when their ban period is up' do
-        membership.ban("dick", 2.weeks.from_now)
+        membership.ban("dick", 2.weeks.from_now, admin_bobby)
         expect(GroupMembership.find(membership.id).role).to eq("banned")
         get :show, id: group.slug
         expect(GroupMembership.find(membership.id).role).to eq("banned")
-        membership.ban("dick", 2.weeks.ago)
+        membership.ban("dick", 2.weeks.ago, admin_bobby)
         get :show, id: group.slug
         expect(GroupMembership.find(membership.id).role).to_not eq("banned")
       end
@@ -111,7 +111,7 @@ RSpec.describe GroupController, type: :controller do
       end
       context 'and banned' do
         it 'should gracefully fail' do
-          bobby.ban("dick", 2.weeks.from_now)
+          bobby.ban("dick", 2.weeks.from_now, admin_bobby)
           get :new
           expect(response).to_not render_template(:new)
           expect(response).to redirect_to(root_url)
@@ -140,7 +140,7 @@ RSpec.describe GroupController, type: :controller do
       end
       context 'and banned' do
         it 'should gracefully fail' do
-          bobby.ban("dick", 2.weeks.from_now)
+          bobby.ban("dick", 2.weeks.from_now, admin_bobby)
           post :create, group: {title: "newgroup", description: "", membership: "public_membership", privacy: "public_group" }
           expect(assigns(:group)).to_not be_present
           expect(response).to_not redirect_to('/group/newgroup')
@@ -251,7 +251,7 @@ RSpec.describe GroupController, type: :controller do
       end
       context 'and banned' do
         it 'should fail gracefully' do
-          membership.ban("dick", 2.weeks.from_now)
+          membership.ban("dick", 2.weeks.from_now, admin_bobby)
           post :update, id: group.slug, group: { description: "dicks", membership: "owner_verified", privacy: "management_only_post" }
           expect(response).to_not redirect_to("/group/#{group.slug}")
           expect(flash[:warning]).to be_present
@@ -426,7 +426,7 @@ RSpec.describe GroupController, type: :controller do
       end
       context 'and globally banned' do
         it 'should reject the user from joining' do
-          bobby.ban("dick", 2.weeks.from_now)
+          bobby.ban("dick", 2.weeks.from_now, admin_bobby)
           get :join, id: group.slug
           expect(group.group_memberships.map(&:user)).to_not include(bobby)
         end
@@ -499,7 +499,7 @@ RSpec.describe GroupController, type: :controller do
       end
       context 'when banned from group' do
         it 'should fail gracefully' do
-          membership.ban("dick", 2.weeks.from_now)
+          membership.ban("dick", 2.weeks.from_now, admin_bobby)
           get :leave, id: group.slug
           expect(response).to redirect_to(root_url)
           expect(flash[:warning]).to be_present

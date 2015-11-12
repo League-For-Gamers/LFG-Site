@@ -139,6 +139,58 @@
 		}
 	}
 }
+.membership-cards {
+	.columns {
+		float: left !important;
+		.text-card {
+			&.ban-card {
+				.duration {
+					label {
+						display: inline-block;
+						width: 49%;
+						input[type="radio"] {
+							margin-bottom: 0.8em;
+						}
+					}
+				}
+				.btn {
+					width: 100%;
+				}
+			}
+			&.user-card {
+				max-width: 100%;
+				width: 100%;
+				text-align: center;
+				.avatar {
+					margin-bottom: rem-calc(10);
+				}
+				.btn {
+					width: 100%;
+				}
+			}
+			&.ban-card { 
+				ul {
+					margin-left: 0;
+					font-size: 10pt;
+					list-style: none;
+					li {
+						ul li {
+							padding-left: rem-calc(5);
+							color: red;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+@media only screen and (max-width: 40em) {
+	.membership-cards {
+		.text-card {
+			margin: rem-calc(7) 0;
+		}
+	}
+}
 @media only screen and (max-width: 26em) {
 	.group-card {
 		.title {

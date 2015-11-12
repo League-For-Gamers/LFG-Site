@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe User, :type => :model do
   let(:bobby) { FactoryGirl.create(:user) }
+  let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
   it "has a valid factory" do
     expect(bobby).to be_valid
   end
@@ -134,16 +135,19 @@ RSpec.describe User, :type => :model do
   describe '#ban' do
     let(:post) { FactoryGirl.create(:post, user: bobby) }
     it 'should ban the user' do
-      bobby.ban("dick", 1.week.from_now, post)
+      bobby.ban("dick", 1.week.from_now, admin_bobby, post)
       expect(User.find(bobby.id).role.name).to eq("banned")
     end
     context 'when a ban is extended' do
       it 'should ban the user but preserve their old role in the ban' do
         old_id = bobby.role_id
-        bobby.ban("dick", 1.week.from_now, post)
-        bobby.ban("serious dick", 2.weeks.from_now, post)
+        bobby.ban("dick", 1.week.from_now, admin_bobby, post)
+        bobby.ban("serious dick", 2.weeks.from_now, admin_bobby, post)
         expect(User.find(bobby.id).bans.first.role_id).to eq(old_id)
       end
+    end
+    it 'should raise an error when a ban cannot be saved' do
+      expect { bobby.ban("dick", 1.week.from_now, nil) }.to raise_error(Exception)
     end
   end
 end

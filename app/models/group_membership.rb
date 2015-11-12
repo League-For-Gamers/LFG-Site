@@ -90,18 +90,38 @@ class GroupMembership < ActiveRecord::Base
     list.map(&:name).include? permission
   end
 
-  def ban(reason, end_date, post = nil)
+  def ban(reason, end_date, banner, post = nil)
     if self.role == "banned"
       old_role = Ban.where(user: self.user, group: self.group).where.not(group_role: "banned").order("end_date DESC").first.group_role
     else
       old_role = self.role
     end
 
-    ban = Ban.new(user: self.user, reason: reason, end_date: end_date, group_role: old_role, group: self.group)
+    duration_string = ActionView::Base.new.distance_of_time_in_words Time.now, end_date unless end_date.nil?
+    duration_string = "permanently" if end_date.nil?
+
+    ban = Ban.new(user: self.user, reason: reason, end_date: end_date, group_role: old_role, group: self.group, duration_string: duration_string, banner: banner)
     ban.post = post unless post.nil?
-    ban.save
-    self.role = :banned
-    self.save
+    if ban.valid?
+      ban.save  
+      self.role = :banned
+      self.save
+    else
+      raise ban.errors.full_messages.join(", ")
+    end
+  end
+
+  def unban(reason, banner, post = nil)
+    old_role = Ban.where(user: self.user, group: self.group).where.not(group_role: "banned").order("end_date DESC").first.group_role
+    ban = Ban.new(user: self.user, reason: reason, end_date: 1.day.ago, group_role: old_role, group: self.group, banner: banner)
+    ban.post = post unless post.nil?
+    if ban.valid?
+      ban.save
+      self.role = old_role
+      self.save
+    else
+      raise ban.errors.full_messages.join(", ")
+    end
   end
 
   private

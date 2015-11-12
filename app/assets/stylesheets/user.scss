@@ -8,6 +8,28 @@
 	$shadow: drop-shadow(rem-calc(5) rem-calc(5) rem-calc(8) rgba(0,0,0,0.6));
 	-webkit-filter: $shadow;
 	filter: $shadow;
+	&.group {
+		border: rem-calc(5) solid;
+		border-radius: rem-calc(5);
+		&.owner {
+			border-color: mix($primary-red, gold, 30%);
+		}
+		&.administrator {
+			border-color: scale-color(forestgreen, $lightness: 15%)
+		}
+		&.moderator {
+			border-color: scale-color(cornflowerblue, $lightness: -10%)
+		}
+		&.member {
+			border-color: $primary-red;
+		}
+		&.banned {
+			border-color: scale-color($primary-red, $lightness: -30%);
+		}
+		&.unverified {
+			border-color: #2A384B;
+		}
+	}
 }
 .search-entry {
 	display: inline-block;
@@ -40,30 +62,14 @@
 }
 
 .user-card {
+	min-width: rem-calc(226);
 	max-width: rem-calc(256);
-	max-height: rem-calc(256);
+	min-height: rem-calc(226);
 	margin-bottom: rem-calc(10);
 	float: left !important;
-	img {
+	img .avatar{
 		min-width: rem-calc(226);
 		min-height: rem-calc(226);
-		border: rem-calc(5) solid;
-		border-radius: rem-calc(5);
-		&.owner {
-			border-color: mix($primary-red, gold, 30%);
-		}
-		&.administrator {
-			border-color: scale-color(forestgreen, $lightness: 15%)
-		}
-		&.moderator {
-			border-color: scale-color(cornflowerblue, $lightness: -10%)
-		}
-		&.member {
-			border-color: $primary-red;
-		}
-		&.banned {
-			border-color: scale-color($primary-red, $lightness: -30%);
-		}
 	}
 	.username {
 		position: absolute;
@@ -80,6 +86,18 @@
 			rem-calc(1) rem-calc(-1) 0 #000,
 		   rem-calc(-1)  rem-calc(1) 0 #000,
 			rem-calc(1)  rem-calc(1) 0 #000;
+	}
+	.user-mod {
+		position: absolute;
+		width: rem-calc(26);
+		height: rem-calc(26);
+		z-index: 9;
+		margin: rem-calc(6) 0 0 rem-calc(6);
+		&:hover, &:focus {
+			// Glyphicon remove
+			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAM1BMVEX////////////////////////////////////////////////////////////////////lEOhHAAAAEHRSTlMAECAwQFBgcICQoLDA0ODwVOCoyAAAAKxJREFUeAF10uFuhSAMQOEiiJOLeN7/abe2Eb3NPH+/1khAYuUDjCpaKk/ZsX5MDkYJ0hbROsAu3gLwUdAGWhWrAeclUnisddv6/vyZb2K1lS6S+m1OI/0B2E9uuKWB1XTkEKvqrJ7jUZXLzvwtTa7WILvcTWm99335T6rcRcmvslFfpALtVdyirHgtRZF84h0pSLAyxVphvo48xaswL6lO8bYpalOs5hJzc/kFQVITdxdk34wAAAAASUVORK5CYII=);
+			cursor: pointer;
+		}
 	}
 }
 

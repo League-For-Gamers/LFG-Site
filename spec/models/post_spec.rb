@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Post, type: :model do
   let(:post) { FactoryGirl.create(:post) }
+  let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
   it "has a valid factory" do
     expect(post).to be_valid
   end
@@ -24,7 +25,7 @@ RSpec.describe Post, type: :model do
 
   context 'when destroyed' do
     it 'any associated bans have their post association wiped' do
-      post.user.ban("dicks", 1.week.from_now, post)
+      post.user.ban("dicks", 1.week.from_now, admin_bobby, post)
       expect(post.bans.count).to eq(1)
       ban = post.bans.first
       post.destroy

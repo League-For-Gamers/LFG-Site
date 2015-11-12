@@ -34,4 +34,16 @@ module ApplicationHelper
       return body
     end
   end
+
+  def ban_string(ban)
+    duration_string = "for #{ban.duration_string}"
+    duration_string = "until the end of time" if ban.duration_string.nil? or ban.duration_string.include? "perm"
+
+    if ban.end_date.nil? or ban.end_date > Time.now
+      "User was banned by #{display_name(ban.banner)} #{duration_string}#{": #{ban.reason}" unless ban.reason.blank?}"
+    else
+      "User was unbanned by #{display_name(ban.banner)}#{": #{ban.reason}" unless ban.reason.blank?}"
+    end
+    
+  end
 end
