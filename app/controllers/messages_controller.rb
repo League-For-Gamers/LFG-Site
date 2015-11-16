@@ -4,8 +4,32 @@ class MessagesController < ApplicationController
   
   # GET /messages
   def index
-    @chats = Chat.includes(:private_messages, :users).find_by_sql ["SELECT chats.*, chats_users.last_read FROM chats_users INNER JOIN chats ON chats_users.chat_id = chats.id WHERE chats_users.user_id = ?", @current_user.id]
+    @chats = Chat.includes(:private_messages, :users)
+                 .find_by_sql(["SELECT chats.*, chats_users.last_read FROM chats_users INNER JOIN chats ON chats_users.chat_id = chats.id WHERE chats_users.user_id = ? LIMIT 12", @current_user.id])
     @chats.sort! {|a,b| b.private_messages.first.created_at <=> a.private_messages.first.created_at} # Newest message takes precedent.
+    @messages_count = @chats.count
+
+    @notifications = @current_user.notifications.includes(:user, :group).all.limit(12)
+    @notification_count = @notifications.count
+  end
+
+  # POST /messages
+  def index_ajax
+    render plain: "Source parameter is missing", status: 403 and return if params[:source].blank?
+    render plain: "Page parameter is missing", status: 403 and return if params[:page].blank?
+    per_page = params[:per_page] || 12
+    page = params[:page].to_i
+    case params[:source]
+    when "messages"
+      @chats = Chat.includes(:private_messages, :users)
+                   .find_by_sql(["SELECT chats.*, chats_users.last_read FROM chats_users INNER JOIN chats ON chats_users.chat_id = chats.id WHERE chats_users.user_id = ? LIMIT #{per_page} OFFSET #{(page)*per_page}", @current_user.id])
+      @chats.sort! {|a,b| b.private_messages.first.created_at <=> a.private_messages.first.created_at} # Newest message takes precedent.
+      render :raw_chat_cards, layout: false
+    when "notifications"
+      @notifications = @current_user.notifications.includes(:users, :groups).all.limit(per_page).offset((page)*per_page)
+    else
+      render plain: "Invalid source parameter", status: 403 and return
+    end
   end
 
   # GET /messages/new

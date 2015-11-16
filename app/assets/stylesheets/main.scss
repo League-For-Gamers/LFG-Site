@@ -410,3 +410,13 @@ a, button {
 .text-white {
 	color: $primary-cream
 }
+
+.notification {
+	width: 100%;
+	height: rem-calc(35);
+	background: $primary-cream;
+	line-height: 2em;
+	&:hover, &:focus {
+		background: scale-color($primary-red, $lightness: 90%);
+	}
+}

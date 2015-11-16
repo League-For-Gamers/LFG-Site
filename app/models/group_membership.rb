@@ -92,7 +92,7 @@ class GroupMembership < ActiveRecord::Base
 
   def ban(reason, end_date, banner, post = nil)
     if self.role == "banned"
-      old_role = Ban.where(user: self.user, group: self.group).where.not(group_role: "banned").order("end_date DESC").first.group_role
+      old_role = Ban.where(user: self.user, group: self.group).where.not(group_role: "banned").order("created_at DESC").first.group_role
     else
       old_role = self.role
     end
@@ -106,19 +106,28 @@ class GroupMembership < ActiveRecord::Base
       ban.save  
       self.role = :banned
       self.save
+
+      notification_message = "for #{ban.duration_string}"
+      notification_message = 'until the end of time' if end_date.nil?
+      notification_message = "by #{banner.display_name || banner.username}"
+      notification_message << ": #{reason}" unless reason.blank?
+      self.user.create_notification("group_ban", self.group, notification_message)
     else
       raise ban.errors.full_messages.join(", ")
     end
   end
 
   def unban(reason, banner, post = nil)
-    old_role = Ban.where(user: self.user, group: self.group).where.not(group_role: "banned").order("end_date DESC").first.group_role
+    old_role = Ban.where(user: self.user, group: self.group).where.not(group_role: "banned").order("created_at DESC").first.group_role
     ban = Ban.new(user: self.user, reason: reason, end_date: 1.day.ago, group_role: old_role, group: self.group, banner: banner)
     ban.post = post unless post.nil?
     if ban.valid?
       ban.save
       self.role = old_role
       self.save
+      notification_message = "by #{banner.display_name || banner.username}"
+      notification_message << ": #{reason}" unless reason.blank?
+      self.user.create_notification("group_unban", self.group, notification_message)
     else
       raise ban.errors.full_messages.join(", ")
     end

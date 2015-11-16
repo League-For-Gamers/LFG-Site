@@ -150,6 +150,7 @@ class GroupController < ApplicationController
     when "approve"
       @user_membership.role = :member
       # Send a notification to the user somehow
+      @user.create_notification("group_accepted", @group)
     else
       flash[:warning] = "Invalid goal parameter" and redirect_to request.referrer || root_url and return
     end
@@ -284,6 +285,8 @@ class GroupController < ApplicationController
       end
     end
   end
+
+  # TODO: Moderation log, group invite
 
   private
     def set_group

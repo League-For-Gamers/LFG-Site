@@ -18,11 +18,12 @@ Rails.application.routes.draw do
   namespace :messages, path: 'messages' do
     root action: 'index'
     # put '/new', action: 'new'
-    put '/', action: 'create_chat'
-    get '/:id', action: 'show'
-    put '/:id', action: 'create_message'
-    get '/:id/older', action: 'older_messages'
-    get '/:id/newer', action: 'new_messages'
+    post '/', action: 'index_ajax'
+    put  '/', action: 'create_chat'
+    get  '/:id', action: 'show'
+    put  '/:id', action: 'create_message'
+    get  '/:id/older', action: 'older_messages'
+    get  '/:id/newer', action: 'new_messages'
   end
 
   namespace :feed, path: 'feed' do

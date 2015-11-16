@@ -5,37 +5,4 @@ $ ->
 		n.toggleClass("shown")
 		n.removeClass("hidden")
 	if window.location.pathname.match(/\/group/i)
-		loading_cards = {"next": false, "prev": false}
-		Foundation.utils.S(".menu-panel .navigator a").click ->
-			node = this
-			dir = Foundation.utils.S(this).data("dir")
-			source = Foundation.utils.S(this).parent().data("source")
-			url = Foundation.utils.S(this).parent().data("url")
-			collection = Foundation.utils.S(this).parent().parent().parent().next(".collection")
-			page = collection.data("page")
-			per_page = Foundation.utils.S(this).data("per")
-			collection.height(collection.height())
-			switch dir
-				when "next"
-					page = page + 1
-				when "prev"
-					page = page - 1
-			if page < 0
-				page = 0
-			if !loading_cards[dir]
-				loading_cards[dir] = true
-				$.ajax
-					url: url
-					type: 'POST'
-					dataType: 'html'
-					data: {'source': source, 'page': page, 'raw': true}
-					complete: (data) ->
-						collection.html(data.responseText)
-						collection.data("page", page)
-						if page == 1
-							Foundation.utils.S(node).parent().children("a[data-dir='prev']").removeClass("hidden")
-						if page == 0
-							Foundation.utils.S(node).parent().children("a[data-dir='prev']").addClass("hidden")
-						if collection.children().length < per_page or (collection.children().length == per_page and Foundation.utils.S(node).parent().children("a[data-dir='next']").hasClass("hidden"))
-							Foundation.utils.S(node).parent().children("a[data-dir='next']").toggleClass("hidden")
-						loading_cards[dir] = false
+		return

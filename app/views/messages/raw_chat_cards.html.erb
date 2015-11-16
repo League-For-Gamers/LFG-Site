@@ -1,0 +1,6 @@
+<% @chats.each do |chat| %>
+  <%= render partial: "chat_card", locals: {chat: chat} %>
+<% end %>
+<% if @chats.empty? -%>
+  <p class="large-6 small-12 center text-white">Oops! No more chats!</p>
+<% end -%>

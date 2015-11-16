@@ -25,6 +25,7 @@ class User < ActiveRecord::Base
   has_many :followers, class_name: 'Follow', foreign_key: 'following_id', dependent: :destroy
   has_many :group_memberships
   has_many :groups, through: :group_memberships
+  has_many :notifications, dependent: :destroy
 
   validates :username, :display_name, length: { maximum: 25 }
   validates_format_of :username, with: /\A([a-zA-Z](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.
@@ -110,7 +111,7 @@ class User < ActiveRecord::Base
   def ban(reason, end_date, banner, post = nil)
     banned_role = Role.find_by(name: "banned")
     if self.role.name == "banned"
-      old_role = Ban.where(user: self).where.not(role: banned_role).order("end_date DESC").first.role
+      old_role = Ban.where(user: self).where.not(role: banned_role).order("created_at DESC").first.role
     else
       old_role = self.role
     end
@@ -124,6 +125,11 @@ class User < ActiveRecord::Base
       ban.save  
       self.role = banned_role
       self.save
+      notification_message = "for #{ban.duration_string}"
+      notification_message = 'until the end of time' if end_date.nil?
+      notification_message = "by #{banner.display_name || banner.username}"
+      notification_message << ": #{reason}" unless reason.blank?
+      self.create_notification("ban", nil, notification_message)
     else
       raise ban.errors.full_messages.join(", ")
     end
@@ -132,6 +138,10 @@ class User < ActiveRecord::Base
   # Usage: user_that_current_user_wants_to_follow.follow(current_user)
   def follow(user)
     Follow.create(user: user, following: self)
+  end
+
+  def create_notification(variant, group = nil, message = nil)
+    Notification.create(variant: Notification.variants[variant], user: self, group: group, message: message)
   end
 
   private

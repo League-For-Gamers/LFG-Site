@@ -1,23 +1,51 @@
-<% @chats.each do |chat| %>
-  <div class="large-6 small-12 center text-card pad chat">
-    <a href="/messages/<%= chat.id %>">
-      <div class="users">Chat with:
-      <%= (chat.users - [@current_user]).map { |x| display_name x }.join(", ") %>
-      </div>
-      <div class="last-message message">
-        <div class="avatar-container">
-          <%= image_tag chat.private_messages.first.user.avatar.url(:thumb), class: "avatar" %>
-        </div>
-        <p class="body">
-          <%= chat.private_messages.first.decrypted_body %>
-        </p>
-      </div>
-    </a>
+<div class="row">
+  <div class="small-12 text-left columns">
+    <h1>Messages and Notifications</h1>
   </div>
-<% end %>
-<% if @chats.empty? -%>
-  <div class="large-6 small-12 center text-card pad">
-    <h2>No chats!</h2>
-    <p>You haven't been talking to anyone yet</p>
+</div>
+
+<div class="notifications-collector">
+  <div class="row">
+    <div class="large-6 small-12 center menu-panel">
+      <div class="small-8 columns">
+        <h2>Notifications</h2>
+      </div>
+      <div class="small-3 columns text-right navigator" data-url="/messages" data-source="messages" data-per="6">
+        <a data-dir="prev" class="hidden">&lt;</a>
+        <a data-dir="next" class="<%= "hidden" if @notification_count < 12 %>">&gt;</a>
+      </div>
+    </div>
   </div>
-<% end -%>
+  <div class="row collection" data-page="0">
+    <% @notifications.each do |notification| %>
+      <div class="large-6 small-12 center text-card pad chat">
+        <%= render partial: "shared/notification", locals: {notification: notification} %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="messages-collector">
+  <div class="row">
+    <div class="large-6 small-12 center menu-panel">
+      <div class="small-8 columns">
+        <h2>Messages</h2>
+      </div>
+      <div class="small-3 columns text-right navigator" data-url="/messages" data-source="messages" data-per="12">
+        <a data-dir="prev" class="hidden">&lt;</a>
+        <a data-dir="next" class="<%= "hidden" if @messages_count < 12 %>">&gt;</a>
+      </div>
+    </div>
+  </div>
+  <div class="row collection" data-page="0">
+    <% @chats.each do |chat| %>
+      <%= render partial: "chat_card", locals: {chat: chat} %>
+    <% end %>
+    <% if @chats.empty? -%>
+      <div class="large-6 small-12 center text-card pad">
+        <h2>No chats!</h2>
+        <p>You haven't been talking to anyone yet</p>
+      </div>
+    <% end -%>
+  </div>
+</div>

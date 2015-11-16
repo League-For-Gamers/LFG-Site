@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151112075546) do
+ActiveRecord::Schema.define(version: 20151113092239) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -106,6 +106,18 @@ ActiveRecord::Schema.define(version: 20151112075546) do
     t.integer  "membership_count"
     t.boolean  "official",                         default: false
   end
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer  "variant"
+    t.string   "message"
+    t.integer  "group_id"
+    t.integer  "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "notifications", ["group_id"], name: "index_notifications_on_group_id", using: :btree
+  add_index "notifications", ["user_id"], name: "index_notifications_on_user_id", using: :btree
 
   create_table "permissions", force: :cascade do |t|
     t.string   "name"
@@ -215,6 +227,8 @@ ActiveRecord::Schema.define(version: 20151112075546) do
   add_foreign_key "follows", "users", column: "following_id"
   add_foreign_key "group_memberships", "groups"
   add_foreign_key "group_memberships", "users"
+  add_foreign_key "notifications", "groups"
+  add_foreign_key "notifications", "users"
   add_foreign_key "posts", "groups"
   add_foreign_key "posts", "users"
   add_foreign_key "private_messages", "chats"

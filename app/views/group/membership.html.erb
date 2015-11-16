@@ -16,7 +16,7 @@
       <% if !["owner", "unverified"].include? @user_membership.role and (@membership.role == "owner" or @current_user.role == Role.find(1)) %>
         <%= form_for @user_membership, url: "/group/#{@group.slug}/members/#{@user.username}", action: "patch" do |f| %>
           <%= hidden_field_tag :goal, :promote %>
-          <%= f.submit 'Promote to Owner', class: "btn center small" %>
+          <%= f.submit 'Promote to Owner', class: "btn center small", :'data-confirm' => 'Are you sure? This will demote you to administrator' %>
         <% end %>
       <% end %>
 
