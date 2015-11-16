@@ -11,6 +11,8 @@ class MessagesController < ApplicationController
 
     @notifications = @current_user.notifications.includes(:user, :group).all.limit(12)
     @notification_count = @notifications.count
+
+    MarkNotificationsAsReadJob.perform_later(@notifications.to_a)
   end
 
   # POST /messages
@@ -27,6 +29,8 @@ class MessagesController < ApplicationController
       render :raw_chat_cards, layout: false
     when "notifications"
       @notifications = @current_user.notifications.includes(:users, :groups).all.limit(per_page).offset((page)*per_page)
+      MarkNotificationsAsReadJob.perform_later(@notifications.to_a)
+      render :raw_notifications, layout: false
     else
       render plain: "Invalid source parameter", status: 403 and return
     end

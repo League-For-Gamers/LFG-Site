@@ -2,6 +2,8 @@ class Notification < ActiveRecord::Base
   belongs_to :group
   belongs_to :user
 
+  after_initialize :default_values
+
   enum variant: [:group_invite, :group_invited, :group_accepted, :group_ban, :group_unban, :ban, :unban, :mention]
 
   def resolve_url
@@ -54,4 +56,9 @@ class Notification < ActiveRecord::Base
     when "mention"
     end
   end
+
+  private
+    def default_values
+      self.acknowledged ||= false
+    end
 end
