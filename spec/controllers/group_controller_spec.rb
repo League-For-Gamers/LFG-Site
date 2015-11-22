@@ -379,6 +379,231 @@ RSpec.describe GroupController, type: :controller do
     end
   end
 
+  describe "GET /group/:id/members/:user_id" do
+    context 'when not logged in' do
+      it 'should fail gracefully' do
+        get :membership, id: group.slug, user_id: bobby.username
+        expect(response).to redirect_to('/signup')
+      end
+    end
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+      end
+
+      context 'but not a member of the group' do
+        before do
+          membership.delete
+        end
+        it 'should fail gracefully' do
+          get :membership, id: group.slug, user_id: bobby.username
+          expect(response).to redirect_to(root_url)
+          expect(flash[:warning]).to be_present
+        end
+      end
+      context 'when the user is not an administrator of the group' do
+        it 'should fail gracefully' do
+          get :membership, id: group.slug, user_id: bobby.username
+          expect(response).to redirect_to(root_url)
+          expect(flash[:warning]).to be_present
+        end
+      end
+      context 'when the user is an administrator of the group' do
+        before do
+          membership.role = :owner
+          membership.save
+          admin_membership.valid?
+        end
+        it 'should render a 404 when the user id is invalid' do
+          get :membership, id: group.slug, user_id: "invaid"
+          expect(response.status).to eq(404)
+          expect(response).to render_template("shared/not_found")
+        end
+        it 'return variables containing the user and their group membership' do
+          admin_membership.ban("dick", 1.week.from_now, bobby)
+          get :membership, id: group.slug, user_id: admin_bobby.username
+          expect(assigns(:user)).to be_present
+          expect(assigns(:user_membership)).to be_present
+          expect(assigns(:user_bans)).to_not be_empty
+          expect(response).to render_template("membership")
+        end
+      end
+    end
+  end
+
+  describe "PATCH /group/:id/members/:user_id" do
+    context 'when not logged in' do
+      it 'should fail gracefully' do
+        patch :update_membership, id: group.slug, user_id: bobby.username
+        expect(response).to redirect_to('/signup')
+      end
+    end
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+      end
+
+      context 'but not a member of the group' do
+        before do
+          membership.delete
+        end
+        it 'should fail gracefully' do
+          patch :update_membership, id: group.slug, user_id: bobby.username
+          expect(response).to redirect_to(root_url)
+          expect(flash[:warning]).to be_present
+        end
+      end
+      context 'when the user is not an administrator of the group' do
+        it 'should fail gracefully' do
+          patch :update_membership, id: group.slug, user_id: bobby.username
+          expect(response).to redirect_to(root_url)
+          expect(flash[:warning]).to be_present
+        end
+      end
+
+      context 'when the user is an administrator of the group' do
+        before do
+          membership.role = :owner
+          membership.save
+          admin_membership.valid?
+        end
+        it 'should render a 404 when the user id is invalid' do
+          patch :update_membership, id: group.slug, user_id: "invaid"
+          expect(response.status).to eq(404)
+          expect(response).to render_template("shared/not_found")
+        end
+        it 'should render an error when missing a goal parameter' do
+          patch :update_membership, id: group.slug, user_id: admin_bobby.username
+          expect(response).to redirect_to(root_url)
+          expect(flash[:warning]).to be_present
+        end
+        it 'should render an error when given an invalid goal parameter' do
+          patch :update_membership, id: group.slug, user_id: admin_bobby.username, goal: "nonexistant"
+          expect(response).to redirect_to(root_url)
+          expect(flash[:warning]).to be_present
+        end 
+        context 'when updating the role' do
+          it 'should update the users role to the newly specified role' do
+            patch :update_membership, id: group.slug, user_id: admin_bobby.username, goal: "role", group_membership: { role: :moderator }
+            expect(response).to redirect_to(root_url)
+            expect(flash[:warning]).to_not be_present
+            expect(GroupMembership.find(admin_membership.id).role).to eq("moderator")
+          end
+        end
+        context 'when approving user' do
+          before do
+            group.membership = :owner_verified
+            group.save
+            admin_membership.role = :unverified
+            admin_membership.save
+          end
+          it 'should update the users role to the newly specified role' do
+            patch :update_membership, id: group.slug, user_id: admin_bobby.username, goal: "approve"
+            expect(response).to redirect_to(root_url)
+            expect(flash[:warning]).to_not be_present
+            expect(GroupMembership.find(admin_membership.id).role).to eq("member")
+            expect(Notification.last.user).to eq(admin_bobby)
+          end
+        end
+        context 'when promoting a user to owner' do
+          it 'should gracefully fail the user is already owner' do
+            patch :update_membership, id: group.slug, user_id: bobby.username, goal: "promote"
+            expect(response).to redirect_to(root_url)
+            expect(flash[:warning]).to be_present
+          end
+          it 'should update the users role to owner, and make the existing owner an admin' do
+            patch :update_membership, id: group.slug, user_id: admin_bobby.username, goal: "promote"
+            expect(response).to redirect_to(root_url)
+            expect(flash[:warning]).to_not be_present
+            expect(GroupMembership.find(admin_membership.id).role).to eq("owner")
+            expect(GroupMembership.find(membership.id).role).to eq("administrator")
+          end
+        end
+      end
+    end
+  end
+
+  describe "POST /group/:id/members/:user_id/ban" do
+    context 'when not logged in' do
+      it 'should fail gracefully' do
+        post :ban, id: group.slug, user_id: bobby.username
+        expect(response).to redirect_to('/signup')
+      end
+    end
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+      end
+
+      context 'but not a member of the group' do
+        before do
+          membership.delete
+        end
+        it 'should fail gracefully' do
+          post :ban, id: group.slug, user_id: bobby.username
+          expect(response.status).to eq(403)
+        end
+      end
+      context 'when the user is not an administrator of the group' do
+        it 'should fail gracefully' do
+          post :ban, id: group.slug, user_id: bobby.username
+          expect(response.status).to eq(403)
+        end
+      end
+      context 'when the user is an administrator of the group' do
+        before do
+          membership.role = :owner
+          membership.save
+          admin_membership.valid?
+        end
+        it 'should render a 404 when the user id is invalid' do
+          post :ban, id: group.slug, user_id: "invaid"
+          expect(response.status).to eq(404)
+          expect(response).to render_template("shared/not_found")
+        end
+        it 'should duration parameter is invalid it should gracefully fail' do
+          post :ban, id: group.slug, user_id: admin_bobby.username, duration: "invalid"
+          expect(response).to redirect_to root_url
+          expect(flash[:warning]).to be_present
+        end
+        it 'should ban a user with the specified duration' do
+          post :ban, id: group.slug, user_id: admin_bobby.username, duration: "one_day"
+          last = Ban.last
+          expect(last.end_date).to eq(1.day.from_now.to_date)
+          expect(last.user).to eq(admin_bobby)
+
+          post :ban, id: group.slug, user_id: admin_bobby.username, duration: "three_days"
+          last = Ban.last
+          expect(last.end_date).to eq(3.days.from_now.to_date)
+          expect(last.user).to eq(admin_bobby)
+
+          post :ban, id: group.slug, user_id: admin_bobby.username, duration: "one_week"
+          last = Ban.last
+          expect(last.end_date).to eq(1.week.from_now.to_date)
+          expect(last.user).to eq(admin_bobby)
+
+          post :ban, id: group.slug, user_id: admin_bobby.username, duration: "one_month"
+          last = Ban.last
+          expect(last.end_date).to eq(1.month.from_now.to_date)
+          expect(last.user).to eq(admin_bobby)
+
+          post :ban, id: group.slug, user_id: admin_bobby.username, duration: "perm"
+          last = Ban.last
+          expect(last.end_date).to eq(nil)
+          expect(last.user).to eq(admin_bobby)
+        end
+        it 'should unban the user' do
+          admin_membership.ban("dick", nil, bobby)
+          expect(GroupMembership.find(admin_membership.id).role).to eq("banned")
+          post :ban, id: group.slug, user_id: admin_bobby.username, duration: "unban"
+          expect(GroupMembership.find(admin_membership.id).role).to_not eq("banned")
+          expect(response).to redirect_to(root_url)
+          expect(flash[:info]).to be_present
+        end 
+      end
+    end
+  end
+
   describe "POST /group/:id/new_post" do
     context 'when not logged in' do
       it 'should fail gracefully' do

@@ -49,7 +49,7 @@ class Notification < ActiveRecord::Base
       "You have been banned from the site #{self.message}" # Message same as group_ban
 
     # Sent to user when explicitly unbanned (not when ban is lapsted)
-    when "group_unban"
+    when "unban"
       "You have been unbanned from the site #{self.message}" # Message same as group_unban
 
     # Sent to user when mentioned. Not currently implemented.

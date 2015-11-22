@@ -149,7 +149,6 @@ class GroupController < ApplicationController
       @user_membership.role = :owner
     when "approve"
       @user_membership.role = :member
-      # Send a notification to the user somehow
       @user.create_notification("group_accepted", @group)
     else
       flash[:warning] = "Invalid goal parameter" and redirect_to request.referrer || root_url and return
@@ -159,7 +158,10 @@ class GroupController < ApplicationController
       owner.save if params[:goal] == "promote"
       flash[:info] = "User has been successfully updated!"
     else
+      # Currently can't create a situation where this is called, I think.
+      # :nocov:
       flash[:warning] = "An error has occurred when updating this user: #{@user_membership.errors.full_messages.join("\n")}"
+      # :nocov:
     end
     redirect_to request.referrer || root_url
   end
@@ -198,10 +200,13 @@ class GroupController < ApplicationController
       if @user_membership.ban(params[:reason], duration, @current_user)
         flash[:info] = "User has been successfully banned"
       else
+        # I have no idea how to make this happen in a test.
+        # :nocov:
         flash[:warning] = "Could not ban user for unknown reason"
       end
     rescue Exception => e
       flash[:warning] = e.message
+      # :nocov:
     end
     redirect_to request.referrer || root_url
   end

@@ -28,7 +28,7 @@ class MessagesController < ApplicationController
       @chats.sort! {|a,b| b.private_messages.first.created_at <=> a.private_messages.first.created_at} # Newest message takes precedent.
       render :raw_chat_cards, layout: false
     when "notifications"
-      @notifications = @current_user.notifications.includes(:users, :groups).all.limit(per_page).offset((page)*per_page)
+      @notifications = @current_user.notifications.includes(:user, :group).all.limit(per_page).offset((page)*per_page)
       MarkNotificationsAsReadJob.perform_later(@notifications.to_a)
       render :raw_notifications, layout: false
     else
