@@ -2,6 +2,8 @@ class Notification < ActiveRecord::Base
   belongs_to :group
   belongs_to :user
 
+  # TODO: Delete after 30 un-acknowledged notifications.
+
   after_initialize :default_values
 
   enum variant: [:group_invite, :group_invited, :group_accepted, :group_ban, :group_unban, :ban, :unban, :mention]

@@ -63,6 +63,7 @@ class GroupController < ApplicationController
 
   # GET /group/:id
   def show
+    @group_posts = @group.posts.where(official: true)
     set_title @group.title
   end
 
@@ -77,7 +78,7 @@ class GroupController < ApplicationController
         format.html { redirect_to request.referrer || "/group/#{@group.slug}", notice: 'Group was successfully updated.' }
         format.json { head :no_content }
       else
-        format.html { render action: 'show', notice: "Error updating group: #{@group.errors.full_messages.join("\n")}" }
+        format.html { redirect_to request.referrer || "/group/#{@group.slug}", notice: "Error updating group: #{@group.errors.full_messages.join("\n")}" }
         format.json { render json: @group.errors, status: :unprocessable_entity }
       end
     end

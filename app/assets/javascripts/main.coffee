@@ -23,6 +23,10 @@ $ ->
     else
       button.attr('disabled', 'disabled')
 
+  Foundation.utils.S('.blackout').click ->
+    Foundation.utils.S('.blackout').hide()
+    Foundation.utils.S(Foundation.utils.S('.blackout').data('usage')).hide()
+
   loading_navigator = {"next": false, "prev": false}
   Foundation.utils.S(".menu-panel .navigator a").click ->
     node = this

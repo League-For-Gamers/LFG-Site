@@ -18,7 +18,7 @@
 # require foundation/foundation.joyride
 # require foundation/foundation.magellan
 # require foundation/foundation.offcanvas
-# require foundation/foundation.orbit
+#= require foundation/foundation.orbit
 #= require foundation/foundation.reveal
 # require foundation/foundation.slider
 # require foundation/foundation.tab
@@ -32,7 +32,16 @@
 @ff_browser = !!navigator.userAgent.match(/Firefox\/\d+/)
 
 $ ->
-  $(document).foundation()
+  $(document).foundation({
+  	orbit: {
+  		bullets: false,
+  		timer: false,
+  		slide_number: false,
+  		navigation_arrows: false,
+  		variable_height: true,
+  		next_on_click: false
+  	}
+  })
   Foundation.utils.S('input, textarea').placeholder()
   Turbolinks.enableProgressBar()
   Turbolinks.enableTransitionCache()

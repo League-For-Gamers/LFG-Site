@@ -1,77 +1,111 @@
-<div class="row">
-  <h1><%= @group.title -%></h1>
+<% if !!@membership and GroupMembership.has_permission? "can_create_post", @permissions -%>
+  <div class="row group-new-post" id="new-post">
+    <div class="large-6 small-12 text-card pad lfg-form new-post-form">
+      <%= form_tag "/group/#{@group.slug}/new_post" do -%>
+        <label>New post
+          <%= text_area_tag "body", nil, class: "quick-submit white" %>
+        </label>
+        <% if universal_permission_check "can_create_official_posts" %>
+          <label style="float: right;">Pinned?
+            <%= check_box_tag "official" %>
+          </label>
+        <% end %>
+        <input type="submit" class="btn" value="Post" />
+      <% end -%>
+    </div>
+  </div>
+<% end -%>
+
+
+<div class="row group-banner">
   <% unless @group.banner.blank? -%>
     <%= image_tag @group.banner.url(:large), class: "banner" %>
   <% end -%>
+  <h1><%= @group.title -%></h1>
 </div>
-<% if !!@membership or @group.privacy == "public_group" -%>
-  <% if !!@membership and @membership.role == "banned" -%>
-    <div class="row">
-      <div class="large-6 small-12 text-card pad banned-message">
-      <h1>You are banned</h1>
-      <p>Your ban will not be lifted until 
-      <% if @ban.end_date.nil? %>
-        <span class="highlight">Never</span>
-      <% else -%>
-        the <span class="highlight"><%= @ban.end_date.strftime("%-d").to_i.ordinalize -%> of <%= @ban.end_date.strftime("%B") %>, <%= @ban.end_date.strftime("%Y") %></span></p>
+<div class="row">
+  <div class="large-4 medium-4 small-12 right columns text-card" id="description">
+    <h2>About</h2>
+    <p><%= @group.description %></p>
+    <div class="buttons">
+      <% if !!@current_user and universal_permission_check "can_view_group_members" %>
+        <a href="/group/<%= @group.slug %>/members" class="btn">Member list</a>
+      <% end %>
+      <% if !!@current_user and !@membership and ["public_membership", "owner_verified"].include? @group.membership %>
+        <a href="/group/<%= @group.slug %>/join" class="btn">Join Group</a>
+      <% elsif !!@membership and @membership.role != "unverified" %>
+        <a href="/group/<%= @group.slug %>/leave" class="btn">Leave Group</a>
+      <% elsif !!@membership and @membership.role == "unverified" %>
+        <a href="/group/<%= @group.slug %>/leave" class="btn">Revoke join request</a>
       <% end -%>
-      <p>You were banned for the reason: <span class="highlight"><%= @ban.reason %></span></p>
-      <% unless @ban.post.nil? -%>
-        <p><a href="/feed/user/<%= @current_user.username %>/<%= @ban.post.id %>">Click here</a> to be taken to the post you were banned for</p>
-      <% end -%>
-      </div>
     </div>
-  <% end -%>
-  <% if GroupMembership.has_permission? "can_create_post", @permissions -%>
-    <div class="row">
-      <div class="large-6 small-12 text-card pad lfg-form new-post-form">
-        <%= form_tag "/group/#{@group.slug}/new_post" do -%>
-          <label>New post
-            <%= text_area_tag "body", nil, class: "quick-submit white" %>
-          </label>
-          <% if universal_permission_check "can_create_official_posts" %>
-            <label style="float: right;">Pinned?
-              <%= check_box_tag "official" %>
-            </label>
-          <% end %>
-          <input type="submit" class="btn" value="Post" />
+  </div>
+  <div class="large-7 medium-8 small-12 left columns">
+    <% if !!@membership and @membership.role == "banned" -%>
+      <div class="row">
+        <div class="text-card pad banned-message">
+        <h1>You are banned</h1>
+        <p>Your ban will not be lifted until 
+        <% if @ban.end_date.nil? %>
+          <span class="highlight">Never</span>
+        <% else -%>
+          the <span class="highlight"><%= @ban.end_date.strftime("%-d").to_i.ordinalize -%> of <%= @ban.end_date.strftime("%B") %>, <%= @ban.end_date.strftime("%Y") %></span></p>
         <% end -%>
+        <p>You were banned for the reason: <span class="highlight"><%= @ban.reason %></span></p>
+        <% unless @ban.post.nil? -%>
+          <p><a href="/feed/user/<%= @current_user.username %>/<%= @ban.post.id %>">Click here</a> to be taken to the post you were banned for</p>
+        <% end -%>
+        </div>
       </div>
-    </div>
-  <% end -%>
-<% end -%>
-<div class="row">
-  <div class="large-6 small-12 center" id="new-posts-button">
-  View <span class="num"></span> new posts
-  </div>
-</div>
-<div class="row">
-  <div class="large-6 small-12 right columns" id="description">
-    <%= @group.description %>
-    <% if !!@current_user and universal_permission_check "can_view_group_members" %>
-      <a href="/group/<%= @group.slug %>/members" class="btn">Member list</a>
-    <% end %>
-    <% if !!@current_user and !@membership and ["public_membership", "owner_verified"].include? @group.membership %>
-      <a href="/group/<%= @group.slug %>/join" class="btn">Join Group</a>
-    <% elsif !!@membership and @membership.role != "unverified" %>
-      <a href="/group/<%= @group.slug %>/leave" class="btn">Leave Group</a>
-    <% elsif !!@membership and @membership.role == "unverified" %>
-      <a href="/group/<%= @group.slug %>/leave" class="btn">Revoke join request</a>
     <% end -%>
-  </div>
-  <div class="large-6 small-12 left columns">
-    <div class="small-12 left" id="pinned-posts">
-      <% @group.posts.where(official: true).each do |post| -%>
-        <%= render partial: "post", locals: {post: post, user: post.user} %>
-      <% end -%>
-    </div>
-    <div class="small-12 left" id="new-posts-button">
-      View <span class="num"></span> new posts
-    </div>
-    <div class="small-12 left" id="feed-posts">
-      <% @group.posts.each do |post| -%>
-        <%= render partial: "post", locals: {post: post, user: post.user} %>
-      <% end -%>
+    
+    <div class="row">
+      <% unless @group_posts.empty? %>
+        <div class="left columns">
+          <div class="small-12 menu-panel">
+            <% if !!@membership and GroupMembership.has_permission? "can_create_post", @permissions -%>
+              <div class="left">
+                <a class="post-icon"></a>
+              </div>
+            <% end -%>
+            <% if @group_posts.count > 1 -%>
+              <div class="right orbit-nav">
+                <% @group_posts.count.times do |i| %>
+                  <a data-orbit-link="stickied-<%=i%>"></a>
+                <% end %>
+              </div>
+            <% end -%>
+          </div>
+          <div class="small-12 left" id="pinned-posts" data-orbit>
+            <% @group_posts.each_with_index do |post, i| -%>
+              <li data-orbit-slide="stickied-<%=i%>">
+                <%= render partial: "post", locals: {post: post, user: post.user} %>
+              </li>
+            <% end -%>
+          </div>
+        <% end %>
+      </div>
+    
+
+      <div class="left columns">
+        <div class="small-12 menu-panel">
+          <% if !!@membership and GroupMembership.has_permission? "can_create_post", @permissions -%>
+            <div class="left">
+              <a class="post-icon"></a>
+            </div>
+          <% end -%>
+        </div>
+
+        <div class="small-12 left" id="new-posts-button">
+          View <span class="num"></span> new posts
+        </div>
+        
+        <div class="small-12 left" id="feed-posts">
+          <% @group.posts.each do |post| -%>
+            <%= render partial: "post", locals: {post: post, user: post.user} %>
+          <% end -%>
+        </div>
+      </div>
     </div>
   </div>
 </div>

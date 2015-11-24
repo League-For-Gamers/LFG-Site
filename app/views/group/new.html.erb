@@ -45,16 +45,17 @@
           </label>
         <% end %>
       </div>
-
-      <div class="small-4 columns">
-        Comment Privacy
-        <% Group.comment_privacies.keys.each do |key| %>
-          <label>
-            <%= f.radio_button :comment_privacy, key %>
-            <%= key.titleize %>
-          </label>
-        <% end %>
-      </div>
+      <% if false # Basically comment it out -%>
+        <div class="small-4 columns">
+          Comment Privacy
+          <% Group.comment_privacies.keys.each do |key| %>
+            <label>
+              <%= f.radio_button :comment_privacy, key %>
+              <%= key.titleize %>
+            </label>
+          <% end %>
+        </div>
+      <% end -%>
     </div>
 
     <div class="small-4 center">

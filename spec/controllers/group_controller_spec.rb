@@ -275,7 +275,7 @@ RSpec.describe GroupController, type: :controller do
         it 'should fail gracefully when invalid parameters are passed' do
           new_desc = SecureRandom.hex(2000)
           post :update, id: group.slug, group: { description: new_desc}
-          expect(response).to render_template("show")
+          expect(response).to redirect_to("/group/#{group.slug}")
           expect(Group.find(group.id).description).to_not eq(new_desc)
         end
       end

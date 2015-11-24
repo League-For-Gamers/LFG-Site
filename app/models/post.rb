@@ -3,6 +3,8 @@ class Post < ActiveRecord::Base
   belongs_to :user
   belongs_to :group
 
+  # TODO: Maximum of 5 stickied posts.
+
   validates :body, length: { maximum: 512 }
   validates :user, :body, presence: true
   has_many :bans, -> { order 'end_date DESC'}

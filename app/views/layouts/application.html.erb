@@ -25,6 +25,7 @@
   <link rel="shortcut icon" href="/favicon.ico?v2" />
 </head>
 <body class="antialiased">
+  <div class="blackout"></div>
   <% flash.each do |message_type, message| %>
     <div data-alert class="alert-box <%= message_type  %>">
       <%= message %>
