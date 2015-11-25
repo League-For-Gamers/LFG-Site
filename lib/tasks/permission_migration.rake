@@ -68,7 +68,7 @@ namespace :db do
     # :nocov:
     g = Group.find_by(slug: "league_for_gamers")
     User.all.each do |u|
-      GroupMembership.find_or_create_by(user: u, group: g)
+      GroupMembership.create(user: u, group: g, role: :member) unless !!GroupMembership.find_by(user: u, group: g)
     end
     # :nocov:
   end
