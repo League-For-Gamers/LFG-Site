@@ -14,7 +14,7 @@ $ ->
       node.text node.text().replace(/hide/i, "Show")
   Foundation.utils.S('#login-button').click (e) -> 
     e.preventDefault()
-    $('#login-form').slideToggle(200);
+    Foundation.utils.S('#login-form').slideToggle(200);
 
   $.wire_up_the_remaining_characters = ->
     $('textarea[maxlength]').each (_, item) ->
@@ -29,7 +29,6 @@ $ ->
         feedback()
   $.wire_up_the_remaining_characters()
 
-    Foundation.utils.S('#login-form').slideToggle(200);
   Foundation.utils.S('.requires-confirmation').find('#confirmation').on 'keyup', ->
     required = Foundation.utils.S(this).attr("placeholder").toLowerCase()
     button = Foundation.utils.S(this).parent().parent().find("input[type='submit']")
