@@ -60,7 +60,7 @@
     <% end -%>
     
     <div class="row">
-      <% unless @group_posts.empty? %>
+      <% unless @stickied_posts.empty? %>
         <div class="left columns">
           <div class="small-12 menu-panel">
             <% if !!@membership and GroupMembership.has_permission? "can_create_post", @permissions -%>
@@ -68,16 +68,16 @@
                 <a class="post-icon"></a>
               </div>
             <% end -%>
-            <% if @group_posts.count > 1 -%>
+            <% if @stickied_posts.count > 1 -%>
               <div class="right orbit-nav">
-                <% @group_posts.count.times do |i| %>
+                <% @stickied_posts.count.times do |i| %>
                   <a data-orbit-link="stickied-<%=i%>"></a>
                 <% end %>
               </div>
             <% end -%>
           </div>
           <div class="small-12 left" id="pinned-posts" data-orbit>
-            <% @group_posts.each_with_index do |post, i| -%>
+            <% @stickied_posts.each_with_index do |post, i| -%>
               <li data-orbit-slide="stickied-<%=i%>">
                 <%= render partial: "post", locals: {post: post, user: post.user} %>
               </li>
@@ -101,7 +101,7 @@
         </div>
         
         <div class="small-12 left" id="feed-posts">
-          <% @group.posts.each do |post| -%>
+          <% @group_posts.each do |post| -%>
             <%= render partial: "post", locals: {post: post, user: post.user} %>
           <% end -%>
         </div>

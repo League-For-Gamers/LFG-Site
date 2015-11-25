@@ -63,7 +63,8 @@ class GroupController < ApplicationController
 
   # GET /group/:id
   def show
-    @group_posts = @group.posts.where(official: true)
+    @stickied_posts = @group.posts.where(official: true)
+    @group_posts = @group.posts.limit(30)
     set_title @group.title
   end
 

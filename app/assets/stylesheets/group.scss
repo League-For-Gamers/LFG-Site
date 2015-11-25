@@ -219,12 +219,12 @@
 		display: inline-block;
 		height: rem-calc(20);
 		width: rem-calc(20);
-		background-color: white;
+		background-color: $primary-dark-red;
 		border-radius: rem-calc(20);
 		margin-right: rem-calc(3);
 		vertical-align: middle;
 		&.active {
-			background-color: $primary-dark-red;
+			background-color: white;
 		}
 	}
 }
