@@ -5,6 +5,7 @@ class GroupMembership < ActiveRecord::Base
   enum role: [:owner, :administrator, :moderator, :member, :banned, :unverified]
 
   validates :role, presence: true
+  validates_uniqueness_of :group, scope: :user_id
   validate :validates_ownership_uniqueness
 
   def self.get_permission(membership, group = nil)
