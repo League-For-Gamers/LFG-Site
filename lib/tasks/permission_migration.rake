@@ -70,6 +70,11 @@ namespace :db do
     User.all.each do |u|
       GroupMembership.create(user: u, group: g, role: :member) unless !!GroupMembership.find_by(user: u, group: g)
     end
+    posts = Post.where(group: nil)
+    posts.each do |p|
+      p.group = g
+      p.save
+    end
     # :nocov:
   end
 
