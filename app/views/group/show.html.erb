@@ -21,12 +21,12 @@
   <% unless @group.banner.blank? -%>
     <%= image_tag @group.banner.url(:large), class: "banner" %>
   <% end -%>
-  <h1><%= @group.title -%></h1>
+  <h1 class="<%= "no-banner" if @group.banner.blank? %>"><%= @group.title -%></h1>
 </div>
 <div class="row">
   <div class="large-4 medium-4 small-12 right columns text-card" id="description">
     <h2>About</h2>
-    <p><%= @group.description %></p>
+    <p><%= replace_urls @group.description %></p>
     <div class="buttons">
       <% if !!@current_user and universal_permission_check "can_view_group_members" %>
         <a href="/group/<%= @group.slug %>/members" class="btn">Member list</a>
@@ -88,13 +88,13 @@
     
 
       <div class="left columns">
-        <div class="small-12 menu-panel">
-          <% if !!@membership and GroupMembership.has_permission? "can_create_post", @permissions -%>
+        <% if !!@membership and GroupMembership.has_permission? "can_create_post", @permissions -%>
+          <div class="small-12 menu-panel">
             <div class="left">
               <a class="post-icon"></a>
             </div>
-          <% end -%>
-        </div>
+          </div>
+        <% end -%>
 
         <div class="small-12 left" id="new-posts-button">
           View <span class="num"></span> new posts

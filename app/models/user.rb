@@ -46,6 +46,7 @@ class User < ActiveRecord::Base
   before_validation :hash_email
   before_create :encrypt_email
   before_create :set_default_role
+  after_create :join_lfg_group
 
   accepts_nested_attributes_for :skills, allow_destroy: true
   accepts_nested_attributes_for :tags, allow_destroy: true
@@ -145,6 +146,11 @@ class User < ActiveRecord::Base
   end
 
   private
+    def join_lfg_group
+      g = Group.find_by(slug: "league_for_gamers")
+      GroupMembership.create(user: self, group: g, role: :member)
+    end
+
     # THANKS STACK OVERFLOW! http://stackoverflow.com/questions/12663593/has-secure-password-authenticate-inside-validation-on-password-update
     def validates_old_password
       return if password_digest_was.nil? || !password_digest_changed?

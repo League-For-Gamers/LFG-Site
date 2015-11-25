@@ -58,6 +58,10 @@ namespace :db do
     default.save
   end
 
+  task :object_migration => :environment do
+    lfg_group = Group.find_or_create_by(id: 1, title: "League for Gamers", privacy: :public_group, membership: :public_membership, official: true)
+  end
+
   task :set_default_user_role => :environment do
     User.where(role: nil).each{|x| x.role=Role.find_by(name: 'default');x.save}
   end

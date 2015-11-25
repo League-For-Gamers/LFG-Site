@@ -274,10 +274,11 @@ class GroupController < ApplicationController
       @sort = search_params["sort"]
       unless @group_query.blank?
         @groups = Group.search_by_title(@group_query).with_pg_search_rank
+        @groups = @groups.map { |x| x unless x.privacy = "private_group" }.compact # Remove private groups.
 
         # I'm not sure how sort is going to be used, or if it really will but I want it to be at least open to it
         if @sort.blank?
-          @groups = @groups.sort { |x,y| y.confidence <=> x.confidence }
+          @groups = @groups.sort { |x,y| y.pg_search_rank <=> x.pg_search_rank }
         end
 
         per_page = 10

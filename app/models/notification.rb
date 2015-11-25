@@ -2,9 +2,8 @@ class Notification < ActiveRecord::Base
   belongs_to :group
   belongs_to :user
 
-  # TODO: Delete after 30 un-acknowledged notifications.
-
   after_initialize :default_values
+  after_create :delete_older_messages
 
   enum variant: [:group_invite, :group_invited, :group_accepted, :group_ban, :group_unban, :ban, :unban, :mention]
 
@@ -62,5 +61,10 @@ class Notification < ActiveRecord::Base
   private
     def default_values
       self.acknowledged ||= false
+    end
+
+    def delete_older_messages
+      to_delete = Notification.where(user: @current_user, acknowledged: true).order("created_at DESC").offset(30)
+      to_delete.each {|n| n.destroy}
     end
 end

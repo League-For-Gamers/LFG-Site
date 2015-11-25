@@ -96,6 +96,7 @@ namespace :deploy do
       within release_path do
         with rails_env: fetch(:rails_env) do
           execute :rake, 'db:permission_migration'
+          execute :rake, 'db:object_migration'
         end
       end
     end

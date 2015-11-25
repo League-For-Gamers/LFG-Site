@@ -204,6 +204,11 @@
 			rem-calc(4) rem-calc(-4) rem-calc(12) #000,
 		   rem-calc(-4)  rem-calc(4) rem-calc(12) #000,
 			rem-calc(4)  rem-calc(4) rem-calc(12) #000;
+
+		&.no-banner {
+			bottom: initial;
+			margin-bottom: initial;
+		}
 	}
 }
 .orbit-nav {
@@ -243,6 +248,7 @@
 		font-size: 18pt;
 		font-weight: 600;
 		font-style: italic;
+		white-space: pre-wrap;
 	}
 	.buttons {
 		a {
