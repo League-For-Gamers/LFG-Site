@@ -13,6 +13,16 @@
         </div>
       </li>
       <li class="accordion-navigation">
+        <a href="#banner">Change Banner</a>
+        <div id="banner" class="content">
+          <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
+            <label>Recommended size: 1500x400.<br>Will be cropped and resized to 1500x400 and 356x200, center focus.</label>
+            <%= f.file_field :banner %>
+            <%= f.submit 'Upload', class: "btn small center" %>
+          <% end -%>
+        </div>
+      </li>
+      <li class="accordion-navigation">
         <a href="#privacy">Group Privacy</a>
         <div id="privacy" class="content">
           <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
@@ -27,7 +37,21 @@
         </div>
       </li>
       <li class="accordion-navigation">
-        <a href="#membership">Membership Privacy</a>
+        <a href="#post">Post Controls</a>
+        <div id="post" class="content">
+          <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
+            <% Group.post_controls.keys.each do |key| %>
+              <label>
+                <%= f.radio_button :post_control, key %>
+                <%= key.titleize %>
+              </label>
+            <% end %>
+            <%= f.submit 'Update', class: "btn small center" %>
+          <% end -%>
+        </div>
+      </li>
+      <li class="accordion-navigation">
+        <a href="#membership">Membership Policy</a>
         <div id="membership" class="content">
           <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
             <% Group.memberships.keys.each do |key| %>
@@ -37,16 +61,6 @@
               </label>
             <% end %>
             <%= f.submit 'Update', class: "btn small center" %>
-          <% end -%>
-        </div>
-      </li>
-      <li class="accordion-navigation">
-        <a href="#banner">Change Banner</a>
-        <div id="banner" class="content">
-          <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
-            <label>Recommended size: 1500x400.<br>Will be cropped and resized to 1500x400 and 356x200, center focus.</label>
-            <%= f.file_field :banner %>
-            <%= f.submit 'Upload', class: "btn small center" %>
           <% end -%>
         </div>
       </li>

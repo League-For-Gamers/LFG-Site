@@ -274,7 +274,7 @@ class GroupController < ApplicationController
       @sort = search_params["sort"]
       unless @group_query.blank?
         @groups = Group.search_by_title(@group_query).with_pg_search_rank
-        @groups = @groups.map { |x| x unless x.privacy = "private_group" }.compact # Remove private groups.
+        @groups = @groups.map { |x| x unless x.privacy == "private_group" }.compact # Remove private groups.
 
         # I'm not sure how sort is going to be used, or if it really will but I want it to be at least open to it
         if @sort.blank?
@@ -322,9 +322,9 @@ class GroupController < ApplicationController
 
     def update_params
       if @current_user.role == Role.find(1)
-        params.require(:group).permit(:title,:description, :membership, :privacy, :banner, :official)
+        params.require(:group).permit(:title, :description, :membership, :privacy, :post_control, :banner, :official)
       else
-        params.require(:group).permit(:description, :membership, :privacy, :banner)
+        params.require(:group).permit(:description, :membership, :privacy, :post_control, :banner)
       end
     end
 

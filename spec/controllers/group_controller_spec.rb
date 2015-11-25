@@ -201,7 +201,8 @@ RSpec.describe GroupController, type: :controller do
         end
         context 'and the group has no other users in it' do
           before do
-            admin_membership.destroy
+            admin_bobby.destroy
+            group.save
           end
           context 'and the confirmation does not match the title' do
             it 'should fail gracefully' do
@@ -252,7 +253,7 @@ RSpec.describe GroupController, type: :controller do
       context 'and banned' do
         it 'should fail gracefully' do
           membership.ban("dick", 2.weeks.from_now, admin_bobby)
-          post :update, id: group.slug, group: { description: "dicks", membership: "owner_verified", privacy: "management_only_post" }
+          post :update, id: group.slug, group: { description: "dicks", membership: "owner_verified", privacy: "public_group", post_control: "management_only_post" }
           expect(response).to_not redirect_to("/group/#{group.slug}")
           expect(flash[:warning]).to be_present
           expect(Group.find(group.id).description).to_not eq("dicks")
@@ -487,7 +488,8 @@ RSpec.describe GroupController, type: :controller do
             patch :update_membership, id: group.slug, user_id: admin_bobby.username, goal: "role", group_membership: { role: :moderator }
             expect(response).to redirect_to(root_url)
             expect(flash[:warning]).to_not be_present
-            expect(GroupMembership.find(admin_membership.id).role).to eq("moderator")
+            expect(assigns[:user_membership].role).to eq("moderator")
+            expect(assigns[:user_membership]).to be_valid
           end
         end
         context 'when approving user' do
@@ -501,7 +503,8 @@ RSpec.describe GroupController, type: :controller do
             patch :update_membership, id: group.slug, user_id: admin_bobby.username, goal: "approve"
             expect(response).to redirect_to(root_url)
             expect(flash[:warning]).to_not be_present
-            expect(GroupMembership.find(admin_membership.id).role).to eq("member")
+            expect(assigns[:user_membership].role).to eq("member")
+            expect(assigns[:user_membership]).to be_valid
             expect(Notification.last.user).to eq(admin_bobby)
           end
         end
@@ -515,8 +518,8 @@ RSpec.describe GroupController, type: :controller do
             patch :update_membership, id: group.slug, user_id: admin_bobby.username, goal: "promote"
             expect(response).to redirect_to(root_url)
             expect(flash[:warning]).to_not be_present
-            expect(GroupMembership.find(admin_membership.id).role).to eq("owner")
-            expect(GroupMembership.find(membership.id).role).to eq("administrator")
+            expect(assigns[:user_membership].role).to eq("owner")
+            expect(assigns[:user_membership]).to be_valid
           end
         end
       end
@@ -596,7 +599,8 @@ RSpec.describe GroupController, type: :controller do
           admin_membership.ban("dick", nil, bobby)
           expect(GroupMembership.find(admin_membership.id).role).to eq("banned")
           post :ban, id: group.slug, user_id: admin_bobby.username, duration: "unban"
-          expect(GroupMembership.find(admin_membership.id).role).to_not eq("banned")
+          expect(assigns[:user_membership].role).to_not eq("banned")
+          expect(assigns[:user_membership]).to be_valid
           expect(response).to redirect_to(root_url)
           expect(flash[:info]).to be_present
         end 

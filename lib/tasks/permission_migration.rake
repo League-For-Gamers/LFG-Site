@@ -59,7 +59,18 @@ namespace :db do
   end
 
   task :object_migration => :environment do
+    # :nocov:
     lfg_group = Group.find_or_create_by(id: 1, title: "League for Gamers", privacy: :public_group, membership: :public_membership, official: true)
+    # :nocov:
+  end
+
+  task :everyone_join_lfg => :environment do
+    # :nocov:
+    g = Group.find_by(slug: "league_for_gamers")
+    User.all.each do |u|
+      GroupMembership.create(user: u, group: g, role: :member)
+    end
+    # :nocov:
   end
 
   task :set_default_user_role => :environment do

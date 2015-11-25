@@ -13,7 +13,7 @@ class GroupMembership < ActiveRecord::Base
     # Permissions are inherited by higher roles. 
     # I'm pretty sure this can be cleaner.
     if !membership
-      if group.privacy == "public_group" and group.membership != "owner_verified"
+      if group.privacy == "public_group" and group.post_control == "public_posts" and group.membership != "owner_verified"
         permissions << Permission.find_by(name: "can_create_post")
         permissions << Permission.find_by(name: "can_edit_own_posts")
         permissions << Permission.find_by(name: "can_view_group_members")
@@ -26,60 +26,36 @@ class GroupMembership < ActiveRecord::Base
       return permissions
     end
 
-    case membership.group.privacy
-    when "public_group", "members_only_post"
-      if ["unverified"].include? membership.role
+    if ["member", "moderator", "owner", "administrator"].include? membership.role
+      permissions << Permission.find_by(name: "can_view_group_members")
+    end
+    if ["moderator", "owner", "administrator"].include? membership.role
+      permissions << Permission.find_by(name: "can_ban_users")
+    end
+    if ["owner", "administrator"].include? membership.role
+      permissions << Permission.find_by(name: "can_create_official_posts")
+      permissions << Permission.find_by(name: "can_update_group")
+      permissions << Permission.find_by(name: "can_edit_group_member_roles")
+    end
+    if ["owner"].include? membership.role
+      permissions << Permission.find_by(name: "can_delete_group")
+    end
+
+    case membership.group.post_control
+    when "public_posts"
+      if ["member", "moderator", "owner", "administrator", "unverified"].include? membership.role
+        permissions << Permission.find_by(name: "can_create_post")
         permissions << Permission.find_by(name: "can_edit_own_posts")
-        permissions << Permission.find_by(name: "can_view_group_members")
       end
+    when "members_only_post"
       if ["member", "moderator", "owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_post")
         permissions << Permission.find_by(name: "can_edit_own_posts")
-        permissions << Permission.find_by(name: "can_view_group_members")
-      end
-      if ["moderator", "owner", "administrator"].include? membership.role
-        permissions << Permission.find_by(name: "can_ban_users")
-      end
-      if ["owner", "administrator"].include? membership.role
-        permissions << Permission.find_by(name: "can_create_official_posts")
-        permissions << Permission.find_by(name: "can_update_group")
-        permissions << Permission.find_by(name: "can_edit_group_member_roles")
-      end
-      if ["owner"].include? membership.role
-        permissions << Permission.find_by(name: "can_delete_group")
       end
     when "management_only_post"
-      if ["member", "moderator", "owner", "unverified", "administrator"].include? membership.role
-        permissions << Permission.find_by(name: "can_edit_own_posts")
-      end
       if ["moderator", "owner", "administrator"].include? membership.role
         permissions << Permission.find_by(name: "can_create_post")
-        permissions << Permission.find_by(name: "can_ban_users")
-      end
-      if ["owner", "administrator"].include? membership.role
-        permissions << Permission.find_by(name: "can_create_official_posts")
-        permissions << Permission.find_by(name: "can_update_group")
-        permissions << Permission.find_by(name: "can_edit_group_member_roles")
-      end
-      if ["owner"].include? membership.role
-        permissions << Permission.find_by(name: "can_delete_group")
-      end
-    when "private_group"
-      if ["member", "moderator", "owner", "administrator"].include? membership.role
-        permissions << Permission.find_by(name: "can_create_post")
         permissions << Permission.find_by(name: "can_edit_own_posts")
-        permissions << Permission.find_by(name: "can_view_group_members")
-      end
-      if ["moderator", "owner", "administrator"].include? membership.role
-        permissions << Permission.find_by(name: "can_ban_users")
-      end
-      if ["owner", "administrator"].include? membership.role
-        permissions << Permission.find_by(name: "can_create_official_posts")
-        permissions << Permission.find_by(name: "can_update_group")
-        permissions << Permission.find_by(name: "can_edit_group_member_roles")
-      end
-      if ["owner"].include? membership.role
-        permissions << Permission.find_by(name: "can_delete_group")
       end
     end
     permissions

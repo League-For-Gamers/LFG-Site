@@ -45,6 +45,7 @@ RSpec.describe GroupMembership, type: :model do
       context 'but has owner verified membership' do
         before do
           group.membership = :owner_verified
+          group.post_control = :members_only_post
         end
         it 'should not give posting permissions to non-members' do
           permissions = GroupMembership.get_permission(nil, group)
@@ -60,7 +61,6 @@ RSpec.describe GroupMembership, type: :model do
           membership.role = :unverified
           permissions = GroupMembership.get_permission(membership)
           expect(permissions.map(&:name)).to_not include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
         end
       end
 
@@ -118,7 +118,7 @@ RSpec.describe GroupMembership, type: :model do
     end
     context 'when the group is members only post' do
       before do
-        group.privacy = :members_only_post
+        group.post_control = :members_only_post
       end
       context 'and the user is not a member' do
         it 'should not give the user posting permissions' do
@@ -165,13 +165,13 @@ RSpec.describe GroupMembership, type: :model do
 
     context 'when the group is management only post' do
       before do
-        group.privacy = :management_only_post
+        group.post_control = :management_only_post
       end
       context 'and the user is not a member' do
         it 'should not give the user posting permissions' do
           permissions = GroupMembership.get_permission(nil, group)
           expect(permissions.map(&:name)).to_not include("can_create_post")
-          expect(permissions.map(&:name)).to_not include("can_edit_own_posts")
+          expect(permissions.map(&:name)).to_not include("can_view_group_members")
         end
       end
 
@@ -179,7 +179,7 @@ RSpec.describe GroupMembership, type: :model do
         it 'should not give posting permisison to the user' do
           permissions = GroupMembership.get_permission(membership)
           expect(permissions.map(&:name)).to_not include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
+          expect(permissions.map(&:name)).to include("can_view_group_members")
         end
       end
 

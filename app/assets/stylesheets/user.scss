@@ -55,9 +55,13 @@
 		margin: 0 auto;
 		margin-bottom: rem-calc(15);
 	}
+	h2,h3 {
+		margin: 0;
+	}
 	p {
 		text-align: justify;
 		font-style: italic;
+		margin-bottom: 0.5rem;
 	}
 }
 
@@ -93,9 +97,11 @@
 		height: rem-calc(26);
 		z-index: 9;
 		margin: rem-calc(6) 0 0 rem-calc(6);
+		// Glyphicon remove
+		background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAM1BMVEX////////////////////////////////////////////////////////////////////lEOhHAAAAEHRSTlMAECAwQFBgcICQoLDA0ODwVOCoyAAAAKxJREFUeAF10uFuhSAMQOEiiJOLeN7/abe2Eb3NPH+/1khAYuUDjCpaKk/ZsX5MDkYJ0hbROsAu3gLwUdAGWhWrAeclUnisddv6/vyZb2K1lS6S+m1OI/0B2E9uuKWB1XTkEKvqrJ7jUZXLzvwtTa7WILvcTWm99335T6rcRcmvslFfpALtVdyirHgtRZF84h0pSLAyxVphvo48xaswL6lO8bYpalOs5hJzc/kFQVITdxdk34wAAAAASUVORK5CYII=);
+		-webkit-filter: drop-shadow(0 0 rem-calc(2) rgba(0,0,0,0.8));
+		filter: drop-shadow(0 0 rem-calc(2) rgba(0,0,0,0.8));
 		&:hover, &:focus {
-			// Glyphicon remove
-			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAM1BMVEX////////////////////////////////////////////////////////////////////lEOhHAAAAEHRSTlMAECAwQFBgcICQoLDA0ODwVOCoyAAAAKxJREFUeAF10uFuhSAMQOEiiJOLeN7/abe2Eb3NPH+/1khAYuUDjCpaKk/ZsX5MDkYJ0hbROsAu3gLwUdAGWhWrAeclUnisddv6/vyZb2K1lS6S+m1OI/0B2E9uuKWB1XTkEKvqrJ7jUZXLzvwtTa7WILvcTWm99335T6rcRcmvslFfpALtVdyirHgtRZF84h0pSLAyxVphvo48xaswL6lO8bYpalOs5hJzc/kFQVITdxdk34wAAAAASUVORK5CYII=);
 			cursor: pointer;
 		}
 	}

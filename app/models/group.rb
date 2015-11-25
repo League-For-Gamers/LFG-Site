@@ -3,7 +3,8 @@ class Group < ActiveRecord::Base
   pg_search_scope :search_by_title, against: :title
 
   # Public and private cannot be used for method names as they as reserved
-  enum privacy: [:public_group, :management_only_post, :members_only_post, :private_group]
+  enum privacy: [:public_group, :private_group]
+  enum post_control: [:public_posts, :management_only_post, :members_only_post]
   enum comment_privacy: [:public_comments, :members_only_comment, :private_comments]
   enum membership: [:public_membership, :owner_verified, :invite_only]
 

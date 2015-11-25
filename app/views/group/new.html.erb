@@ -37,7 +37,7 @@
       </div>
 
       <div class="small-4 columns">
-        Membership Rules
+        Membership Policy
         <% Group.memberships.keys.each do |key| %>
           <label>
             <%= f.radio_button :membership, key %>
@@ -45,6 +45,18 @@
           </label>
         <% end %>
       </div>
+
+      <div class="small-4 columns">
+        Post Controls
+        <% Group.post_controls.keys.each do |key| %>
+          <label>
+            <%= f.radio_button :post_control, key %>
+            <%= key.titleize %>
+          </label>
+        <% end %>
+      </div>
+
+      
       <% if false # Basically comment it out -%>
         <div class="small-4 columns">
           Comment Privacy

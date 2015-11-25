@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   has_many :own_bans, -> { order 'id DESC'}, class_name: 'Ban', foreign_key: 'banner_id'
   has_many :follows, dependent: :destroy
   has_many :followers, class_name: 'Follow', foreign_key: 'following_id', dependent: :destroy
-  has_many :group_memberships
+  has_many :group_memberships, dependent: :destroy
   has_many :groups, through: :group_memberships
   has_many :notifications, dependent: :destroy
 
