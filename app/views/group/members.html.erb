@@ -1,0 +1,31 @@
+<% if universal_permission_check "can_view_group_members" %>
+  <div class="row">
+    <div class="medium-8 small-12 text-left columns">
+      <h1>Members of <%= @group.title %></h1>
+    </div>
+    <div class="medium-4 small-12 text-right columns">
+      <a href="/group/<%= @group.slug %>"><h2>Return to group</h2></a>
+    </div>
+  </div>
+  <% @members.each do |role| %>
+    <div class="row">
+      <div class="small-12 menu-panel">
+        <div class="small-4 large-2 columns">
+          <h2><%= role[0].titleize %></h2>
+        </div>
+        <div class="small-3 medium-2 large-1 columns text-right navigator" data-url="/group/<%= @group.slug %>/members" data-source="<%= role[0] %>" date-per="10">
+          <a data-dir="prev" class="hidden">&lt;</a>  
+          <a data-dir="next" class="<%= 'hidden' if role[1].size < 10 %>">&gt;</a>
+        </div>
+      </div>
+    </div>
+    <div class="row collection" data-page="0">
+      <% group = true if universal_permission_check "can_edit_group_member_roles" -%>
+      <% role[1].each do |u| %>
+        <%= render partial: "shared/user_card", locals: {user: u, role: role[0], group: group} %>
+      <% end %>
+    </div>
+  <% end %>
+<% else %>
+  <h3>You do not have permission to view this list</h3>
+<% end %>

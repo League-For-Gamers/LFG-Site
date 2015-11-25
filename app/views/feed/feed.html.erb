@@ -19,9 +19,9 @@
   <div class="row">
     <div class="large-6 small-12 text-card pad lfg-form center new-post-form">
       <%= form_tag '/feed/new_post' do -%>
-        <label id="body_feedback" style="float:right"></label>
-        <label>New post</label>
-          <%= text_area_tag "body", nil, class: "quick-submit", maxlength: "512" %>
+        <label>New post
+          <%= text_area_tag "body", nil, class: "quick-submit white", maxlength: "512" %>
+        </label>
         <% if @current_user.has_permission? "can_create_official_posts" %>
           <label style="float: right;">Official?
             <%= check_box_tag "official" %>
@@ -33,14 +33,14 @@
   </div>
 <% end -%>
 <div class="row">
-  <div class="large-6 small-12 center">
-    <% @posts.each do |post| -%>
-      <%= render partial: "post", locals: {post: post, user: post.user} %>
-    <% end -%>
+  <div class="large-6 small-12 center" id="new-posts-button">
+  View <span class="num"></span> new posts
   </div>
 </div>
 <div class="row">
-  <div class="large-6 small-12 center">
-    <%= render(:partial => "shared/pagination", :locals => {:address_prefix => "/#{@query_string}", :number_of_pages => @num_of_pages, :current => @page}) %>
+  <div class="large-6 small-12 center" id="feed-posts">
+    <% @posts.each do |post| -%>
+      <%= render partial: "post", locals: {post: post, user: post.user} %>
+    <% end -%>
   </div>
 </div>

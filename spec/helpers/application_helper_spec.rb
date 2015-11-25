@@ -2,9 +2,10 @@ require 'rails_helper'
 
 RSpec.describe ApplicationHelper, :type => :helper do
   let(:bobby) { FactoryGirl.create(:user) }
+  let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
   describe '#logged_in?' do
     it 'returns true when logged in' do
-      session[:user] = {id: 5}
+      session[:user] = bobby.id
       expect(helper.logged_in?).to eq(true)
     end
   end
@@ -33,7 +34,7 @@ RSpec.describe ApplicationHelper, :type => :helper do
       expect(helper.reverse_urlify(url)).to eq("leagueforgamers.com")
     end
   end
-
+  
   describe '#replace_urls' do
     it 'should parse URLs and return a valid HTML link' do
       body = "https://i.imgur.com/Qe6xws5.jpg"
@@ -50,6 +51,36 @@ RSpec.describe ApplicationHelper, :type => :helper do
     it 'should escape raw HTML' do
       body = "http://imgur.com\n<script>alert(\"wee-woo\");</script>"
       expect(helper.replace_urls(body)).to include("&lt;script&gt;")
+    end
+  end
+
+  describe '#ban_string' do
+    let(:group) { FactoryGirl.create(:group)}
+    let(:membership) { FactoryGirl.create(:group_membership, user: bobby, group: group) }
+    it 'should return a string containing information about the ban' do
+      # Test bans
+      membership.ban("dick", 1.week.from_now, admin_bobby)
+      ban = Ban.where(user: bobby, group: group).last
+      ban_str = helper.ban_string(ban)
+      expect(ban_str).to include("banned")
+      expect(ban_str).to include("for")
+      expect(ban_str).to include(ban.reason)
+
+      # Test permabans
+      membership.ban("dick", nil, admin_bobby)
+      ban = Ban.where(user: bobby, group: group).last
+      ban_str = helper.ban_string(ban)
+      expect(ban_str).to include("banned")
+      expect(ban_str).to include("end of time")
+      expect(ban_str).to include(ban.reason)
+
+      # Test unbans
+      membership.unban("dock", admin_bobby)
+      ban = Ban.where(user: bobby, group: group).last
+      ban_str = helper.ban_string(ban)
+      expect(ban_str).to include("unbanned")
+      expect(ban_str).to_not include("for")
+      expect(ban_str).to include(ban.reason)
     end
   end
 end

@@ -1,19 +1,22 @@
 <div class="large-4 small-12 columns left">
   <div class="pad text-card profile-card bio-card">
-    <% if @user == @current_user %>
+    <% if @user == @current_user -%>
       <div class="edit-section">
       </div>
-    <% end %>
+    <% end -%>
     <%= link_to image_tag(@user.avatar.url(:med), class: "avatar"), @user.avatar.url(:original), title: (@user.display_name || "@" + @user.username) %>
     <span class="title <%= "long" if display_name(@user).length > 18 %>"><%= display_name(@user) %></span>
     <p><%= replace_urls @user.bio %></p>
     <div class="bottom">
-      <% unless @user.social["website"].blank? %>
+      <% unless @user.social["website"].blank? -%>
         <span class="website">Website: <%= link_to truncate(reverse_urlify(@user.social["website"]), length: 30), full_urlify(@user.social["website"]) %></span>
-      <% end %>
-      <% if logged_in? and @user != @current_user and @current_user.has_permission? "can_send_private_messages" %>
-        <a href="/user/<%= @user.username %>/message" class="btn small private-message">Send Message</a>
-      <% end %>
+      <% end -%>
+      <% if logged_in? and @user != @current_user -%>
+        <% if @current_user.has_permission? "can_send_private_messages" -%>
+          <a href="/user/<%= @user.username %>/message" class="btn small">Send Message</a>
+        <% end -%>
+        <a href="/user/<%= @user.username %>/follow" class="btn small"><% unless @current_user.follows.map(&:following).include? @user -%>Follow<% else -%>Unfollow<% end -%></a>
+      <% end -%>
       <ul class="social-links">
         <% @user.social.each do |social| %>
           <% if social[0].start_with? 'link_' and !social[1].empty? %>
@@ -25,18 +28,18 @@
   </div>
 </div>
 
-<% if !(to_b @user.hidden["skills"]) or @user == @current_user %>
+<% if !(to_b @user.hidden["skills"]) or @user == @current_user -%>
   <div class="large-4 small-12 columns left">
     <div class="pad text-card profile-card skills-card">
-      <% if @user == @current_user %>
+      <% if @user == @current_user -%>
         <div class="hidden-section <%= "active" if to_b @user.hidden["skills"] %>"></div>
         <div class="edit-section">
           <a class="hide <%= "disabled" if to_b  @user.hidden["skills"] %>" data-section="skills"></a>
         </div>
-      <% end %>
+      <% end -%>
       <span class="title">Skills</span>
       <div class="skills">
-        <% @user.skills.each do |skill| %>
+        <% @user.skills.each do |skill| -%>
           <div class="skill">
             <span class="category"><%= skill.category.titleize %></span>
             <div class="bar">
@@ -46,41 +49,41 @@
             </div>
             <span class="note"><%= skill.note %></span>
           </div>
-        <% end %>
+        <% end -%>
       </div>
-      <% unless @user.skill_notes.blank? %>
+      <% unless @user.skill_notes.blank? -%>
         <div class="notes">
           <h5>Notes:</h5>
           <p><%= @user.skill_notes %></p>
         </div>
-      <% end %>
+      <% end -%>
       <div class="bottom">
-        <% unless @user.social["portfolio"].blank? %>
+        <% unless @user.social["portfolio"].blank? -%>
           <span class="portfolio">Portfolio/Resume: <%= link_to truncate(reverse_urlify(@user.social["portfolio"]), length: 21), full_urlify(@user.social["portfolio"]) %></span>
-        <% end %>
+        <% end -%>
       </div>
     </div>
   </div>
 <% end %>
 
-<% if !(to_b @user.hidden["games"]) or @user == @current_user %>
+<% if !(to_b @user.hidden["games"]) or @user == @current_user -%>
   <div class="large-4 small-12 columns left">
     <div class="pad text-card profile-card games-card">
-      <% if @user == @current_user %>
+      <% if @user == @current_user -%>
         <div class="hidden-section <%= "active" if to_b @user.hidden["games"] %>"></div>
         <div class="edit-section">
           <a class="hide <%= "disabled" if to_b  @user.hidden["games"] %>" data-section="games"></a>
         </div>
-      <% end %>
+      <% end -%>
       <span class="title"><span title="Favourite">Favorite</span> Games</span>
       <ul class="games-list small-block-grid-3">
-        <% @user.games.each do |game| %>
+        <% @user.games.each do |game| -%>
           <li class="game">
             <%= image_tag game.boxart.url(:small) %>
             <span class="game-title"><%= game.name %></span>
           </li>
-        <% end %>
+        <% end -%>
       </div>
     </div>
   </div>
-<% end %>
+<% end -%>

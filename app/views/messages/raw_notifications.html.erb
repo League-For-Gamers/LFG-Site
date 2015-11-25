@@ -1,0 +1,5 @@
+<% @notifications.each do |notification| %>
+  <div class="large-6 small-12 center text-card pad chat">
+    <%= render partial: "shared/notification", locals: {notification: notification} %>
+  </div>
+<% end %>

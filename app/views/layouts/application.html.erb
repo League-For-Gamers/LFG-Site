@@ -26,9 +26,7 @@
   <link rel="shortcut icon" href="/favicon.ico?v2" />
 </head>
 <body class="antialiased">
-  
-    
-  
+  <div class="blackout"></div>
   <% flash.each do |message_type, message| %>
     <div data-alert class="alert-box <%= message_type  %>">
       <%= message %>
@@ -48,6 +46,7 @@
     <% end %>
     <% if !logged_in? %><div class="center lfg-form" id="login-form"><%= render "user/login" %></div><% end -%>
     <ul class="right">
+      <li><a href="/group">Groups</a></li>
       <% if !logged_in? %>
         <li><a href="/login" id="login-button">Login</a></li>
       <% else %>
@@ -69,12 +68,16 @@
 
   <nav class="bottom-nav-bar">
     <ul class="left">
+      <li><a href="/faq">FAQ</a></li>
+      <li><a href="/terms">Terms</a></li>
+      <li><a href="/privacy">Privacy</a></li>
       <li><a href="https://leagueforgamers.atlassian.net/projects/LFG/issues">Report a Bug</a></li>
     </ul>
     <ul class="right">
-      <li><a href="/terms">Terms</a></li>
+      <%= render "group/admin_menu" %>
     </ul>
   </nav>
 
+<meta name="unique" content="<%= SecureRandom.hex(16) %>">
 </body>
 </html>

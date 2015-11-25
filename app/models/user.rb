@@ -20,6 +20,12 @@ class User < ActiveRecord::Base
   has_many :tags, dependent: :destroy
   has_many :posts, -> { order 'created_at ASC' }, dependent: :destroy
   has_many :bans, -> { order 'id DESC'}, dependent: :destroy
+  has_many :own_bans, -> { order 'id DESC'}, class_name: 'Ban', foreign_key: 'banner_id'
+  has_many :follows, dependent: :destroy
+  has_many :followers, class_name: 'Follow', foreign_key: 'following_id', dependent: :destroy
+  has_many :group_memberships, dependent: :destroy
+  has_many :groups, through: :group_memberships
+  has_many :notifications, dependent: :destroy
 
   validates :username, :display_name, length: { maximum: 25 }
   validates_format_of :username, with: /\A([a-zA-Z0-9_](_?[a-zA-Z0-9]+)*_?|_([a-zA-Z0-9]+_?)*)\z/ # Twitter username rules.
@@ -40,6 +46,7 @@ class User < ActiveRecord::Base
   before_validation :hash_email
   before_create :encrypt_email
   before_create :set_default_role
+  after_create :join_lfg_group
 
   accepts_nested_attributes_for :skills, allow_destroy: true
   accepts_nested_attributes_for :tags, allow_destroy: true
@@ -92,6 +99,7 @@ class User < ActiveRecord::Base
     end
   end
 
+  # Why is this a function
   def generate_password_reset_link
     "http://leagueforgamers.com/user/forgot_password/#{self.verification_digest}"
   end
@@ -101,21 +109,48 @@ class User < ActiveRecord::Base
     self.role.permissions.map(&:name).include? permission
   end
 
-  def ban(reason, end_date, post = nil)
+  def ban(reason, end_date, banner, post = nil)
     banned_role = Role.find_by(name: "banned")
     if self.role.name == "banned"
-      old_role = Ban.where(user: self).where.not(role: banned_role).order("end_date DESC").first.role
+      old_role = Ban.where(user: self).where.not(role: banned_role).order("created_at DESC").first.role
     else
       old_role = self.role
     end
-    ban = Ban.new(user: self, reason: reason, end_date: end_date, role: old_role)
+
+    duration_string = ActionView::Base.new.distance_of_time_in_words Time.now, end_date unless end_date.nil?
+    duration_string = "permanently" if end_date.nil?
+
+    ban = Ban.new(user: self, reason: reason, end_date: end_date, role: old_role, banner: banner, duration_string: duration_string)
     ban.post = post unless post.nil?
-    ban.save
-    self.role = banned_role
-    self.save
+    if ban.valid?
+      ban.save  
+      self.role = banned_role
+      self.save
+      notification_message = "for #{ban.duration_string}"
+      notification_message = 'until the end of time' if end_date.nil?
+      notification_message = "by #{banner.display_name || banner.username}"
+      notification_message << ": #{reason}" unless reason.blank?
+      self.create_notification("ban", nil, notification_message)
+    else
+      raise ban.errors.full_messages.join(", ")
+    end
+  end
+
+  # Usage: user_that_current_user_wants_to_follow.follow(current_user)
+  def follow(user)
+    Follow.create(user: user, following: self)
+  end
+
+  def create_notification(variant, group = nil, message = nil)
+    Notification.create(variant: Notification.variants[variant], user: self, group: group, message: message)
   end
 
   private
+    def join_lfg_group
+      g = Group.find_by(slug: "league_for_gamers")
+      GroupMembership.create(user: self, group: g, role: :member)
+    end
+
     # THANKS STACK OVERFLOW! http://stackoverflow.com/questions/12663593/has-secure-password-authenticate-inside-validation-on-password-update
     def validates_old_password
       return if password_digest_was.nil? || !password_digest_changed?

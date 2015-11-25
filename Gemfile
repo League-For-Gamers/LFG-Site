@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 ## Rails Default
-gem 'rails', '4.2.4'
+gem 'rails', '4.2.5'
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.1.0'
@@ -12,9 +12,9 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'bcrypt', '~> 3.1.7'
 
 ## Aftermarket rails
-gem 'pg', '0.18.2'
+gem 'pg', '0.18.4'
 gem 'pg_search'
-gem 'fog', '~> 1.32', require: 'fog/aws'
+gem 'fog', '~> 1.33', require: 'fog/aws'
 gem 'asset_sync'
 gem 'redis-rails'
 gem 'rails_autolink'
@@ -39,7 +39,7 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
 
-  gem 'rspec-rails', '~> 3.3.2'
+  gem 'rspec-rails', '~> 3.4.0'
   gem 'factory_girl_rails'
   gem 'database_cleaner'
   gem 'simplecov', require: false
@@ -52,7 +52,7 @@ group :development do
   gem 'quiet_assets'
   gem 'capistrano', '3.4.0', require: false
   gem 'capistrano-bundler', '1.1.4', require: false
-  gem 'capistrano-rails', '1.1.3', require: false
+  gem 'capistrano-rails', '1.1.5', require: false
   gem 'capistrano3-puma', require: false
   gem 'ruby-prof'
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150808011333) do
+ActiveRecord::Schema.define(version: 20151125061750) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,10 +23,15 @@ ActiveRecord::Schema.define(version: 20150808011333) do
     t.integer  "role_id"
     t.string   "reason"
     t.date     "end_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "group_id"
+    t.text     "group_role"
+    t.string   "duration_string"
+    t.integer  "banner_id"
   end
 
+  add_index "bans", ["group_id"], name: "index_bans_on_group_id", using: :btree
   add_index "bans", ["post_id"], name: "index_bans_on_post_id", using: :btree
   add_index "bans", ["role_id"], name: "index_bans_on_role_id", using: :btree
   add_index "bans", ["user_id"], name: "index_bans_on_user_id", using: :btree
@@ -44,6 +49,16 @@ ActiveRecord::Schema.define(version: 20150808011333) do
   end
 
   add_index "chats_users", ["user_id", "chat_id"], name: "index_chats_users_on_user_id_and_chat_id", unique: true, using: :btree
+
+  create_table "follows", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "following_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "follows", ["following_id"], name: "index_follows_on_following_id", using: :btree
+  add_index "follows", ["user_id"], name: "index_follows_on_user_id", using: :btree
 
   create_table "games", force: :cascade do |t|
     t.string   "name"
@@ -63,6 +78,50 @@ ActiveRecord::Schema.define(version: 20150808011333) do
   end
 
   add_index "games_users", ["user_id", "game_id"], name: "index_games_users_on_user_id_and_game_id", unique: true, using: :btree
+
+  create_table "group_memberships", force: :cascade do |t|
+    t.integer  "group_id"
+    t.integer  "user_id"
+    t.integer  "role",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "group_memberships", ["group_id"], name: "index_group_memberships_on_group_id", using: :btree
+  add_index "group_memberships", ["user_id"], name: "index_group_memberships_on_user_id", using: :btree
+
+  create_table "groups", force: :cascade do |t|
+    t.string   "title",               limit: 100,                  null: false
+    t.string   "slug",                limit: 100,                  null: false
+    t.string   "description",         limit: 1000
+    t.integer  "privacy",                          default: 0,     null: false
+    t.integer  "comment_privacy",                  default: 0,     null: false
+    t.integer  "membership",                       default: 0,     null: false
+    t.string   "banner_file_name"
+    t.string   "banner_content_type"
+    t.integer  "banner_file_size"
+    t.datetime "banner_updated_at"
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
+    t.integer  "membership_count"
+    t.boolean  "official",                         default: false
+    t.integer  "post_control",                     default: 0
+  end
+
+  add_index "groups", ["slug"], name: "index_groups_on_slug", using: :btree
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer  "variant"
+    t.string   "message"
+    t.integer  "group_id"
+    t.integer  "user_id"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.boolean  "acknowledged", default: false
+  end
+
+  add_index "notifications", ["group_id"], name: "index_notifications_on_group_id", using: :btree
+  add_index "notifications", ["user_id"], name: "index_notifications_on_user_id", using: :btree
 
   create_table "permissions", force: :cascade do |t|
     t.string   "name"
@@ -93,8 +152,10 @@ ActiveRecord::Schema.define(version: 20150808011333) do
     t.boolean  "official"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "group_id"
   end
 
+  add_index "posts", ["group_id"], name: "index_posts_on_group_id", using: :btree
   add_index "posts", ["user_id"], name: "index_posts_on_user_id", using: :btree
 
   create_table "private_messages", force: :cascade do |t|
@@ -162,8 +223,16 @@ ActiveRecord::Schema.define(version: 20150808011333) do
 
   add_index "users", ["role_id"], name: "index_users_on_role_id", using: :btree
 
+  add_foreign_key "bans", "groups"
   add_foreign_key "bans", "posts"
   add_foreign_key "bans", "users"
+  add_foreign_key "follows", "users"
+  add_foreign_key "follows", "users", column: "following_id"
+  add_foreign_key "group_memberships", "groups"
+  add_foreign_key "group_memberships", "users"
+  add_foreign_key "notifications", "groups"
+  add_foreign_key "notifications", "users"
+  add_foreign_key "posts", "groups"
   add_foreign_key "posts", "users"
   add_foreign_key "private_messages", "chats"
   add_foreign_key "private_messages", "users"

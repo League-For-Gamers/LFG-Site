@@ -5,6 +5,7 @@ RSpec.describe MessagesController, type: :controller do
   let(:bobby) { FactoryGirl.create(:user)}
   let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
   let(:chat) { FactoryGirl.create(:chat, users: [bobby, admin_bobby])}
+  let(:notification) { FactoryGirl.create(:notification, user: bobby) }
   let(:third_user) { FactoryGirl.create(:user, username: "new_user", display_name: nil, email: "a@b.com", email_confirm: "a@b.com") }
   before do
     session[:user] = bobby.id
@@ -13,8 +14,33 @@ RSpec.describe MessagesController, type: :controller do
   describe 'GET /messages' do
     it 'should list all chats the user is involved in' do
       chat.save
+      notification.save
       get :index
       expect(assigns(:chats)).to include(chat)
+      expect(assigns(:notifications)).to include(notification)
+    end
+  end
+
+  describe 'POST /messages' do
+    before do
+      notification.save
+      chat.save
+    end
+    it 'should return a page of notifications' do
+      post :index_ajax, {source: "notifications", page: 0}
+      expect(assigns(:notifications)).to_not be_empty
+    end
+    it 'should return a page of chats' do
+      post :index_ajax, {source: "messages", page: 0}
+      expect(assigns(:chats)).to include(chat)
+    end
+    it 'should fail gracefully when given missing or invalid parameters' do
+      post :index_ajax
+      expect(response.status).to eq(403)
+      post :index_ajax, {source: "messages"}
+      expect(response.status).to eq(403)
+      post :index_ajax, {source: "invalid", page: 0}
+      expect(response.status).to eq(403)
     end
   end
 

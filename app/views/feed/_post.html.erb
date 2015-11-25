@@ -1,16 +1,21 @@
 <div class="streamPost text-card <%= 'official' if post.official -%>" id="post-<%= post.id %>" data-id="<%= post.id %>">
   <div class="large-2 small-3 columns user" data-id="<%= user.username %>">
     <%= link_to image_tag(user.avatar(:med), class: "avatar"), "/user/#{user.username}" %>
-    <% if !@current_user.nil? and ((user == @current_user and @current_user.has_permission? "can_edit_own_posts") or @current_user.has_permission? "can_edit_all_users_posts") -%>
+    <% if !@current_user.nil? and ((user == @current_user and (@current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_own_posts")) or @current_user.has_permission? "can_edit_all_users_posts" or @current_user.has_permission? "can_delete_all_posts") -%>
       <div class="user-controls">
-        <div class="edit-controls">
-          <a class="submit-post">Submit</a>
-          <a class="cancel-post">Cancel</a>
-          <div id="edit_post_<%= post.id %>_feedback"></div>
-        </div>
+        <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
+          <div class="edit-controls">
+            <a class="submit-post">Submit</a>
+            <a class="cancel-post">Cancel</a>
+          </div>
+        <% end -%>
         <div class="default-controls">
-          <a class="edit-post" id="edit_post_<%= post.id %>">Edit</a>
-          <a class="delete-post"></a>
+          <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
+            <a class="edit-post">Edit</a>
+          <% end -%>
+          <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_all_posts" -%>
+            <a class="delete-post"></a>
+          <% end -%>
         </div>
       </div>
     <% end -%>
@@ -24,10 +29,10 @@
     <% unless post.bans.empty? -%>
       <div class="bans">
         <% post.bans.each do |ban| -%>
-          <p>User was banned for this post: <%= ban.reason %></p>
+          <p><%= ban_string(ban) %></p>
         <% end -%>
       </div>
     <% end %>
-    <span class="time-ago"><%= post_time_ago(post) -%></span>
+    <%= post_time_ago(post) -%>
   </div>
 </div>

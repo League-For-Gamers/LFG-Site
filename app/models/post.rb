@@ -1,6 +1,9 @@
 class Post < ActiveRecord::Base
   include Postable
   belongs_to :user
+  belongs_to :group
+
+  # TODO: Maximum of 5 stickied posts.
 
   validates :body, length: { maximum: 512 }
   validates :user, :body, presence: true

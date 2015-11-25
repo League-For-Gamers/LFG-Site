@@ -1,0 +1,9 @@
+<div class="large-3 medium-3 small-6 columns user-card">
+  <% if defined?(group) and group %>
+    <a class="user-mod" href="/group/<%= @group.slug %>/members/<%= user.username %>"></a>
+  <% end %>
+  <a href="/user/<%= user.username %>">
+    <%= image_tag user.avatar(:large), class: "avatar group #{role}" %>
+    <span class="username"><%= display_name(user) %></span>
+  </a>
+</div>

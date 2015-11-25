@@ -1,0 +1,9 @@
+<div class="large-3 medium-4 small-6 columns group-card">
+  <a href="/group/<%= group.slug %>">
+    <%= image_tag group.banner(:thumb), class: "banner" %>
+    <span class="title <%= "small" if group.title.length >= 31 %>"><%= group.title %></span>
+  </a>
+  <% if group.official %>
+    <%= image_tag 'ui/official-shield.png', class: 'official-shield' %>
+  <% end %>
+</div>

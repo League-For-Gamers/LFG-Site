@@ -129,12 +129,12 @@ a {
 }
 
 .main-logo {
-	position: absolute;
-	width: rem-calc(360);
-	left: 0;
+	position: fixed;
+	width: rem-calc(180);
+	left: rem-calc(10);
 	right: 0;
 	margin: 0 auto;
-	padding-top: rem-calc(20);
+	padding-top: rem-calc(10);
 	text-align: center;
 	z-index: 999;
 	&.left {
@@ -147,12 +147,13 @@ a {
 }
 
 .top-nav-bar, .bottom-nav-bar {
-	padding: 0 rem-calc(25);
+	padding: 0 rem-calc(15);
 	ul {
 		line-height: 1.95;
 		font-size: 12pt;
 		font-style: italic;
 		text-transform: uppercase;
+		margin: 0;
 		li {
 			display: inline-block;
 			list-style: none;
@@ -165,13 +166,13 @@ a {
 }
 
 .top-nav-bar {
-	position: absolute;
-	margin-top: rem-calc(83);
+	position: fixed;
 	height: rem-calc(86);
 	width: 100%;
 	background-color: $primary-red;
+	z-index: 998;
 	.search {
-		margin-left: rem-calc(330);
+		margin-left: rem-calc(225);
 		margin-top: rem-calc(25);
 		input[type="text"] {
 			background-image: image-url('ui/search-icon.png');
@@ -191,9 +192,13 @@ a {
 		font-size: 24pt;
 	}
 }
-
+.main {
+	padding-top: rem-calc(100);
+	padding-bottom: rem-calc(40) !important;
+}
 @media only screen and (max-width: 64.688em) {
 	.main-logo {
+		position: absolute;
 		width: rem-calc(200);
 		margin-top: rem-calc(50) !important;
 	}
@@ -209,6 +214,8 @@ a {
 		padding: 0 rem-calc(15);
 	}
 	.top-nav-bar {
+		position: absolute;
+		margin-top: rem-calc(83);
 		ul {
 			line-height: 2.5;
 			font-size: 16pt;
@@ -217,10 +224,13 @@ a {
 	.search {
 		margin-top: rem-calc(15) !important;
 		margin-left: rem-calc(200) !important;
-		width: rem-calc(250) !important;
+		width: rem-calc(200) !important;
 		input[type="text"] {
 			width: 100% !important;
 		}
+	}
+	.main {
+		padding-top: rem-calc(170);
 	}
 }
 
@@ -234,15 +244,16 @@ a {
 }
 @media only screen and (max-width: 90em) {
 	.main {
-		padding: 0 rem-calc(25);
+		padding-left: rem-calc(25);
+		padding-right: rem-calc(25);
 	}
 }
-@media only screen and (max-width: 51.9em) {
-	.bottom-nav-bar {
-		position: relative;
-		display: block;
-	}
-}
+// @media only screen and (max-width: 51.9em) {
+// 	.bottom-nav-bar {
+// 		position: relative;
+// 		display: block;
+// 	}
+// }
 // Landscape mobile
 @media only screen and (max-width: 51.875em) {
 	.main-logo {
@@ -279,10 +290,7 @@ a {
 		}
 	}
 }
-.main {
-	padding-top: rem-calc(200);
-	padding-bottom: rem-calc(40) !important;
-}
+
 
 input[type="text"], input[type="password"], input[type="date"], 
 input[type="datetime"], input[type="datetime-local"], input[type="month"], 
@@ -306,7 +314,7 @@ button, a.btn {
 		input[type="datetime"], input[type="datetime-local"], input[type="month"], 
 		input[type="week"], input[type="email"], input[type="number"],
 		input[type="search"], input[type="tel"], input[type="time"], 
-		input[type="url"], input[type="color"] {
+		input[type="url"], input[type="color"], textarea {
 			background-color: $primary-cream;
 			border-color: white;
 			box-shadow: none;
@@ -328,6 +336,13 @@ button, a.btn {
 			&::-webkit-input-placeholder {
 				color: $primary-text;
 			}
+			&.white {
+				background-color: white;
+				border-color: $primary-cream;
+			}
+		}
+		.m-top {
+			margin-top: rem-calc(10);
 		}
 	}
 }
@@ -350,6 +365,10 @@ a, button {
 			font-size: 16pt;
 			padding: rem-calc(2) rem-calc(12);
 		}
+		&[disabled] {
+			background-color: mix($primary-red, #c4c4c4, 15%);
+			cursor: default;
+		}
 	}
 }
 @media only screen and (max-width: 26em) {
@@ -369,4 +388,47 @@ a, button {
 		text-transform: none;
 		font-weight: normal;
 	}
+}
+.clearfix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+}
+
+// Manual accordion
+.accordion {
+	.content {
+		display: none;
+		&.active {
+			display: block;
+		}
+	}
+}
+.text-white {
+	color: $primary-cream
+}
+
+.notification {
+	width: 100%;
+	height: rem-calc(35);
+	background: $primary-cream;
+	line-height: 2em;
+	&:hover, &:focus {
+		background: scale-color($primary-red, $lightness: 90%);
+	}
+}
+
+.blackout {
+	position: fixed;
+	top: 0;
+	left: 0;
+	display: none;
+	width: 100%;
+	height: 100%;
+	background-color: $primary-red;
+	opacity: 0.7;
+	z-index: 500;
 }

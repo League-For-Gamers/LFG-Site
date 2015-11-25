@@ -6,30 +6,75 @@ class FeedController < ApplicationController
   # GET /
   def feed
     set_title "Feed"
-    #query = Post.connection.unprepared_statement { "((SELECT * FROM posts WHERE official) UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id})) as posts" }
-    #@posts = Post.includes(:user).from(query).order("created_at ASC")
-
+    
     respond_to do |format|
       format.html {
-        redirect_to '/signup' unless logged_in?
-        @page = params[:page].to_i
-        @page = 0 if @page < 0
-        per_page = 30
-        from = (@page * per_page)
-        @posts = Post.includes(:user, :bans).all.order("id DESC").limit(per_page).offset(from)
-        @posts.unshift(Post.includes(:user).where(official: true).order("id DESC").first) if @page == 0
-        @posts = @posts.compact
-        count = Post.count
-        @num_of_pages = (count + per_page - 1) / per_page
+        redirect_to '/signup' and return unless logged_in?
+        generate_personal_feed_posts(30)
       }
       # No json currently, I want draper for when I do that.
-      format.rss { 
-        @posts = Post.includes(:user, :bans).all.order("id DESC").limit(50)
+      format.rss {
+        render status: 403, plain: "Must be logged in to view personal RSS feed" and return unless logged_in?
+        generate_personal_feed_posts(50)
         @feed_url = "main.rss"
         @feed_source = ""
         render action: "rss.html.erb", content_type: "application/rss", layout: false
       }
     end
+  end
+
+  # This could probably be cleaner.
+  # GET /timeline
+  def timeline
+    render plain: "Feed parameter is missing", status: 403 and return if params[:feed].blank?
+    render plain: "ID parameter is missing", status: 403 and return if params[:id].blank?
+    render plain: "Direction paramteter is missing", status: 403 and return if params[:direction].blank?
+    case params[:direction]
+    when "older"
+      case params[:feed]
+      when "main"
+        render plain: "Must be logged in to view feed", status: 403 and return unless logged_in?
+        generate_personal_feed_posts(30, { last_id: params[:id] })
+      when "official"
+        @posts = Post.where("official = ?", true).where("id < ?", params[:id]).where("group_id IS NULL").includes(:user, :bans).limit(30).order("id DESC")
+      when /user\/([\w\d\/]*)/i
+        user = User.includes(:posts).where("lower(username) = ?", $1.downcase).first or (render plain: "Cannot find user", status: 404 and return)
+        @posts = Post.where("user_id = ?", user.id).where("id < ?", params[:id]).limit(30).order("id DESC").includes(:user, :bans)
+      when /group\/([\w\d]*)/i
+        group = Group.includes(:users, :posts).find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
+        @posts = group.posts.where("id < ?", params[:id]).limit(30).order("id DESC").includes(:user, :bans)
+      else
+        render plain: "Invalid feed parameter", status: 403 and return
+      end
+    when "newer"
+      case params[:feed]
+      when "main"
+        render plain: "Must be logged in to view feed", status: 403 and return unless logged_in?
+        generate_personal_feed_posts(0, { latest_id: params[:id] })
+      when "official"
+        @posts = Post.where("official = ?", true).where("id > ?", params[:id]).where("group_id IS NULL").includes(:user, :bans).order("id DESC")
+      when /user\/([\w\d\/]*)/i
+        user = User.includes(:posts).where("lower(username) = ?", $1.downcase).first or (render plain: "Cannot find user", status: 404 and return)
+        @posts = Post.where("user_id = ?", user.id).where("id > ?", params[:id]).order("id DESC").includes(:user, :bans)
+      when /group\/([\w\d]*)/i
+        group = Group.includes(:users, :posts).find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
+        @posts = group.posts.where("id > ?", params[:id]).order("id DESC").includes(:user, :bans)
+      else
+        render plain: "Invalid feed parameter", status: 403 and return
+      end
+    else
+      render plain: "Invalid direction parameter", status: 403 and return
+    end
+    posts = []
+    @posts.each do |post|
+      posts << render_to_string(partial: "post", locals: {post: post, user: post.user})
+    end
+    if posts.empty?
+      render nothing: true
+    else
+      render json: {latest_id: @posts.first.id, posts: posts.reverse}
+    end
+    #render :raw_posts, layout: false
   end
 
   # GET /feed/user/:user_id
@@ -42,8 +87,6 @@ class FeedController < ApplicationController
         per_page = 30
         from = (@page * per_page)
         @posts = Post.where("user_id = ?", @user.id).includes(:user, :bans).order("id DESC").limit(per_page).offset(from)
-        count = @user.posts.count
-        @num_of_pages = (count + per_page - 1) / per_page
       }
       # No json currently, I want draper for when I do that.
       format.rss {
@@ -64,13 +107,11 @@ class FeedController < ApplicationController
         @page = 0 if @page < 0
         per_page = 30
         from = (@page * per_page)
-        @posts = Post.where("official = ?", true).includes(:user, :bans).order("id DESC").limit(per_page).offset(from)
-        count = Post.where("official = ?", true).count
-        @num_of_pages = (count + per_page - 1) / per_page
+        @posts = Post.where("official = ?", true).where("group_id IS NULL").includes(:user, :bans).order("id DESC").limit(per_page).offset(from)
       }
       # No json currently, I want draper for when I do that.
       format.rss { 
-        @posts = Post.where("official = ?", true).includes(:user, :bans).order("id DESC").limit(50)
+        @posts = Post.where("official = ?", true).where("group_id IS NULL").includes(:user, :bans).order("id DESC").limit(50)
         @feed_url = "official.rss"
         @feed_source = "official"
         render action: "rss.html.erb", content_type: "application/rss", layout: false
@@ -140,5 +181,25 @@ class FeedController < ApplicationController
       rescue ActionController::RoutingError
         render :template => 'shared/not_found', :status => 404
       end
+    end
+
+    def build_main_feed_query
+      # Good god...
+      official_query = "(SELECT * FROM posts WHERE official AND group_id IS NULL)"
+      own_query = "UNION DISTINCT (SELECT * FROM posts WHERE user_id = #{@current_user.id} AND group_id IS NULL)"
+      following_query = "UNION (SELECT * FROM posts WHERE user_id IN (#{@current_user.follows.map(&:following_id).join(",")}) AND group_id IS NULL)"
+
+      Post.connection.unprepared_statement { "(#{official_query} #{own_query} #{following_query if @current_user.follows.count > 0}) as posts" }
+    end
+
+    def generate_personal_feed_posts(amount, options = {})
+      unless options == {}
+        @posts = Post.includes(:user, :bans).from(build_main_feed_query).where("id < ?", options[:last_id]).order("id DESC").limit(amount) unless options[:last_id].blank?
+        @posts = Post.includes(:user, :bans).from(build_main_feed_query).where("id > ?", options[:latest_id]).order("id DESC") unless options[:latest_id].blank?
+      else
+        @posts = Post.includes(:user, :bans).from(build_main_feed_query).order("id DESC").limit(amount)
+        @posts.unshift(Post.includes(:user).where(official: true).order("id DESC").first) if @page == 0
+      end
+      @posts = @posts.compact
     end
 end

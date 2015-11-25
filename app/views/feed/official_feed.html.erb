@@ -1,0 +1,12 @@
+<div class="row">
+  <div class="large-6 small-12 center" id="new-posts-button">
+  View <span class="num"></span> new posts
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 small-12 center" id="feed-posts">
+    <% @posts.each do |post| -%>
+      <%= render partial: "post", locals: {post: post, user: post.user} %>
+    <% end -%>
+  </div>
+</div>

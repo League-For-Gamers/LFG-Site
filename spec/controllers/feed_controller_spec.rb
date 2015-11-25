@@ -2,11 +2,17 @@ require 'rails_helper'
 
 RSpec.describe FeedController, type: :controller do
   let(:bobby) { FactoryGirl.create(:user) }
-  describe "GET /feed/main" do
+  let(:group) { FactoryGirl.create(:group) }
+  before do
+    FactoryGirl.create(:group_membership, user: bobby, group: group)
+  end
+  describe "GET /" do
     context "when not logged in" do
       it "redirects to signup page" do
         get :feed
         expect(response).to redirect_to('/signup')
+        get :feed, format: :rss
+        expect(response.status).to eq(403)
       end
     end
     context "when logged in" do
@@ -23,10 +29,110 @@ RSpec.describe FeedController, type: :controller do
         get :feed
         expect(assigns(:posts)).to include(bobby.posts.last)
       end
+      it "should respond to rss correctly" do
+        get :feed, format: :rss
+        expect(response).to render_template("feed/rss.html.erb")
+      end
     end
-    it "should respond to rss correctly" do
-      get :feed, format: :rss
-      expect(response).to render_template("feed/rss.html.erb")
+  end
+
+  describe "GET /timeline" do
+    it 'should create 403 errors when all required variables are missing' do
+      30.times { FactoryGirl.create(:post, user: bobby)}
+      FactoryGirl.create(:post, user: bobby, official: true)
+      get :timeline
+      expect(response.status).to eq(403)
+      get :timeline, feed: 'main'
+      expect(response.status).to eq(403)
+      get :timeline, feed: 'main', id: Post.all.order("created_at DESC")[1]
+      expect(response.status).to eq(403)
+      get :timeline, feed: 'main', id: Post.all.order("created_at DESC")[1], direction: 'newer'
+      expect(response.status).to eq(403)
+      get :timeline, feed: 'invalid', id: Post.all.order("created_at DESC")[1], direction: 'older'
+      expect(response.status).to eq(403)
+      get :timeline, feed: 'invalid', id: Post.all.order("created_at DESC")[1], direction: 'newer'
+      expect(response.status).to eq(403)
+      get :timeline, feed: 'main', id: Post.all.order("created_at DESC")[1], direction: 'invalid'
+      expect(response.status).to eq(403)
+      session[:user] = bobby.id
+      get :timeline, feed: 'main', id: Post.all.order("created_at DESC")[1], direction: 'newer'
+      expect(response.status).to_not eq(403)
+    end
+    context 'when polling for new posts' do
+      before { session[:user] = bobby.id }
+      context 'on the main feed' do
+        it 'should respond with posts newer than the last' do
+          get :timeline, feed: 'main', id: 0, direction: 'newer'
+          expect(response.body).to be_blank
+          30.times { FactoryGirl.create(:post, user: bobby)}
+          FactoryGirl.create(:post, user: bobby, official: true)
+          get :timeline, feed: 'main', id: Post.all.order("created_at DESC")[1], direction: 'newer'
+          expect(response.status).to_not eq(403)
+          expect(assigns(:posts)).to include(Post.all.order("created_at DESC").first)
+        end
+      end
+      context 'on the official feed' do
+        it 'should respond with posts newer than the last' do
+          30.times { FactoryGirl.create(:post, user: bobby, official: true)}
+          FactoryGirl.create(:post, user: bobby, official: true)
+          get :timeline, feed: 'official', id: Post.all.order("created_at DESC")[1], direction: 'newer'
+          expect(response.status).to_not eq(403)
+          expect(assigns(:posts)).to include(Post.all.order("created_at DESC").first) 
+        end
+      end
+      context 'on a user feed' do
+        it 'should respond with posts newer than the last' do
+          30.times { FactoryGirl.create(:post, user: bobby)}
+          get :timeline, feed: "user/#{bobby.username}", id: Post.all.order("created_at DESC")[1], direction: 'newer'
+          expect(response.status).to_not eq(403)
+          expect(assigns(:posts)).to include(Post.all.order("created_at DESC").first)
+        end
+      end
+      context 'on a group feed' do
+        it 'should respond with posts newer than the last' do
+          30.times { FactoryGirl.create(:post, user: bobby, group: group)}
+          get :timeline, feed: "group/#{group.slug}", id: Post.all.order("created_at DESC")[1], direction: 'newer'
+          expect(response.status).to_not eq(403)
+          expect(assigns(:posts)).to include(Post.all.order("created_at DESC").first)
+        end
+      end
+    end
+    context 'when retrieving older posts' do
+      before { session[:user] = bobby.id }
+      context 'on the main feed' do
+        it 'should respond with posts older than the last' do
+          30.times { FactoryGirl.create(:post, user: bobby)}
+          FactoryGirl.create(:post, user: bobby, official: true)
+          get :timeline, feed: 'main', id: Post.all.order("created_at DESC")[1], direction: 'older'
+          expect(response.status).to_not eq(403)
+          expect(assigns(:posts)).to include(Post.all.order("created_at DESC").last)
+        end
+      end
+      context 'on the official feed' do
+        it 'should respond with posts older than the last' do
+          30.times { FactoryGirl.create(:post, user: bobby, official: true)}
+          FactoryGirl.create(:post, user: bobby, official: true)
+          get :timeline, feed: 'official', id: Post.all.order("created_at DESC")[1], direction: 'older'
+          expect(response.status).to_not eq(403)
+          expect(assigns(:posts)).to include(Post.all.order("created_at DESC").last)
+        end
+      end
+      context 'on a user feed' do
+        it 'should respond with posts older than the last' do
+          30.times { FactoryGirl.create(:post, user: bobby)}
+          get :timeline, feed: "user/#{bobby.username}", id: Post.all.order("created_at DESC")[1], direction: 'older'
+          expect(response.status).to_not eq(403)
+          expect(assigns(:posts)).to include(Post.all.order("created_at DESC").last)
+        end
+      end
+      context 'on a group feed' do
+        it 'should respond with posts older than the last' do
+          30.times { FactoryGirl.create(:post, user: bobby, group: group)}
+          get :timeline, feed: "group/#{group.slug}", id: Post.all.order("created_at DESC")[1], direction: 'older'
+          expect(response.status).to_not eq(403)
+          expect(assigns(:posts)).to include(Post.all.order("created_at DESC").last)
+        end
+      end
     end
   end
 

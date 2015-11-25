@@ -1,5 +1,74 @@
+new_posts = []
+latest_id = null
+get_new_posts = (feed, uid) ->
+  if Foundation.utils.S("meta[name='unique']").attr('content') == uid
+    if latest_id == undefined or latest_id == null
+      latest_id = 0
+
+    $.ajax
+      url: "/timeline"
+      type: 'GET'
+      dataType: 'json'
+      data: {'feed': feed, 'id': latest_id, 'direction': 'newer'}
+      success: (data) ->
+        #console.log "New post(s)."
+        latest_id = data.latest_id
+        new_posts = new_posts.concat(data.posts)
+        update_new_posts_button()
+      complete: (data) -> 
+        window.setTimeout(get_new_posts, 10000, feed, uid)
+
+update_new_posts_button = () ->
+  button = Foundation.utils.S("#new-posts-button")
+  Foundation.utils.S("#new-posts-button .num").text(new_posts.length)
+  Foundation.utils.S("title").text("(#{new_posts.length}) #{@original_title}")
+  if button.is(':hidden')
+    button.slideDown(200)
+
 $ ->
-  if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$/i)
+  if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$|^\/group\/([^search|members][\w\d]+)$/i)
+    new_posts = []
+    loading_messages = false
+    end_of_stream = false
+
+    Foundation.utils.S(".time-ago a").timeago()
+    
+    if window.location.pathname.match(/^\/$/)
+      feed_type = "main"
+    else if window.location.pathname.match(/^\/group\/([\w\d]*)$/)
+      feed_type = "group/#{RegExp.$1}"
+    else
+      feed_type = window.location.pathname.match(/^\/feed\/([\w\d\/]*)$/i)[1]
+
+    Foundation.utils.S(window).scroll ->
+      # Each browser seems to treat all the elements used in this differently.
+      # So, this is the only method that seems to work for all
+      if @ie_browser or @ff_browser
+        detected = document.documentElement.clientHeight + document.documentElement.scrollTop >= document.body.scrollHeight - 500
+      else
+        detected = window.innerHeight + document.body.scrollTop >= document.body.scrollHeight - 500
+
+      if detected and !end_of_stream and !loading_messages
+        loading_messages = true
+        Foundation.utils.S("#loading-message").show()
+        last_id = Foundation.utils.S('#feed-posts').children().last().data("id")
+        if last_id == undefined or last_id == null
+          last_id = 0
+        $.ajax
+          url: "/timeline"
+          type: 'GET'
+          dataType: 'json'
+          data: {'feed': feed_type, 'id': last_id, 'direction': 'older'}
+          success: (data) ->
+            for post in data.posts
+              do ->
+                Foundation.utils.S('#feed-posts').append(post)
+                Foundation.utils.S(".time-ago a").last().timeago()
+            loading_messages = false
+            Foundation.utils.S("#loading-message").hide()
+          failure: (data) ->
+            end_of_stream = true
+
     Foundation.utils.S('.edit-post').click ->
       # This is less terrible!
       # Why, jQuery. Why.
@@ -83,3 +152,16 @@ $ ->
               Turbolinks.visit("/")
           error: (data) ->
             alert("An error occured deleting your post: #{data.statusText}")
+
+    latest_id = Foundation.utils.S('#feed-posts').children().first().data("id")
+    get_new_posts(feed_type, Foundation.utils.S("meta[name='unique']").attr('content'))
+
+    Foundation.utils.S('#new-posts-button').click ->
+      Foundation.utils.S(this).hide()
+      Foundation.utils.S('title').text(original_title)
+      posts = new_posts
+      new_posts = []
+      for post in posts # Why does the 'do' have to be a on a newline? wtf coffeescript?
+        do ->
+          Foundation.utils.S('#feed-posts').prepend(post)
+          Foundation.utils.S(".time-ago a").first().timeago()

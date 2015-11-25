@@ -52,7 +52,7 @@ class ApplicationController < ActionController::Base
     end
 
     def set_current_user
-      @current_user ||= User.includes(:bans, role: [:permissions]).find session[:user]
+      @current_user ||= User.includes(:follows, :bans, role: [:permissions]).find session[:user]
       # Unban mechanism
       if @current_user.role.name == "banned" 
         if @current_user.bans.first.end_date != nil and @current_user.bans.first.end_date < Time.now 
