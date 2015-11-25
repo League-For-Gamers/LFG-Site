@@ -72,7 +72,7 @@ namespace :db do
     end
     posts = Post.where(group: nil)
     posts.each do |p|
-      p.group = g
+      p.group = g unless p.official?
       p.save
     end
     # :nocov:
