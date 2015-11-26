@@ -41,7 +41,7 @@ set :ssh_options, { keys: [APP_CONFIG['SSH_KEY_DIR']] }
 
 # Puma configuration
 set :puma_threads, [0, 4]
-set :puma_workers, 3
+set :puma_workers, 4
 set :puma_init_active_record, true
 set :puma_preload_app, true
 

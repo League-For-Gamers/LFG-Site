@@ -26,7 +26,7 @@ class Group < ActiveRecord::Base
   validates :title, :slug, presence: true, uniqueness: {case_sensitive: false}, length: { maximum: 38 }
   validates :description, allow_blank: true, allow_nil: true, length: { maximum: 1000 }
   validates_attachment :banner, content_type: { content_type: ['image/jpeg', 'image/png', 'image/bmp'] },
-                       attachment_size: { less_than: 1024.kilobytes }
+                       attachment_size: { less_than: 2048.kilobytes }
   validates :privacy, :membership, presence: true
   validate :validates_reserved_names
 

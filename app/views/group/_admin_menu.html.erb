@@ -16,7 +16,7 @@
         <a href="#banner">Change Banner</a>
         <div id="banner" class="content">
           <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
-            <label>Recommended size: 1500x400.<br>Will be cropped and resized to 1500x400 and 356x200, center focus.</label>
+            <label>Recommended size: 1500x400.<br>Will be cropped and resized to 1500x400 and 356x200, center focus.<br>2MB file size limit.</label>
             <%= f.file_field :banner %>
             <%= f.submit 'Upload', class: "btn small center" %>
           <% end -%>
