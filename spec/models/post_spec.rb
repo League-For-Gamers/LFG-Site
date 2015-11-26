@@ -32,4 +32,24 @@ RSpec.describe Post, type: :model do
       expect(Ban.find(ban.id).post).to be(nil)
     end
   end
+
+  describe "limits on the size of posts" do
+
+    it "should accept a post with exactly 512 characters" do
+      post = FactoryGirl.build(:post, body: "a"*512)
+      expect(post).to be_valid
+    end
+
+    it "should accept a post with exactly 511 characters" do
+      post = FactoryGirl.build(:post, body: "a"*511)
+      expect(post).to be_valid
+    end
+
+    it "should NOT accept a post with exactly 513 characters" do
+      post = FactoryGirl.build(:post, body: "a"*513)
+      expect(post).to_not be_valid
+    end
+
+  end
+
 end
