@@ -51,6 +51,18 @@
 			cursor: pointer;
 		}
 	}
+	.follow-user {
+		position: relative;
+		display: inline-block;
+		width: rem-calc(18);
+		height: rem-calc(18);
+		background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAV1BMVEUAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////+ORg7oAAAAHHRSTlMAbXByc3V3eX6BhIWIiYqLlJWXmJmbxsnO0PHy6tKDMQAAAF5JREFUeNqdkEkSgCAMBCO4R4kbLpD/v1NTeFAuWvQp06fJQECx91zDE8MXy0v1ouYE1Yma7qAtEZWbqKMyRLYAzxH+p3KxcpCNiKhWCbtuEQcVlUh86GucXCZswn0CKU8Qqgk47RIAAAAASUVORK5CYII=);
+		-webkit-filter: drop-shadow(0 0 rem-calc(1) rgba(0,0,0,0.8));
+		filter: drop-shadow(0 0 rem-calc(1) rgba(0,0,0,0.8));
+		&:hover, &:focus {
+			cursor: pointer;
+		}
+	}
 	.user-controls {
 		margin-top: rem-calc(5);
 		display: block;

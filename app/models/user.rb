@@ -145,6 +145,10 @@ class User < ActiveRecord::Base
     Notification.create(variant: Notification.variants[variant], user: self, group: group, message: message)
   end
 
+  def follow?(user)
+    self.follows.map(&:following_id).include? user.id
+  end
+
   private
     def join_lfg_group
       g = Group.find_by(slug: "league_for_gamers")
