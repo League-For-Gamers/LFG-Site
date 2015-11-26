@@ -76,12 +76,14 @@
 		min-height: rem-calc(226);
 	}
 	.username {
-		position: absolute;
-		width: 90%;
+		position: relative;
+		display: block;
+		width: 100%;
 		word-wrap: break-word;
 		text-align: right;
-		padding: 0 rem-calc(15);
-		bottom: rem-calc(5);
+		padding: 0 rem-calc(10);
+		margin-bottom: rem-calc(-40);
+		top: rem-calc(-40);
 		color: white;
 		font-size: 18pt;
 		font-weight: 600;

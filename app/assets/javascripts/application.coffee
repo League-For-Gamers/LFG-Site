@@ -42,5 +42,5 @@ $ ->
   })
   Foundation.utils.S('input, textarea').placeholder()
   Turbolinks.enableProgressBar()
-  Turbolinks.enableTransitionCache()
+  #Turbolinks.enableTransitionCache()
   return

@@ -1,4 +1,4 @@
-<% if !!@membership and GroupMembership.has_permission? "can_create_post", @permissions -%>
+<% if !!@current_user and GroupMembership.has_permission? "can_create_post", @permissions -%>
   <div class="row group-new-post" id="new-post">
     <div class="large-6 small-12 text-card pad lfg-form new-post-form">
       <%= form_tag "/group/#{@group.slug}/new_post" do -%>
@@ -63,7 +63,7 @@
       <% unless @stickied_posts.empty? %>
         <div class="left columns">
           <div class="small-12 menu-panel">
-            <% if !!@membership and GroupMembership.has_permission? "can_create_post", @permissions -%>
+            <% if !!@current_user and GroupMembership.has_permission? "can_create_post", @permissions -%>
               <div class="left">
                 <a class="post-icon"></a>
               </div>
@@ -88,7 +88,7 @@
     
 
       <div class="left columns">
-        <% if !!@membership and GroupMembership.has_permission? "can_create_post", @permissions -%>
+        <% if !!@current_user and GroupMembership.has_permission? "can_create_post", @permissions -%>
           <div class="small-12 menu-panel">
             <div class="left">
               <a class="post-icon"></a>

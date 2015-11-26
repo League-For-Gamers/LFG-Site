@@ -105,7 +105,7 @@ class GroupController < ApplicationController
     per_page = params[:per_page] || 10
     page = params[:page].to_i
     keys = GroupMembership.roles.keys
-    keys.delete("unverified")
+    keys.delete("unverified") unless universal_permission_check("can_edit_group_member_roles")
     render plain: "Invalid source parameter", status: 403 and return unless keys.include? params[:source]
     @members = @group.group_memberships.includes(:user).where(role: GroupMembership.roles[params[:source]]).limit(per_page).offset((page)*per_page).order("created_at ASC")
     render :raw_user_cards, layout: false and return
@@ -290,6 +290,21 @@ class GroupController < ApplicationController
         @groups = @groups[start_num...start_num + per_page]
         render :raw_cards, layout: false and return if params[:raw]
       end
+    end
+  end
+
+  # GET /group/:group_id/posts/:post_id
+  def show_post
+    begin
+      @post = Post.includes(:user, :bans).find_by(id: params[:post_id]) or not_found
+      not_found if @post.group != @group
+    rescue ActionController::RoutingError 
+      render :template => 'shared/not_found', :status => 404
+    end
+
+    respond_to do |format|
+      format.html { set_title @group.title }
+      format.json { render :json => {id: @post.id, body: @post.body, user_id: @post.user.username, created_at: @post.created_at, updated_at: @post.updated_at} }
     end
   end
 

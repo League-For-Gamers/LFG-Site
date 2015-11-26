@@ -121,6 +121,12 @@ class FeedController < ApplicationController
 
   # GET /feed/user/:user_id/:post_id
   def show
+    begin
+      not_found if @post.user != @user
+    rescue ActionController::RoutingError 
+      render :template => 'shared/not_found', :status => 404
+    end
+
     respond_to do |format|
       format.html { set_title @post.user.display_name || @post.user.username }
       format.json { render :json => {id: @post.id, body: @post.body, user_id: @post.user.username, created_at: @post.created_at, updated_at: @post.updated_at} }

@@ -40,7 +40,7 @@ RSpec.describe ApplicationHelper, :type => :helper do
       body = "https://i.imgur.com/Qe6xws5.jpg"
       # This can probably be remade better.
       expect(helper.replace_urls(body)).to_not eq(body)
-      expect(helper.replace_urls(body)).to eq("<a href=\"https://i.imgur.com/Qe6xws5.jpg\">https://i.imgur.com/Qe6xws5.jpg</a>")
+      expect(helper.replace_urls(body)).to eq("<a data-no-turbolink=\"true\" href=\"https://i.imgur.com/Qe6xws5.jpg\">https://i.imgur.com/Qe6xws5.jpg</a>")
     end
 
     it 'should escape HTML hidden in URLs' do

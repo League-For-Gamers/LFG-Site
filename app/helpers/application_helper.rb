@@ -24,7 +24,7 @@ module ApplicationHelper
         split_body = body.split("\n")
         split_body.each_with_index do |line, i| # Map didn't want to work here :(
           if line =~ URI::regexp(["https", "http"])
-            split_body[i] = auto_link_urls(CGI.escapeHTML(line)) {|t| truncate(t, length: 50)}
+            split_body[i] = auto_link_urls(CGI.escapeHTML(line), data: { no_turbolink: true }) {|t| truncate(t, length: 50)}
           else
             split_body[i] = CGI.escapeHTML(line)
           end
