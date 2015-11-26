@@ -17,15 +17,19 @@
           </form>
         </div>
       </div>
-       <div class="small-3 medium-2 large-1 columns text-right navigator" data-url="/group/search" data-source="all" data-per="12">
+       <div class="small-3 medium-2 large-1 columns text-right navigator" data-url="/group/search" data-source="<%= @group_query %>" data-per="12">
         <a data-dir="prev" class="hidden">&lt;</a>
-        <a data-dir="next" class="<%= 'hidden' if @count < 12 %>">&gt;</a>
+        <a data-dir="next" class="<%= 'hidden' if !@count or @count < 12 %>">&gt;</a>
       </div>
     </div>
   </div>
-  <div class="row collection" data-page="0">
-    <% @groups.each do |g| %>
-      <%= render partial: "group_card", locals: {group: g} %>
-    <% end %>
-  </div>
+  <% if !!@groups and !@groups.empty? -%>
+    <div class="row collection" data-page="0">
+      <% @groups.each do |g| %>
+        <%= render partial: "group_card", locals: {group: g} %>
+      <% end %>
+    </div>
+  <% else -%>
+    <H3>No results found</H3>
+  <% end -%>
 </div>

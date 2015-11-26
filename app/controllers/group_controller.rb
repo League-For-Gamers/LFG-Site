@@ -268,7 +268,7 @@ class GroupController < ApplicationController
   def search
     set_title "Search"
     search_params = params.permit(:query, :sort, :page)
-
+    search_params["query"] = params["source"] if !!params["source"]
     unless search_params["query"].blank? and search_params["sort"].blank?
       @group_query = search_params["query"]
       @sort = search_params["sort"]
@@ -281,14 +281,14 @@ class GroupController < ApplicationController
           @groups = @groups.sort { |x,y| y.pg_search_rank <=> x.pg_search_rank }
         end
 
-        per_page = 10
+        per_page = 12
         @count = @groups.size
         @page_num = search_params["page"].to_i || 0
         offset = @page_num * per_page
         @num_of_pages = @count / per_page
         start_num = 0 + offset
         @groups = @groups[start_num...start_num + per_page]
-        render :raw_cards, layout: false and return if params[:raw]
+        render :raw_cards, layout: false and return if !!params["raw"]
       end
     end
   end

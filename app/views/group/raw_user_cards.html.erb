@@ -1,5 +1,6 @@
+<% group = true if !!@membership and universal_permission_check "can_edit_group_member_roles" -%>
 <% @members.each do |u| %>
-  <%= render partial: "shared/user_card", locals: {user: u.user, role: @role} %>
+  <%= render partial: "shared/user_card", locals: {user: u.user, role: u.role, group: group} %>
 <% end %>
 <% if @members.blank? %>
   <p class="text-white">Oops! No more users!</p>

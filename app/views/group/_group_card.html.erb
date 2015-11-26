@@ -4,6 +4,6 @@
     <span class="title <%= "small" if group.title.length >= 31 %>"><%= group.title %></span>
   </a>
   <% if group.official %>
-    <%= image_tag 'ui/official-shield.png', class: 'official-shield' %>
+    <%= image_tag 'ui/official-shield.png', class: "official-shield #{"alt-pos" if group.slug == 'dev_learning_center'}" %>
   <% end %>
 </div>

@@ -42,7 +42,7 @@ class FeedController < ApplicationController
         @posts = Post.where("user_id = ?", user.id).where("id < ?", params[:id]).limit(30).order("id DESC").includes(:user, :bans)
       when /group\/([\w\d]*)/i
         group = Group.includes(:users, :posts).find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
-        @posts = group.posts.where("id < ?", params[:id]).limit(30).order("id ASC").includes(:user, :bans)
+        @posts = group.posts.where("id < ?", params[:id]).limit(30).order("id DESC").includes(:user, :bans)
       else
         render plain: "Invalid feed parameter", status: 403 and return
       end
@@ -67,12 +67,17 @@ class FeedController < ApplicationController
     end
     posts = []
     @posts.each do |post|
-      posts << render_to_string(partial: "post", locals: {post: post, user: post.user})
+      if params[:feed] =~ /group\/([\w\d]*)/i
+        posts << render_to_string(partial: "group/post", locals: {post: post, user: post.user})
+      else
+        posts << render_to_string(partial: "post", locals: {post: post, user: post.user})
+      end
     end
     if posts.empty?
       render nothing: true
     else
-      render json: {latest_id: @posts.first.id, posts: posts.reverse}
+      posts = posts.reverse if params[:direction] == "newer"
+      render json: {latest_id: @posts.first.id, posts: posts}
     end
     #render :raw_posts, layout: false
   end

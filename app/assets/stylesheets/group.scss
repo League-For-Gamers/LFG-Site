@@ -97,6 +97,7 @@
 			rem-calc(1)  rem-calc(1) 0 #000;
 		&.small {
 			font-size: 14pt;
+			top: rem-calc(-30);
 		}
 	}
 	.official-shield {
@@ -106,6 +107,11 @@
 		border: none;
 		width: rem-calc(65);
 		height: rem-calc(66);
+		z-index: 10;
+		&.alt-pos {
+			top: rem-calc(100);
+    		left: rem-calc(17);
+		}
 	}
 }
 .menu-panel {

@@ -41,6 +41,7 @@ Rails.application.routes.draw do
     get   'new', action: 'new'
     post  'new', action: 'create'
     get   '/search', action: 'search'
+    post  '/search', action: 'search'
     get   ':id', action: 'show'
     patch ':id', action: 'update'
     get   ':id/members', action: 'members'
