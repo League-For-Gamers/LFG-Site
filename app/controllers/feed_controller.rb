@@ -42,7 +42,7 @@ class FeedController < ApplicationController
         @posts = Post.where("user_id = ?", user.id).where("id < ?", params[:id]).limit(30).order("id DESC").includes(:user, :bans)
       when /group\/([\w\d]*)/i
         group = Group.includes(:users, :posts).find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
-        @posts = group.posts.where("id < ?", params[:id]).limit(30).order("id DESC").includes(:user, :bans)
+        @posts = group.posts.where("id < ?", params[:id]).limit(30).order("id ASC").includes(:user, :bans)
       else
         render plain: "Invalid feed parameter", status: 403 and return
       end
