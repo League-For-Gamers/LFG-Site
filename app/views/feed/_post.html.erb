@@ -25,7 +25,7 @@
   </div>
   <div class="large-10 small-9 columns body">
     <span class="title"><%= link_to display_name(user), "/user/#{user.username}" -%>
-    <% if !!@current_user and !@current_user.follow? user -%>
+    <% if !!@current_user and !@current_user.follow? user and @current_user != user -%>
       <a class="follow-user" href="/user/<%= user.username -%>/follow" title="Follow" data-tooltip></a>
     <% end -%></span>
     <p><%= replace_urls post.body -%></p>

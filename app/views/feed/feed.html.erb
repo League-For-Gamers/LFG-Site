@@ -19,9 +19,9 @@
   <div class="row">
     <div class="large-6 small-12 text-card pad lfg-form center new-post-form">
       <%= form_tag '/feed/new_post' do -%>
-        <label>New post
-          <%= text_area_tag "body", nil, class: "quick-submit white", maxlength: "512" %>
-        </label>
+        <label id="body_feedback" style="float:right"></label>
+        <label>New post</label>
+        <%= text_area_tag "body", nil, class: "quick-submit white", maxlength: "512" %>
         <% if @current_user.has_permission? "can_create_official_posts" %>
           <label style="float: right;">Official?
             <%= check_box_tag "official" %>

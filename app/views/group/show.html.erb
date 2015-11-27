@@ -2,9 +2,9 @@
   <div class="row group-new-post" id="new-post">
     <div class="large-6 small-12 text-card pad lfg-form new-post-form">
       <%= form_tag "/group/#{@group.slug}/new_post" do -%>
-        <label>New post
-          <%= text_area_tag "body", nil, class: "quick-submit white" %>
-        </label>
+        <label id="body_feedback" style="float:right"></label>
+        <label>New post</label>
+        <%= text_area_tag "body", nil, class: "quick-submit white", maxlength: "512" %>
         <% if universal_permission_check "can_create_official_posts" %>
           <label style="float: right;">Pinned?
             <%= check_box_tag "official" %>
