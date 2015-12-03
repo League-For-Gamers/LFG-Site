@@ -17,7 +17,8 @@ class UserController < ApplicationController
     unless user.nil? or !user # Nil if there's no results, false if failed authentication
       login_user(user)
       remember_user(user, request) if !!login_params[:remember]
-      redirect_to root_url
+      #redirect_to request.referrer || root_url
+      redirect_to "/group/league_for_gamers" # Temporary. Need to work out a solution
     else
       flash[:warning] = "Invalid username or password."
       set_title "Login"
