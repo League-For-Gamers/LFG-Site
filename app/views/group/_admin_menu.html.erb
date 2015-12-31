@@ -64,6 +64,22 @@
           <% end -%>
         </div>
       </li>
+      <li class="accordion-navigation">
+        <a href="#language">Group Language</a>
+        <div id="language" class="content">
+          <%= form_for @group, url: "/group/#{@group.slug}", method: "patch" do |f| %>
+            <label>Performs minor localization changes<br> to provide better handling of different scripts</label>
+            <% Group.languages.keys.each do |key| %>
+              <label>
+                <%= f.radio_button :language, key %>
+                <%= key.titleize %>
+              </label>
+            <% end %>
+            <%= f.submit 'Update', class: "btn small center" %>
+          <% end -%>
+        </div>
+      </li>
+      
       <% if @current_user.role == Role.find(1) %>
         <li class="accoridon-navigation">
           <a href="#title">Change Title</a>

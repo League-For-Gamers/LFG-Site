@@ -7,6 +7,7 @@ class Group < ActiveRecord::Base
   enum post_control: [:public_posts, :management_only_post, :members_only_post]
   enum comment_privacy: [:public_comments, :members_only_comment, :private_comments]
   enum membership: [:public_membership, :owner_verified, :invite_only]
+  enum language: [:english, :japanese]
 
   has_attached_file :banner,
                   default_url: "/group/banner/:style/missing.png",

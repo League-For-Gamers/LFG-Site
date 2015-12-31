@@ -326,8 +326,18 @@ class GroupController < ApplicationController
         end
         @permissions = GroupMembership.get_permission(@membership, @group) if !!@current_user
         not_found if @group.privacy == "private_group" and !@membership # Private groups are private.
+        set_locale
       rescue ActionController::RoutingError 
         render template: 'shared/not_found', status: 404
+      end
+    end
+
+    def set_locale
+      case @group.language
+      when "japanese"
+        @lang = "ja"
+        @charset = "shift-jis"
+        @encoding = Encoding::Shift_JIS
       end
     end
 
@@ -337,9 +347,9 @@ class GroupController < ApplicationController
 
     def update_params
       if @current_user.role == Role.find(1)
-        params.require(:group).permit(:title, :description, :membership, :privacy, :post_control, :banner, :official)
+        params.require(:group).permit(:title, :description, :membership, :privacy, :post_control, :banner, :official, :language)
       else
-        params.require(:group).permit(:description, :membership, :privacy, :post_control, :banner)
+        params.require(:group).permit(:description, :membership, :privacy, :post_control, :banner, :language)
       end
     end
 

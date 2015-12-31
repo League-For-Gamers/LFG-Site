@@ -122,6 +122,9 @@
 			white-space: pre-wrap;
 			font-size: 12pt;
 			font-weight: 400;
+			&.ja {
+				font-size: 14pt;
+			}
 		}
 		.time-ago {
 			text-align: right;

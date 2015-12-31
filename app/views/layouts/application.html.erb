@@ -1,7 +1,15 @@
 <!DOCTYPE html>
-<html>
+<% if @lang -%>
+<html lang="<%= @lang %>">
+<% else -%>
+<html lang="en">
+<% end -%>
 <head>
-  <meta charset='UTF-8' />
+  <% if @charset -%>
+    <meta charset='<%= @charset %>' />
+  <% else -%>
+    <meta charset='UTF-8' />
+  <% end -%>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="dns-prefetch" href="//static.leagueforgamers.com/">
@@ -63,7 +71,16 @@
   </nav>
 
   <div class="main row">
-    <%= yield.force_encoding(Encoding::UTF_8) %>
+    <% y = yield -%>
+    <% begin -%>
+      <% if @encoding -%>
+        <%= y.force_encoding(@encoding) %>
+      <% else -%>
+        <%= y.force_encoding(Encoding::UTF_8) %>
+      <% end -%>
+    <% rescue Encoding::CompatibilityError -%>
+      <%= y.force_encoding(Encoding::UTF_8) %>
+    <% end -%>
   </div>
 
   <nav class="bottom-nav-bar">
@@ -77,6 +94,9 @@
       <%= render "group/admin_menu" %>
     </ul>
   </nav>
+
+<script src="https://use.typekit.net/ggz5lnu.js"></script>
+<script>try{Typekit.load({ async: true });}catch(e){}</script>
 
 <meta name="unique" content="<%= SecureRandom.hex(16) %>">
 </body>
