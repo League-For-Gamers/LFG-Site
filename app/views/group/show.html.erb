@@ -25,20 +25,21 @@
 </div>
 <div class="row">
   <div class="large-4 medium-4 small-12 right columns text-card" id="description">
-    <h2>About</h2>
-    <p><%= replace_urls @group.description %></p>
-    <div class="buttons">
-      <% if !!@current_user and universal_permission_check "can_view_group_members" %>
-        <a href="/group/<%= @group.slug %>/members" class="btn">Member list</a>
-      <% end %>
+    <div class="stats row">
+      <span class="small-4 columns"><% if !!@current_user and universal_permission_check "can_view_group_members" -%><a href="/group/<%= @group.slug %>/members"><%= number_with_delimiter @group.group_memberships.count %> members</a><% else -%><%= number_with_delimiter @group.group_memberships.count %> members</a><% end -%></span>
+      <span class="small-4 columns"><%= number_with_delimiter @group.posts.count %> posts</span>
       <% if !!@current_user and !@membership and ["public_membership", "owner_verified"].include? @group.membership %>
-        <a href="/group/<%= @group.slug %>/join" class="btn">Join Group</a>
+        <span class="small-4 columns"><a href="/group/<%= @group.slug %>/join">Join Group</a></span>
       <% elsif !!@membership and @membership.role != "unverified" %>
-        <a href="/group/<%= @group.slug %>/leave" class="btn">Leave Group</a>
+        <span class="small-4 columns"><a href="/group/<%= @group.slug %>/leave">Leave Group</a></span>
       <% elsif !!@membership and @membership.role == "unverified" %>
-        <a href="/group/<%= @group.slug %>/leave" class="btn">Revoke join request</a>
+        <span class="small-4 columns"><a href="/group/<%= @group.slug %>/leave">Revoke join request</a></span>
+      <% else %>
+        <span class="small-4 columns has-tip" title="You must be logged in to join" data-tooltip aria-haspopup="true">Join Group</span>
       <% end -%>
     </div>
+    <h2>About</h2>
+    <p><%= replace_urls @group.description %></p>
   </div>
   <div class="large-7 medium-8 small-12 left columns">
     <% if !!@membership and @membership.role == "banned" -%>

@@ -18,7 +18,7 @@ RSpec.describe Notification, type: :model do
       expect(notification.resolve_url).to include("members")
       notification.variant = :group_invited
       expect(notification.resolve_url).to include(notification.group.slug)
-      expect(notification.resolve_url).to include("accept")
+      expect(notification.resolve_url).to include("join")
       notification.variant = :group_accepted
       expect(notification.resolve_url).to include(notification.group.slug)
       notification.variant = :group_ban

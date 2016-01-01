@@ -12,10 +12,12 @@
         <span class="website">Website: <%= link_to truncate(reverse_urlify(@user.social["website"]), length: 30), full_urlify(@user.social["website"]) %></span>
       <% end -%>
       <% if logged_in? and @user != @current_user -%>
-        <% if @current_user.has_permission? "can_send_private_messages" -%>
-          <a href="/user/<%= @user.username %>/message" class="btn small">Send Message</a>
-        <% end -%>
-        <a href="/user/<%= @user.username %>/follow" class="btn small"><% unless @current_user.follows.map(&:following).include? @user -%>Follow<% else -%>Unfollow<% end -%></a>
+        <div class="buttons">
+          <% if @current_user.has_permission? "can_send_private_messages" -%>
+            <a href="/user/<%= @user.username %>/message" class="btn small small-6 columns">Send Message</a>
+          <% end -%>
+          <a href="/user/<%= @user.username %>/follow" class="btn small small-6 columns"><% unless @current_user.follows.map(&:following).include? @user -%>Follow<% else -%>Unfollow<% end -%></a>
+        </div>
       <% end -%>
       <ul class="social-links">
         <% @user.social.each do |social| %>

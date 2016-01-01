@@ -127,10 +127,18 @@
 		}
 	}
 	.bottom {
-		padding-right: rem-calc(36);
 		position: relative;
 		bottom: 0;
-		width: rem-calc(360);
+		width: 100%;
+		.buttons {
+			display: block;
+			width: 100%;
+			//height: rem-calc(36);
+			margin-bottom: rem-calc(5);
+			a {
+				margin: 0 rem-calc(-3);
+			}
+		}
 	}
 	.hidden-section {
 		display: none;
@@ -188,6 +196,7 @@
 			text-transform: uppercase;
 		}
 		.social-links {
+			display: block;
 			list-style: none;
 			margin: 0;
 			li {

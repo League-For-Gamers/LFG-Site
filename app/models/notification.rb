@@ -12,7 +12,7 @@ class Notification < ActiveRecord::Base
     when "group_invite"
       "/group/#{self.group.slug}/members"
     when "group_invited"
-      "/group/#{self.group.slug}/accept"
+      "/group/#{self.group.slug}/join"
     when "group_accepted"
       "/group/#{self.group.slug}"
     when "group_ban", "group_unban"

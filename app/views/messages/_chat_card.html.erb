@@ -7,9 +7,7 @@
       <div class="avatar-container">
         <%= image_tag chat.private_messages.first.user.avatar.url(:thumb), class: "avatar" %>
       </div>
-      <p class="body">
-        <%= chat.private_messages.first.decrypted_body %>
-      </p>
+      <p class="body"><%= chat.private_messages.first.decrypted_body -%></p>
     </div>
   </a>
 </div>

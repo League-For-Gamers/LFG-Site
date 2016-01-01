@@ -11,10 +11,11 @@ get_new_posts = (feed, uid) ->
       dataType: 'json'
       data: {'feed': feed, 'id': latest_id, 'direction': 'newer'}
       success: (data) ->
-        #console.log "New post(s)."
-        latest_id = data.latest_id
-        new_posts = new_posts.concat(data.posts)
-        update_new_posts_button()
+        if Foundation.utils.S("meta[name='unique']").attr('content') == uid
+          #console.log "New post(s)."
+          latest_id = data.latest_id
+          new_posts = new_posts.concat(data.posts)
+          update_new_posts_button()
       complete: (data) -> 
         window.setTimeout(get_new_posts, 10000, feed, uid)
 
@@ -26,7 +27,7 @@ update_new_posts_button = () ->
     button.slideDown(200)
 
 $ ->
-  if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$|^\/group\/([^search|members|new][\w\d]+)$/i)
+  if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$|^\/group\/([^search|members|new][\w\d]+)(\/posts\/\d+)?$/i)
     new_posts = []
     loading_messages = false
     end_of_stream = false
@@ -164,4 +165,6 @@ $ ->
       for post in posts # Why does the 'do' have to be a on a newline? wtf coffeescript?
         do ->
           Foundation.utils.S('#feed-posts').prepend(post)
-          Foundation.utils.S(".time-ago a").first().timeago()
+          Foundation.utils.S('.streamPost').sort((a, b) ->
+            Foundation.utils.S(b).data('id') - Foundation.utils.S(a).data('id')
+          ).first().find('.time-ago a').timeago()

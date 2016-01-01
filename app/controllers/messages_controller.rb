@@ -70,6 +70,7 @@ class MessagesController < ApplicationController
     respond_to do |format|
       if @message.valid?
         chat.save
+        MessageCountIncrementJob.perform_later(@message)
         format.html { redirect_to "/messages/#{chat.id}" }
         format.json { head :no_content }
       else

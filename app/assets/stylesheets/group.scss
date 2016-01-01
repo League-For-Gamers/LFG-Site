@@ -87,7 +87,7 @@
 		padding: 0 rem-calc(5);
 		top: rem-calc(-35);
 		color: white;
-		font-size: 18pt;
+		font-size: 17pt;
 		font-weight: 600;
 		z-index: 9;
 		text-shadow:
@@ -96,8 +96,8 @@
 		   rem-calc(-1)  rem-calc(1) 0 #000,
 			rem-calc(1)  rem-calc(1) 0 #000;
 		&.small {
-			font-size: 14pt;
-			top: rem-calc(-30);
+			font-size: 12pt;
+			top: rem-calc(-27);
 		}
 	}
 	.official-shield {
@@ -265,6 +265,29 @@
 			display: block;
 		}
 	}
+	.stats {
+		border-bottom: rem-calc(1) solid $primary-red;
+		height: rem-calc(50);
+		span {
+			background: $primary-cream;
+			display: inline-block;
+			height: 100%;
+			text-align: center;
+			vertical-align: middle;
+			line-height: 36pt;
+			border-bottom: none;
+			padding: 0;
+			&:hover {
+				background: scale-color($primary-red, $lightness: 80%, $saturation: 30%);
+			}
+			&:first-child {
+				border-right: rem-calc(1) solid $primary-red;
+			}
+			&:last-child {
+				border-left: rem-calc(1) solid $primary-red;
+			}
+		}
+	}
 }
 
 .group-new-post {
@@ -281,10 +304,37 @@
 	}
 }
 
+@media only screen and (min-width: 40em) and (max-width: 64em) {
+	.group-banner {
+		h1 {
+			font-size: 48pt;
+			bottom: rem-calc(60);
+			margin-bottom: rem-calc(-60);
+		}
+	}
+	#description {
+		.stats {
+			span {
+				font-size: 9pt;
+			}
+		}
+	}
+}
+
 @media only screen and (max-width: 40em) {
 	.membership-cards {
 		.text-card {
 			margin: rem-calc(7) 0;
+		}
+	}
+	.group-new-post {
+		top: rem-calc(60);
+	}
+	.group-banner {
+		h1 {
+			font-size: 24pt;
+			bottom: rem-calc(25);
+			margin-bottom: rem-calc(-25);
 		}
 	}
 }
@@ -320,13 +370,6 @@
 	.group-control-panel {
 		ul li .content#desc textarea {
 			width: rem-calc(270);
-		}
-	}
-	.group-banner {
-		h1 {
-			font-size: 24pt;
-			bottom: rem-calc(25);
-			margin-bottom: rem-calc(-25);
 		}
 	}
 	#description {

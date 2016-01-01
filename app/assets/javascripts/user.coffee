@@ -16,6 +16,11 @@ $ ->
       Foundation.utils.S("##{id}").val("")
       return
   if window.location.pathname.match(/\/user\/([\d\w]*)/i)
+    # Well this is gross.
+    Foundation.utils.S('.bio-card .bottom .buttons').height( -> Foundation.utils.S(this).children().map(->
+      Foundation.utils.S(this).height()
+    ).sort().last()[0])
+
     Foundation.utils.S('.edit-section .hide').click -> 
       section = Foundation.utils.S(this).data('section')
       t = this
