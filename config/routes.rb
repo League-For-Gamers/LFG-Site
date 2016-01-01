@@ -72,6 +72,8 @@ Rails.application.routes.draw do
     end
   end
 
+  get 'stats', to: 'static#stats'
+
   get 'terms', to: 'static#terms'
   get 'faq', to: 'static#faq'
   get 'privacy', to: 'static#privacy'

@@ -1,0 +1,16 @@
+<div class="large-4 small-12 text-card pad center">
+	<h2>Stats</h2>
+
+  <p>
+    Objects stored in database:
+    <ul>
+      <li>Members: <%= number_with_delimiter User.count %></li>
+      <li>Groups: <%= number_with_delimiter Group.count %></li>
+      <li>Posts: <%= number_with_delimiter Post.count %></li>
+      <li>Follows: <%= number_to_cardinal Follow.count %></li>
+      <li>Bans: <%= number_to_cardinal Ban.count %></li>
+      <li>Skills: <%= number_to_cardinal Skill.count %></li>
+      <li>Games: <%= number_to_cardinal Game.count %></li>
+    </ul>
+  </p>
+</div>
