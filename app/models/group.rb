@@ -11,7 +11,7 @@ class Group < ActiveRecord::Base
 
   has_attached_file :banner,
                   default_url: "/group/banner/:style/missing.png",
-                  path: "/group/banner/:style/:id.:extension",
+                  url: "/group/banner/:style/:id.:extension",
                   styles: {
                     thumb: '356x200#',
                     large: '1500x400#'

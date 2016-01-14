@@ -226,6 +226,12 @@ class UserController < ApplicationController
     @message = PrivateMessage.new()
   end
 
+  def autocomplete # GET /ajax/user/autocomplete
+    users = User.select("id, username, display_name, avatar_file_name").autocomplete(params[:query]).limit(5)
+    users = users.map { |u| {username: u.username, display_name: u.display_name, url: "/user/#{u.username}", avatar: u.avatar(:thumb)} }
+    render json: users.to_json
+  end
+
   private
     def set_current_user_with_includes
       @current_user = User.includes(:skills, :games, :tags).find session[:user]

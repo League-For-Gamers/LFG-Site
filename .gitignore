@@ -28,3 +28,4 @@
 /coverage
 /public/assets
 config/newrelic.yml
+public/group/

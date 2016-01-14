@@ -69,6 +69,7 @@ Rails.application.routes.draw do
   scope :ajax do
     namespace :user, path: 'user' do
       post 'hide', action: 'profile_hide'
+      get  'autocomplete', action: 'autocomplete'
     end
   end
 
