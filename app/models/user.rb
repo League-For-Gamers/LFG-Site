@@ -3,12 +3,10 @@ class User < ActiveRecord::Base
   include PgSearch
   multisearchable against: [:username, :display_name]
 
-  pg_search_scope :autocomplete, against: [:username, :display_name], using: {tsearch: {prefix: true}}
-
   enum skill_status: [:empty, :looking_for_group, :looking_for_more]
 
   has_attached_file :avatar,
-                  url: "/users/avatars/:style/:id.:extension",
+                  path: "users/avatars/:style/:id.:extension",
                   styles: {
                     thumb: '64x64>',
                     med:   '150x150#',

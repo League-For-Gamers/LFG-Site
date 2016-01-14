@@ -75,15 +75,3 @@ $ ->
           if collection.children().length < per_page or (collection.children().length == per_page and Foundation.utils.S(node).parent().children("a[data-dir='next']").hasClass("hidden"))
             Foundation.utils.S(node).parent().children("a[data-dir='next']").toggleClass("hidden")
           loading_navigator[dir] = false
-
-  Foundation.utils.S('.user-autocomplete').on 'input', ->
-    last_word = $(this).val().split(" ").reverse()[0]
-    if last_word[0] == "@"
-      word = last_word.substr(0)
-      $.ajax
-        url: "/ajax/user/autocomplete"
-        type: 'GET'
-        dataType: 'json'
-        data: {query: last_word}
-        success: (data) ->
-          console.log data
