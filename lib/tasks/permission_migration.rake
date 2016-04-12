@@ -98,4 +98,13 @@ namespace :db do
       ban.save
     end
   end
+
+  task :set_default_chat_version => :environment do
+    # due to the new crypto system in chats a version marker is required, this will also be reflected on the front end
+    # for clientside decryption purposes.
+    Chat.all.each do |chat|
+      chat.version = 1
+      chat.save
+    end
+  end
  end

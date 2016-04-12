@@ -10,6 +10,9 @@ Rails.application.routes.draw do
   get  'logout', to: 'user#logout'
   get 'account', to: 'user#my_account'
   patch 'account', to: 'user#update'
+  get 'generate_keys', to:  'user#generate_keys'
+  put 'generate_keys', to:  'user#save_keys'
+  post 'finalize_keys', to: 'user#finalize_keys'
   
   get 'search', to: 'user#search'
 
@@ -69,6 +72,7 @@ Rails.application.routes.draw do
   scope :ajax do
     namespace :user, path: 'user' do
       post 'hide', action: 'profile_hide'
+      get  'autocomplete', action: 'autocomplete'
     end
   end
 

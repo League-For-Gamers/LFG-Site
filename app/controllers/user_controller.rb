@@ -2,7 +2,7 @@ class UserController < ApplicationController
   before_action :set_user, only: [:show, :direct_message, :follow]
   skip_before_filter :set_current_user, only: [:my_account, :update, :direct_message]
   before_filter :set_current_user_with_includes, only: [:my_account, :update, :direct_message], if: :logged_in?
-  before_action :required_log_in, only: [:my_account, :search, :direct_message, :logout]
+  before_action :required_log_in, only: [:my_account, :search, :direct_message, :logout, :generate_keys, :save_keys, :finalize_keys]
   before_action :required_logged_out, only: [:forgot_password, :forgot_password_check, :signup, :login]
 
   # GET /login
@@ -17,8 +17,12 @@ class UserController < ApplicationController
     unless user.nil? or !user # Nil if there's no results, false if failed authentication
       login_user(user)
       remember_user(user, request) if !!login_params[:remember]
-      #redirect_to request.referrer || root_url
-      redirect_to "/group/league_for_gamers" # Temporary. Need to work out a solution
+      if user.keypair_final
+        #redirect_to request.referrer || root_url
+        redirect_to "/group/league_for_gamers" # Temporary. Need to work out a solution
+      else
+        redirect_to "/generate_keys"
+      end
     else
       flash[:warning] = "Invalid username or password."
       set_title "Login"
@@ -224,6 +228,34 @@ class UserController < ApplicationController
     flash[:info] = "You can't send a message to yourself." and redirect_to root_url and return if @user == @current_user
     @users = [@user]
     @message = PrivateMessage.new()
+  end
+
+  def autocomplete # GET /ajax/user/autocomplete
+    users = User.select("id, username, display_name, avatar_file_name").autocomplete(params[:query]).limit(5)
+    users = users.map { |u| {username: u.username, display_name: u.display_name, url: "/user/#{u.username}", avatar: u.avatar(:thumb)} }
+    render json: users.to_json
+  end
+
+  def generate_keys
+    redirect_to "/" if @current_user.keypair_final
+  end
+
+  def save_keys
+    render status: 403, plain: "You cannot set new PGP keys." if @current_user.keypair_final
+    keys = params.permit(:public_key, :private_key)
+    pub = Key.new(key_type: Key.key_types["public_key"], user: @current_user, body: keys["public_key"])
+    priv = Key.new(key_type: Key.key_types["private_key"], user: @current_user, parent: pub, body: keys["private_key"])
+    @current_user.public_key = pub
+    @current_user.private_key = priv
+    @current_user.keypair_final = false
+    @current_user.save
+    render plain: "OK"
+  end
+
+  def finalize_keys
+    @current_user.keypair_final = true
+    @current_user.save
+    redirect_to "/"
   end
 
   private

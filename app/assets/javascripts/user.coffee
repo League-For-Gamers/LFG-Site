@@ -1,4 +1,78 @@
+generate_keypair = (name, password) ->
+  new Promise((resolve, reject) ->
+    console.log "Kicking off generation..."
+    options = {
+      userIds: [{name: name}],
+      numBits: 4096,
+      passphrase: password
+    }
+    openpgp.generateKey(options).then (key) -> 
+      return resolve(key)
+  )
+active_hide_by_variable = (selector, variable) ->
+  if variable
+    Foundation.utils.S(selector).addClass('unhide')
+  else
+    Foundation.utils.S(selector).removeClass('unhide')
+  return
+
+hide_by_variable = (selector, variable) ->
+  if variable
+    Foundation.utils.S(selector).removeClass('hidden')
+  else
+    Foundation.utils.S(selector).addClass('hidden')
+  return
 $ ->
+  if window.location.pathname.match(/^\/generate_keys$/)
+    interrupted = false
+    active_hide_by_variable('#finalize_form',false)
+    pass = window.sessionStorage.getItem('pass') || window.localStorage.getItem('pass')
+    name = Foundation.utils.S("meta[name=username]").attr('content')
+    generate_keypair(name, pass).then (key) ->
+      console.log "Key generated"
+      unless interrupted
+        Foundation.utils.S('#keys_form #public_key').val(key.publicKeyArmored)
+        Foundation.utils.S('#keys_form #private_key').val(key.privateKeyArmored)
+        data = Foundation.utils.S('#keys_form').serialize()
+        $.post(Foundation.utils.S('#keys_form').attr('action'), data).then ->
+          active_hide_by_variable('.loading-ring',false)
+          active_hide_by_variable('#finalize_form',true)
+        return
+
+    Foundation.utils.S('#manually_set_button').click ->
+      interrupted = true
+      active_hide_by_variable('.loading-ring',false)
+      hide_by_variable('#manually_set_button', false)
+      active_hide_by_variable('#finalize_form',false)
+      Foundation.utils.S('#manual_password_container').addClass("unhide")
+
+    Foundation.utils.S('#manual_password').on 'propertychange change keyup paste input', ->
+      if Foundation.utils.S('#manual_password').val() == Foundation.utils.S('#manual_password_confirm').val() and Foundation.utils.S('#manual_password').val() != ""
+        Foundation.utils.S('#generate_button').removeAttr('disabled')
+      else
+        Foundation.utils.S('#generate_button').attr('disabled', 'disabled')
+
+    Foundation.utils.S('#manual_password_confirm').on 'propertychange change keyup paste input', ->
+      if Foundation.utils.S('#manual_password').val() == Foundation.utils.S('#manual_password_confirm').val() and Foundation.utils.S('#manual_password').val() != ""
+        Foundation.utils.S('#generate_button').removeAttr('disabled')
+      else
+        Foundation.utils.S('#generate_button').attr('disabled', 'disabled')
+
+    Foundation.utils.S('#generate_button').click ->
+      
+      if Foundation.utils.S('#manual_password').val() == Foundation.utils.S('#manual_password_confirm').val()
+        active_hide_by_variable('#manual_password_container',false)
+        active_hide_by_variable('.loading-ring',true)
+        generate_keypair(name, Foundation.utils.S('#manual_password').val()).then (key) ->
+          console.log "Key generated"
+          Foundation.utils.S('#keys_form #public_key').val(key.publicKeyArmored)
+          Foundation.utils.S('#keys_form #private_key').val(key.privateKeyArmored)
+          data = Foundation.utils.S('#keys_form').serialize()
+          $.post(Foundation.utils.S('#keys_form').attr('action'), data).then ->
+            active_hide_by_variable('.loading-ring',false)
+            active_hide_by_variable('#finalize_form',true)
+
+    return
   if window.location.pathname.match(/\/account/)
     Foundation.utils.S('#new_favourite_game').click ->
       id = Foundation.utils.S('#favourite_games').children().length

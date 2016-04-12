@@ -11,3 +11,14 @@
 .hidden {
 	display: none;
 }
+.active-hidden {
+	transition: max-height 0.7s ease-out;
+	max-height: 0;
+	overflow: hidden;
+	opacity: 0;
+}
+.active-hidden.unhide {
+	transition: max-height 0.7s ease-in;
+	max-height: 5000px;
+	opacity: 1;
+}

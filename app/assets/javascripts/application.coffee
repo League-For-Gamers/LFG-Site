@@ -23,8 +23,15 @@
 #= require foundation/foundation.tooltip
 # require foundation/foundation.topbar
 
+#= require openpgp
+
 #= require turbolinks
 #= require_tree .
+
+openpgp.config.useWebCrypto = true
+openpgp.config.aead_protect = true
+# Init web worker if webcrypto has failed.
+openpgp.initWorker({path:'/openpgp.worker.min.js'})
 
 @ie_browser = !!navigator.userAgent.match(/Trident\/\d+/)
 @ff_browser = !!navigator.userAgent.match(/Firefox\/\d+/)
@@ -42,5 +49,9 @@ $ ->
   })
   Foundation.utils.S('input, textarea').placeholder()
   Turbolinks.enableProgressBar()
+  # Just a precaution. Seriously. Any measure. We need to find a way to prevent XSS attacks.
+  if Foundation.utils.S("meta[name=loggedin]").attr("content") == "false"
+    window.sessionStorage.removeItem('pass')
+    window.localStorage.removeItem('pass')
   #Turbolinks.enableTransitionCache()
   return

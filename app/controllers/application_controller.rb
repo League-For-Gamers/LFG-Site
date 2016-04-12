@@ -53,6 +53,7 @@ class ApplicationController < ActionController::Base
 
     def set_current_user
       @current_user ||= User.includes(:follows, :bans, role: [:permissions]).find session[:user]
+      redirect_to '/generate_keys' and return if !@current_user.keypair_final and !["generate_keys", "save_keys", "finalize_keys", "logout"].include? action_name
       # Unban mechanism
       if @current_user.role.name == "banned" 
         if @current_user.bans.first.end_date != nil and @current_user.bans.first.end_date < Time.now 

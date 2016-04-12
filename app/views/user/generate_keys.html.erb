@@ -1,0 +1,22 @@
+<div class="medium-4 small-12 center lfg-form alone">
+  <h1>Generating Keys</h1>
+  <p>Generating PGP keys. This is used for encrypted private communication, as well as cryptographically signing and verifying ownership of posts.</p>
+  <p class="no-margin">This may take a few minutes, and the page may seem unresponsive during this time.</p>
+
+  <div class='loading-ring active-hidden unhide'><div></div></div>
+  <a id="manually_set_button">Manually set password.<sup>*</sup></a>
+  
+  <div id="manual_password_container" class="active-hidden">
+    <%= password_field_tag :manual_password, "", placeholder: "Password" %>
+    <%= password_field_tag :manual_password_confirm, "", placeholder: "Confirm Password" %>
+    <a class="btn active-hidden unhide" id="generate_button" disabled="disabled">Generate</a>
+  </div>
+  <%= form_tag('/generate_keys', method: 'put', class: 'hidden', id: 'keys_form') do %>
+    <%= hidden_field_tag :public_key %>
+    <%= hidden_field_tag :private_key %>
+  <% end %>
+  <p><sub><sub>*This will require you to enter the password every time you want to read your messages, or sign a post</sub></sub></p>
+  <%= form_tag('/finalize_keys', method: 'post', class: 'active-hidden', id: 'finalize_form') do %>
+    <%= submit_tag 'Finish', class: 'btn', id: 'submit_button' %>
+  <% end %>
+</div>

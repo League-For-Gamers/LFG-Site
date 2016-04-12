@@ -30,6 +30,11 @@ a {
 		color: $primary-lighter-red;
 	}
 }
+p {
+	&.no-margin {
+		margin: 0;
+	}
+}
 
 #login-form {
 	display: none;
@@ -306,6 +311,13 @@ button, a.btn {
 }
 
 .lfg-form {
+	&.alone {
+		background-color: #2B2B2B;
+		border-radius: rem-calc(5);
+		border: rem-calc(1) solid #444;
+		padding: rem-calc(5);
+		color: $primary-cream;
+	}
 	form {
 		h1,h2,h3 {
 			margin-bottom: rem-calc(3);
@@ -431,4 +443,60 @@ a, button {
 	background-color: $primary-red;
 	opacity: 0.7;
 	z-index: 500;
+}
+
+@mixin transform($params) {
+  -ms-transform: $params;
+  -moz-transform: $params;
+  -webkit-transform: $params;
+  -o-transform: $params;
+  transform: $params;
+}
+@mixin keyframes($animation-name) {
+  @-webkit-keyframes #{$animation-name} {
+    @content;
+  }
+  @-moz-keyframes #{$animation-name} {
+    @content;
+  }
+  @-o-keyframes #{$animation-name} {
+    @content;
+  }
+  @keyframes #{$animation-name} {
+    @content;
+  }
+}
+@include keyframes(loading-ring) {
+  0% {
+    @include transform(rotate(0deg))
+  }
+  100% {
+    @include transform(rotate(360deg))
+  }
+}
+@mixin animation($params) {
+  -ms-animation: $params;
+  -moz-animation: $params;
+  -webkit-animation: $params;
+  -o-animation: $params;
+  animation: $params;
+}
+
+.loading-ring {
+  background: none;
+  position: relative;
+  width: rem-calc(150);
+  height: rem-calc(150);
+  margin: 0 auto;
+  div {
+    position: absolute;
+    display: block;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    border-radius: 100%;
+    box-shadow: 0 rem-calc(2) 0 0 #BD0707;
+    @include animation(loading-ring 0.7s linear infinite);
+  }
 }

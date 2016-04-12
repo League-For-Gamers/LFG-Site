@@ -3,6 +3,8 @@ class User < ActiveRecord::Base
   include PgSearch
   multisearchable against: [:username, :display_name]
 
+  pg_search_scope :autocomplete, against: [:username, :display_name], using: {tsearch: {prefix: true}}
+
   enum skill_status: [:empty, :looking_for_group, :looking_for_more]
 
   has_attached_file :avatar,
@@ -16,6 +18,9 @@ class User < ActiveRecord::Base
   attr_accessor :old_password, :email_confirm, :skip_old_password
   has_and_belongs_to_many :games
   belongs_to :role
+  belongs_to :public_key, class_name: 'Key', foreign_key: 'public_key_id'
+  belongs_to :private_key, class_name: 'Key', foreign_key: 'private_key_id'
+  
   has_many :skills, -> { order 'confidence DESC' }, dependent: :destroy
   has_many :tags, dependent: :destroy
   has_many :posts, -> { order 'created_at ASC' }, dependent: :destroy

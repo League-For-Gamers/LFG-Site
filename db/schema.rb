@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151231051009) do
+ActiveRecord::Schema.define(version: 20160412093920) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,8 +38,10 @@ ActiveRecord::Schema.define(version: 20151231051009) do
 
   create_table "chats", force: :cascade do |t|
     t.string   "key"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "public_key_id"
+    t.integer  "version",       default: 2
   end
 
   create_table "chats_users", id: false, force: :cascade do |t|
@@ -105,11 +107,25 @@ ActiveRecord::Schema.define(version: 20151231051009) do
     t.datetime "updated_at",                                       null: false
     t.integer  "membership_count"
     t.boolean  "official",                         default: false
-    t.integer  "post_control",                     default: 0
+    t.integer  "post_control",                     default: 1
     t.integer  "language",                         default: 0
   end
 
   add_index "groups", ["slug"], name: "index_groups_on_slug", using: :btree
+
+  create_table "keys", force: :cascade do |t|
+    t.integer  "key_type"
+    t.integer  "user_id"
+    t.integer  "group_id"
+    t.integer  "parent_id"
+    t.string   "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "keys", ["group_id"], name: "index_keys_on_group_id", using: :btree
+  add_index "keys", ["parent_id"], name: "index_keys_on_parent_id", using: :btree
+  add_index "keys", ["user_id"], name: "index_keys_on_user_id", using: :btree
 
   create_table "notifications", force: :cascade do |t|
     t.integer  "variant"
@@ -153,6 +169,7 @@ ActiveRecord::Schema.define(version: 20151231051009) do
     t.boolean  "official"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean  "pinned"
     t.integer  "group_id"
   end
 
@@ -202,8 +219,8 @@ ActiveRecord::Schema.define(version: 20151231051009) do
     t.string   "password_digest"
     t.string   "display_name"
     t.text     "bio"
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
     t.binary   "email"
     t.binary   "email_iv"
     t.string   "avatar_file_name"
@@ -211,15 +228,18 @@ ActiveRecord::Schema.define(version: 20151231051009) do
     t.integer  "avatar_file_size"
     t.datetime "avatar_updated_at"
     t.string   "hashed_email"
-    t.hstore   "social",              default: {}, null: false
+    t.hstore   "social",              default: {},    null: false
     t.text     "skill_notes"
     t.integer  "skill_status"
-    t.hstore   "hidden",              default: {}, null: false
+    t.hstore   "hidden",              default: {},    null: false
     t.integer  "role_id"
     t.string   "verification_digest"
     t.datetime "verification_active"
     t.string   "enc_key"
     t.integer  "unread_count",        default: 0
+    t.integer  "private_key_id"
+    t.integer  "public_key_id"
+    t.boolean  "keypair_final",       default: false
   end
 
   add_index "users", ["role_id"], name: "index_users_on_role_id", using: :btree
@@ -231,6 +251,8 @@ ActiveRecord::Schema.define(version: 20151231051009) do
   add_foreign_key "follows", "users", column: "following_id"
   add_foreign_key "group_memberships", "groups"
   add_foreign_key "group_memberships", "users"
+  add_foreign_key "keys", "groups"
+  add_foreign_key "keys", "users"
   add_foreign_key "notifications", "groups"
   add_foreign_key "notifications", "users"
   add_foreign_key "posts", "groups"

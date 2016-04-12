@@ -28,7 +28,7 @@ gem 'sucker_punch'
 gem 'paperclip'
 gem 'aws-sdk', '< 2.0'
 
-gem 'foundation-rails'
+gem 'foundation-rails', '~> 5.5'
 
 group :staging, :production do
   gem 'puma'
