@@ -3,11 +3,15 @@
     <div class="users">Chat with:
     <%= (chat.users - [@current_user]).map { |x| display_name x }.join(", ") %>
     </div>
-    <div class="last-message message">
+    <div class="last-message message ver-<%= chat.private_messages.first.version %> <%= "encrypted" if chat.private_messages.first.version == 2 %>">
       <div class="avatar-container">
         <%= image_tag chat.private_messages.first.user.avatar.url(:thumb), class: "avatar" %>
       </div>
-      <p class="body"><%= chat.private_messages.first.decrypted_body -%></p>
+      <% if chat.private_messages.first.version == 2 %>
+        <p class="body" data-content="<%= chat.private_messages.first.decrypted_body.force_encoding(Encoding::UTF_8) %>">Decrypting...</p>
+      <% else %>
+        <p class="body"><%= chat.private_messages.first.decrypted_body.force_encoding(Encoding::UTF_8) %></p>
+      <% end %>
     </div>
   </a>
 </div>

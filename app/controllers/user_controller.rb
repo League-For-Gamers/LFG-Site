@@ -1,8 +1,8 @@
 class UserController < ApplicationController
-  before_action :set_user, only: [:show, :direct_message, :follow]
+  before_action :set_user, only: [:show, :direct_message, :follow, :pubkey]
   skip_before_filter :set_current_user, only: [:my_account, :update, :direct_message]
   before_filter :set_current_user_with_includes, only: [:my_account, :update, :direct_message], if: :logged_in?
-  before_action :required_log_in, only: [:my_account, :search, :direct_message, :logout, :generate_keys, :save_keys, :finalize_keys]
+  before_action :required_log_in, only: [:my_account, :search, :direct_message, :logout, :generate_keys, :save_keys, :finalize_keys, :get_private_key]
   before_action :required_logged_out, only: [:forgot_password, :forgot_password_check, :signup, :login]
 
   # GET /login
@@ -256,6 +256,14 @@ class UserController < ApplicationController
     @current_user.keypair_final = true
     @current_user.save
     redirect_to "/"
+  end
+
+  def pubkey
+    render plain: @user.public_key.body
+  end
+
+  def get_private_key
+    render plain: @current_user.private_key.body
   end
 
   private

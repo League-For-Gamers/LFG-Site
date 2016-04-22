@@ -92,6 +92,8 @@ class MessagesController < ApplicationController
     set_title "Chat between #{@chat.users.map(&:username).join(", ")}"
     MessageCountResolveJob.perform_later(@chat, @current_user, @chat.last_viewed(@current_user))
     @chat.update_timestamp(@current_user.id)
+    @user_list = @chat.users.map(&:username).join(',')
+    @chat_version = @chat.version
   end
 
   # GET /messages/:id/newer
@@ -125,13 +127,13 @@ class MessagesController < ApplicationController
         format.html { redirect_to "/messages/#{@chat.id}" }
         format.json { head :no_content }
       else
-        format.html { 
-          flash[:alert] = message.errors.full_messages.join("\n")
-          set_title "Chat between #{@chat.users.map(&:username).join(", ")}"
-          @chat.update_timestamp(@current_user.id)
-          @messages = @chat.private_messages.offset(0).limit(25)
-          render action: 'show'
-        }
+        # format.html { 
+        #   flash[:alert] = message.errors.full_messages.join("\n")
+        #   set_title "Chat between #{@chat.users.map(&:username).join(", ")}"
+        #   @chat.update_timestamp(@current_user.id)
+        #   @messages = @chat.private_messages.offset(0).limit(25)
+        #   render action: 'show'
+        # }
         format.json { render json: @current_user.errors, status: :unprocessable_entity }
       end
     end

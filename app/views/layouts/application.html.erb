@@ -35,6 +35,10 @@
   <meta name="loggedin" content="<%= logged_in? %>">
   <% if logged_in? -%>
     <meta name="username" content="<%= @current_user.username %>">
+    <% if @chat %>
+      <meta name="users" content="<%= @user_list %>">
+      <meta name="chat_version" content="<%= @chat_version %>">
+    <% end %>
   <% end -%>
 </head>
 <body class="antialiased">

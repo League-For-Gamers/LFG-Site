@@ -26,7 +26,7 @@ $ ->
   if window.location.pathname.match(/^\/generate_keys$/)
     interrupted = false
     active_hide_by_variable('#finalize_form',false)
-    pass = window.sessionStorage.getItem('pass') || window.localStorage.getItem('pass')
+    pass = btoa(window.sessionStorage.getItem('pass')) || btoa(window.localStorage.getItem('pass'))
     name = Foundation.utils.S("meta[name=username]").attr('content')
     generate_keypair(name, pass).then (key) ->
       console.log "Key generated"

@@ -1,6 +1,10 @@
-<div class="message <%= "own" if message.user == @current_user %>" data-timestamp="<%= message.created_at %>">
+<div class="message <%= "own" if message.user == @current_user %> ver-<%= message.version %> <%= "encrypted" if message.version == 2 %>" data-timestamp="<%= message.created_at %>">
   <div class="avatar-container">
     <%= link_to image_tag(message.user.avatar.url(:thumb), class: "avatar"), "/user/#{message.user.username}" %>
   </div>
-  <p class="body"><%= message.decrypted_body.force_encoding(Encoding::UTF_8) %></p>
+  <% if message.version == 2 %>
+    <p class="body" data-content="<%= message.decrypted_body.force_encoding(Encoding::UTF_8) %>">Decrypting...</p>
+  <% else %>
+    <p class="body"><%= message.decrypted_body.force_encoding(Encoding::UTF_8) %></p>
+  <% end %>
 </div>

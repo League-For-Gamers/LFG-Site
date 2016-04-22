@@ -107,4 +107,12 @@ namespace :db do
       chat.save
     end
   end
+  task :set_default_message_version => :environment do
+    # due to the new crypto system in chats a version marker is required, this will also be reflected on the front end
+    # for clientside decryption purposes.
+    PrivateMessage.all.each do |message|
+      message.version = 1
+      message.save
+    end
+  end
  end

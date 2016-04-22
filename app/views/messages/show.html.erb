@@ -18,7 +18,8 @@
     <%= form_for PrivateMessage.new, url: {controller: "messages", action: "create_message" }, method: 'put' do |f| -%>
       <label id="private_message_body_feedback" style="float:right"></label>
       <label>New Message</label>
-      <%= f.text_area "body", class: "quick-submit", maxlength: "512" %>
+      <%= f.hidden_field "body" %>
+      <%= text_area_tag "", "", id: "fake_body", class: "quick-submit", maxlength: "512" %>
       <input type="submit" class="btn small" value="Send" />
     <% end %>
   </div>

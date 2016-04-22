@@ -3,7 +3,7 @@ class PrivateMessage < ActiveRecord::Base
   belongs_to :chat
 
   validates :user, :chat, :body, presence: true
-  validates :decrypted_body, length: { maximum: 512 }
+  #validates :decrypted_body, length: { maximum: 512 }
   validate :validates_user_authority
   validate :duplicate_check
 
@@ -18,6 +18,9 @@ class PrivateMessage < ActiveRecord::Base
     crypt.iv = iv
     self.iv = iv
     self.body = crypt.update(self.decrypted_body) + crypt.final
+    if self.decrypted_body[0..26] == "-----BEGIN PGP MESSAGE-----"
+      self.version = 2
+    end
   end
 
   def decrypted_body

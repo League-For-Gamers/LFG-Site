@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   get 'generate_keys', to:  'user#generate_keys'
   put 'generate_keys', to:  'user#save_keys'
   post 'finalize_keys', to: 'user#finalize_keys'
+  get 'get_private_key', to: 'user#get_private_key'
   
   get 'search', to: 'user#search'
 
@@ -67,6 +68,7 @@ Rails.application.routes.draw do
     get ':id', action: 'show'
     get ':id/message', action: 'direct_message'
     get ':id/follow', action: 'follow'
+    get ':id/pubkey', action: 'pubkey'
   end
 
   scope :ajax do
