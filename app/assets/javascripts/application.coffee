@@ -50,7 +50,8 @@ $ ->
   Foundation.utils.S('input, textarea').placeholder()
   Turbolinks.enableProgressBar()
   # Just a precaution. Seriously. Any measure. We need to find a way to prevent XSS attacks.
-  if Foundation.utils.S("meta[name=loggedin]").attr("content") == "false"
+  if Foundation.utils.S("meta[name=loggedin]").attr("content") != "true"
+    console.log "Wiping pass"
     window.sessionStorage.removeItem('pass')
     window.localStorage.removeItem('pass')
   #Turbolinks.enableTransitionCache()

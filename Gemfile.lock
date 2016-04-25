@@ -47,6 +47,7 @@ GEM
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
+    bcrypt (3.1.10)
     bcrypt (3.1.10-x86-mingw32)
     better_errors (2.1.1)
       coderay (>= 1.0.0)
@@ -230,6 +231,7 @@ GEM
       sass (>= 3.3.0, < 3.5)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
+    hitimes (1.2.3)
     hitimes (1.2.3-x86-mingw32)
     httpclient (2.7.1)
     i18n (0.7.0)
@@ -260,6 +262,8 @@ GEM
       net-ssh (>= 2.6.5)
     net-ssh (3.0.2)
     newrelic_rpm (3.14.1.311)
+    nokogiri (1.6.7.1)
+      mini_portile2 (~> 2.0.0.rc2)
     nokogiri (1.6.7.1-x86-mingw32)
       mini_portile2 (~> 2.0.0.rc2)
     paperclip (4.3.2)
@@ -268,6 +272,7 @@ GEM
       cocaine (~> 0.5.5)
       mime-types
       mimemagic (= 0.3.0)
+    pg (0.18.4)
     pg (0.18.4-x86-mingw32)
     pg_search (1.0.5)
       activerecord (>= 3.1)
@@ -398,10 +403,12 @@ GEM
       json (>= 1.8.0)
     unf (0.1.4)
       unf_ext
+    unf_ext (0.0.7.1)
     unf_ext (0.0.7.1-x86-mingw32)
     xml-simple (1.1.5)
 
 PLATFORMS
+  ruby
   x86-mingw32
 
 DEPENDENCIES
@@ -446,4 +453,4 @@ DEPENDENCIES
   uglifier (>= 1.3.0)
 
 BUNDLED WITH
-   1.10.6
+   1.11.2

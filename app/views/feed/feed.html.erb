@@ -22,12 +22,14 @@
         <label id="body_feedback" style="float:right"></label>
         <label>New post</label>
         <%= text_area_tag "body", nil, class: "quick-submit white user-autocomplete", maxlength: "512" %>
+        <%= hidden_field_tag "signed", nil %>
         <% if @current_user.has_permission? "can_create_official_posts" %>
           <label style="float: right;">Official?
             <%= check_box_tag "official" %>
           </label>
         <% end %>
         <input type="submit" class="btn" value="Post" />
+        <a class="sign_text">Sign</a>
       <% end -%>
     </div>
   </div>

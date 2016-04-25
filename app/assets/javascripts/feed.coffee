@@ -168,3 +168,25 @@ $ ->
           Foundation.utils.S('.streamPost').sort((a, b) ->
             Foundation.utils.S(b).data('id') - Foundation.utils.S(a).data('id')
           ).first().find('.time-ago a').timeago()
+
+    Foundation.utils.S('.sign_text').click ->
+      form = $(this).parent()
+      body_field = form.find('#body')
+      signature_field = form.find('#signed')
+      LFGCrypto.get_private_key().then (key) ->
+        LFGCrypto.sign_message(body_field.val(), key).then (signed) ->
+          signature_field.val(signed)
+
+    for p in Foundation.utils.S('p[data-signed]')
+      p = Foundation.utils.S(p)
+      post = p.parent().parent()
+      username = post.find('.user').data('id')
+      id = post.data('id')
+      signature = p.data('signed')
+      message = p.text()
+      LFGCrypto.get_public_key(username).then (key) ->
+        LFGCrypto.verify_signature(message, signature, key).then((result) ->
+          console.log "Post #{id} passed!"
+        ).catch (result) ->
+          console.log "Post #{id} failed!"
+      

@@ -17,17 +17,26 @@ $ ->
     e.preventDefault()
     Foundation.utils.S('#login-form').slideToggle(200);
 
-  Foundation.utils.S('#login-form').on 'submit', (e) ->
-    # Convert to Base64 to avoid it being immediately readable. Just incase someone looks over your shoulder.
-    pass = atob(unescape(encodeURIComponent(Foundation.utils.S(this).find('#password').val()))).trim()
-    if Foundation.utils.S(this).find('#remember').prop('checked')
-      window.localStorage.setItem('pass', pass)
-    else
-      window.sessionStorage.setItem('pass', pass)
+  Foundation.utils.S('#login-form').on 'submit', (e, opts) ->
+    opts = opts || {}
+    t = this
+    if !opts.pass_set
+      console.log opts
+      e.preventDefault()
+      # Convert to Base64 to avoid it being immediately readable. Just incase someone looks over your shoulder.
+      pass = atob(encodeURIComponent(Foundation.utils.S(t).find('#password').val()).trim())
+      if Foundation.utils.S(t).find('#remember').prop('checked')
+        window.localStorage.setItem('pass', pass)
+      else
+        window.sessionStorage.setItem('pass', pass)
+
+      console.log t
+      Foundation.utils.S(t).find('form').trigger('submit', {'pass_set': true})
 
   Foundation.utils.S('#logout-button').click ->
     window.sessionStorage.removeItem('pass')
     window.localStorage.removeItem('pass')
+    window.sessionStorage.removeItem('pkey')
 
   $.wire_up_the_remaining_characters = ->
     $('textarea[maxlength]').each (_, item) ->
@@ -51,8 +60,9 @@ $ ->
       button.attr('disabled', 'disabled')
 
   Foundation.utils.S('.blackout').click ->
-    Foundation.utils.S('.blackout').hide()
-    Foundation.utils.S(Foundation.utils.S('.blackout').data('usage')).hide()
+    if Foundation.utils.S('.blackout').data('blockout') != 'true'
+      Foundation.utils.S('.blackout').hide()
+      Foundation.utils.S(Foundation.utils.S('.blackout').data('usage')).hide()
 
   loading_navigator = {"next": false, "prev": false}
   Foundation.utils.S(".menu-panel .navigator a").click ->
@@ -85,7 +95,7 @@ $ ->
             Foundation.utils.S(node).parent().children("a[data-dir='prev']").removeClass("hidden")
           if page == 0
             Foundation.utils.S(node).parent().children("a[data-dir='prev']").addClass("hidden")
-          if collection.children().length < per_page or (collection.children().length == per_page and Foundation.utils.S(node).parent().children("a[data-dir='next']").hasClass("hidden"))
+          if collection.children().length < per_page or (collection.children().length == per_page and Foundation.utils.S(node).parent().children("a[data-dir='next']").Class("hidden"))
             Foundation.utils.S(node).parent().children("a[data-dir='next']").toggleClass("hidden")
           loading_navigator[dir] = false
 

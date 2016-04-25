@@ -1,6 +1,6 @@
 generate_keypair = (name, password) ->
   new Promise((resolve, reject) ->
-    console.log "Kicking off generation..."
+    console.log "Kicking off generation with password"
     options = {
       userIds: [{name: name}],
       numBits: 4096,

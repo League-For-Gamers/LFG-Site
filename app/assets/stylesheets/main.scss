@@ -310,6 +310,12 @@ button, a.btn {
 	margin-bottom: rem-calc(10);
 }
 
+#pgp-decrypt-form {
+	z-index: 999;
+	position: fixed;
+	width: 100%;
+	top: 5%;
+}
 .lfg-form {
 	&.alone {
 		background-color: #2B2B2B;

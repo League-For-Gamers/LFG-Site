@@ -12,103 +12,56 @@ get_new_messages = (id, uid, repeat) ->
         if repeat
           window.setTimeout(get_new_messages, 10000, id, uid, true)
 
-prompt_for_password = ->
-  new Promise((resolve, reject) ->
-    # TODO: Replace with a proper on-screen password field
-    return resolve(prompt("Enter your PGP key password"))
-  )
-
-decrypt_private_key = (key, password) ->
-  new Promise((resolve, reject) ->
-    pass = password | btoa(window.sessionStorage.getItem('pass')) || btoa(window.localStorage.getItem('pass'))
-    if key.decrypt(pass)
-      if window.localStorage.getItem('pass') != null
-        window.localStorage.setItem('pass', atob(pass))
-      else
-        window.sessionStorage.setItem('pass', atob(pass))
-      return resolve(key)
-    # User must be using their own key
-    else
-      prompt_for_password().then (password) ->
-        return resolve(decrypt_private_key(key, password))
-  )
-
-get_private_key = ->
-  new Promise((resolve, reject) ->
-    key = window.sessionStorage.getItem('pkey')
-    if key != null
-      decrypt_private_key(openpgp.key.readArmored(key).keys[0]).then (key) ->
-        return resolve(key)
-    else
-      $.ajax
-        url: '/get_private_key'
-        type: 'GET'
-        dataType: 'plain'
-        complete: (data) ->
-          window.sessionStorage.setItem('pkey', data.responseText)
-          decrypt_private_key(openpgp.key.readArmored(data.responseText).keys[0]).then (key) ->
-            return resolve(key)
-  )
-
-get_public_key = (user) ->
-  new Promise((resolve, reject) ->
-    $.ajax
-      url: "/user/#{user}/pubkey"
-      type: 'GET'
-      dataType: 'plain'
-      complete: (data) ->
-        return resolve(openpgp.key.readArmored(data.responseText).keys[0])
-  )
-
 decrypt_messages = ->
-  for message in Foundation.utils.S(".message.ver-2.encrypted")
-    decrypt_message(message)
-
-decrypt_message = (message) ->
   new Promise((resolve, reject) ->
-    body = Foundation.utils.S(message).find(".body").data('content')
-    get_private_key().then (private_key) ->
-      openpgp.decrypt({message: openpgp.message.readArmored(body), privateKey: private_key}).then (data) ->
-        Foundation.utils.S(message).find(".body").data('content', '')
-        Foundation.utils.S(message).find(".body").text(data.data)
-        Foundation.utils.S(message).removeClass("encrypted")
-        return resolve(true)
+    console.log "Decrypting messages..."
+    LFGCrypto.get_private_key().then (private_key) ->
+      for message in Foundation.utils.S(".message.ver-2.encrypted")
+        LFGCrypto.decrypt_message(message, private_key)
   )
 
 $ ->
-  if window.location.pathname.match(/^\/messages$/i)
+  if !!window.location.pathname.match(/^\/messages$/i)
     decrypt_messages()
-  if window.location.pathname.match(/^\/messages\/\d+/i)
+  if !!window.location.pathname.match(/^\/messages\/\d+/i)
     loading_messages = false
     end_of_chat = false
-    chat_id = window.location.pathname.match(/\/messages\/(\d+)/i)[1]
-    users = Foundation.utils.S("meta[name=users]").attr("content").split(",")
+    can_send = false
+    sending = false
     public_keys = []
+    chat_id = window.location.pathname.match(/\/messages\/(\d+)/i)[1]
+    console.log "Chat ID: #{chat_id}"
+    console.log "Finished initial config"
+    decrypt_messages()
+
+    users = Foundation.utils.S("meta[name=users]").attr("content").split(",")
 
     for user in users
-      get_public_key(user).then (key) ->
+      LFGCrypto.get_public_key(user).then (key) ->
         public_keys.push key
-
-    decrypt_messages()
+        if public_keys.length == users.length
+          can_send = true
 
     Foundation.utils.S('#new_private_message').on 'submit', (e) ->
       e.preventDefault()
+      if can_send and !sending and Foundation.utils.S('#new_private_message #fake_body').val().trim().length > 0
+        form = Foundation.utils.S(this)
+        sending = true # Ensure we can't send multiple messages at once. Avoides duplicates.
 
-      form = Foundation.utils.S(this)
-
-      message = Foundation.utils.S('#new_private_message #fake_body').val()
-      Foundation.utils.S('#new_private_message #private_message_body').val('')
-      
-      openpgp.encrypt({data: message, publicKeys: public_keys}).then (crypt) ->
-        Foundation.utils.S('#new_private_message #private_message_body').val(crypt.data)
-        $.ajax
-          url: window.location.pathname
-          type: 'POST'
-          dataType: 'json'
-          data: form.serialize()
-          complete: (data) ->
-            $('#new_private_message #private_message_body').val('')
-            get_new_messages(chat_id, Foundation.utils.S("meta[name='unique']").attr('content'), false)
+        message = Foundation.utils.S('#new_private_message #fake_body').val().trim()
+        Foundation.utils.S('#new_private_message #fake_body').val('')
+        
+        openpgp.encrypt({data: message, publicKeys: public_keys}).then (crypt) ->
+          Foundation.utils.S('#new_private_message #private_message_body').val(crypt.data)
+          $.ajax
+            url: window.location.pathname
+            type: 'POST'
+            dataType: 'json'
+            data: form.serialize()
+            complete: (data) ->
+              $('#new_private_message #private_message_body').val('')
+              get_new_messages(chat_id, Foundation.utils.S("meta[name='unique']").attr('content'), false)
+              sending = false
 
     Foundation.utils.S(window).scroll ->
       # Each browser seems to treat all the elements used in this differently.

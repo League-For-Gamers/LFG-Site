@@ -32,16 +32,11 @@
   <meta name="msapplication-TileColor" content="#c4c4c4">
   <meta name="msapplication-TileImage" content="/images/favicon-144.png">
   <link rel="shortcut icon" href="/favicon.ico?v2" />
-  <meta name="loggedin" content="<%= logged_in? %>">
-  <% if logged_in? -%>
-    <meta name="username" content="<%= @current_user.username %>">
-    <% if @chat %>
-      <meta name="users" content="<%= @user_list %>">
-      <meta name="chat_version" content="<%= @chat_version %>">
-    <% end %>
-  <% end -%>
 </head>
 <body class="antialiased">
+  <% if logged_in? %>
+    <%= render "shared/decrypt_password_form" %>
+  <% end -%>
   <div class="blackout"></div>
   <% flash.each do |message_type, message| %>
     <div data-alert class="alert-box <%= message_type  %>">
@@ -107,5 +102,13 @@
 <script>try{Typekit.load({ async: true });}catch(e){}</script>
 
 <meta name="unique" content="<%= SecureRandom.hex(16) %>">
+<meta name="loggedin" content="<%= logged_in? %>">
+<% if logged_in? -%>
+  <meta name="username" content="<%= @current_user.username %>">
+  <% if @chat %>
+    <meta name="users" content="<%= @user_list %>">
+    <meta name="chat_version" content="<%= @chat_version %>">
+  <% end %>
+<% end -%>
 </body>
 </html>
