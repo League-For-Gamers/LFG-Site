@@ -86,10 +86,11 @@ class @LFGCrypto
         return resolve(true)
 
   @sign_message = (message, private_key) -> 
-    # TODO: Some sort of serverside verification of signatures? A sort of MITM detection, maybe?
-    openpgp.sign({data: message, privateKeys: private_key}).then (signed) ->
-      return signed.data
-    return
+    new Promise (resolve, reject) ->
+      # TODO: Some sort of serverside verification of signatures? A sort of MITM detection, maybe?
+      openpgp.sign({data: message, privateKeys: private_key}).then (signed) ->
+        return resolve signed.data
+      return
 
   @verify_signature = (message, signature, public_key) ->
     new Promise (resolve, reject) ->

@@ -177,8 +177,8 @@ $ ->
         LFGCrypto.sign_message(body_field.val(), key).then (signed) ->
           signature_field.val(signed)
 
-    for p in Foundation.utils.S('p[data-signed]')
-      p = Foundation.utils.S(p)
+    Foundation.utils.S('p[data-signed]').each (index, element) ->
+      p = Foundation.utils.S(element)
       post = p.parent().parent()
       username = post.find('.user').data('id')
       id = post.data('id')
@@ -186,7 +186,9 @@ $ ->
       message = p.text()
       LFGCrypto.get_public_key(username).then (key) ->
         LFGCrypto.verify_signature(message, signature, key).then((result) ->
-          console.log "Post #{id} passed!"
+          post.find('.time-ago').after('<span class="validation" title="This post has been cryptographically validated as authentic, as created by the user">✓</span>')
+          post.addClass("valid-signature")
         ).catch (result) ->
-          console.log "Post #{id} failed!"
+          post.find('.time-ago').after('<span class="validation" title="This post is cryptographically verified to be inauthentic. It was either forged or modified after the original post was created.">x</span>')
+          post.addClass("invalid-signature")
       
