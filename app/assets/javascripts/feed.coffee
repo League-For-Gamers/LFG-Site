@@ -26,6 +26,75 @@ update_new_posts_button = () ->
   if button.is(':hidden')
     button.slideDown(200)
 
+update_comment_count = (postid) ->
+  count = Foundation.utils.S("#comments-#{postid} .comment-contents").children().length
+  counter = Foundation.utils.S("#post-#{postid}").find(".comment-count")
+  classes = counter.attr('class').split(' ')
+  if classes.indexOf('active') > 0 
+    if count <= 0
+      classes.splice(classes.indexOf('active'), 1) # Remove 'active' from the list
+  else if count > 0
+    classes.push('active')
+  
+  counter.attr('class', classes.join(' '))
+  counter.text(count)
+
+set_actions_for_comments = ->
+  # Gods I need to clean this.
+    Foundation.utils.S('.comment .controls .edit-post').click ->
+      t = Foundation.utils.S(this)
+      comment_div = t.parent().parent()
+      id = comment_div.data("id")
+      user_id = comment_div.find(".title").data("id")
+      $.ajax
+        url: "/feed/user/#{user_id}/#{id}.json"
+        type: 'GET'
+        dataType: 'json'
+        success: (data) ->
+          t.parent().addClass('hidden')
+          body = comment_div.find(".body")
+          body.addClass("hidden")
+          body.after("<form class='edit-form'><input type='text' name='body' value='#{data.body}'></form>")
+
+          Foundation.utils.S('.comment .edit-form').on 'submit', (e) ->
+            e.preventDefault()
+            form = Foundation.utils.S(this)
+            $.ajax
+              url: "/feed/user/#{user_id}/#{id}"
+              type: 'PATCH'
+              dataType: 'json'
+              data: form.serialize()
+              beforeSend: (xhr) ->
+                xhr.setRequestHeader('X-CSRF-Token', Foundation.utils.S('meta[name="csrf-token"]').attr('content'))
+              success: (data) ->
+                form.remove()
+                body.text(data.body)
+                body.removeClass('hidden')
+                t.parent().removeClass('hidden')
+
+
+    Foundation.utils.S('.comment .controls .delete-post').click ->
+      t = Foundation.utils.S(this)
+      comment_div = t.parent().parent()
+      post_id = comment_div.parent().parent().data('id')
+      id = comment_div.data("id")
+      user_id = comment_div.find(".user").data("id")
+      if window.confirm "Do you really want to delete this post?"
+        $.ajax
+          url: "/feed/user/#{user_id}/#{id}"
+          type: 'DELETE'
+          dataType: 'text'
+          data: {id: id}
+          beforeSend: (xhr) ->
+            xhr.setRequestHeader('X-CSRF-Token', Foundation.utils.S('meta[name="csrf-token"]').attr('content'))
+          success: (data) ->
+            comment_div.height(comment_div.height())
+            comment_div.slideUp ->
+              comment_div.remove()
+              update_comment_count(post_id)
+          error: (data) ->
+            alert("An error occured deleting your comment: #{data.statusText}")
+
 $ ->
   if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$|^\/group\/((?!search)(?!members)(?!new)[\w\d]+)(\/posts\/\d+)?$/i)
     new_posts = []
@@ -70,7 +139,54 @@ $ ->
           failure: (data) ->
             end_of_stream = true
 
-    Foundation.utils.S('.edit-post').click ->
+    Foundation.utils.S('.streamPost .comment-count').click ->
+      t = Foundation.utils.S(this)
+      post = t.parent().parent()
+      post_id = post.data('id')
+      user_id = post.find(".user").data("id")
+      comments = Foundation.utils.S("#comments-#{post_id}")
+      if post.attr("class").includes("hidden-comments")
+        post.removeClass("hidden-comments")
+        comments.slideDown ->
+          comments.removeClass("hidden")
+        if comments.find('.comment-contents').attr('class').includes('unloaded')
+          $.ajax
+            url: "/feed/user/#{user_id}/#{post_id}/replies"
+            type: 'GET'
+            dataType: 'html'
+            success: (data) ->
+              container = comments.find('.comment-contents')
+              container.removeClass('unloaded')
+              container.html(data)
+              set_actions_for_comments()
+      else
+        comments.slideUp ->
+          comments.addClass("hidden")
+          post.addClass("hidden-comments")
+
+    sending = false
+    Foundation.utils.S('.comments .new-comment').on 'submit', (e) ->
+      e.preventDefault()
+      form = Foundation.utils.S(this)
+      if !sending and form.find('input[name=body]').val().trim().length > 0
+        sending = true
+        message = form.find('input[name=body]').val().trim()
+        post_id = form.parent().data('id')
+        form.find('input[name=body]').val(message)
+        $.ajax
+          url: form.attr('action')
+          type: 'POST'
+          dataType: 'json'
+          data: form.serialize()
+          success: (data) ->
+            form.parent().find('.comment-contents').html(data.body)
+          complete: ->
+            form.find('input[name=body]').val('')
+            sending = false
+            update_comment_count(post_id)
+            set_actions_for_comments()
+
+    Foundation.utils.S('.streamPost .default-controls .edit-post').click ->
       # This is less terrible!
       # Why, jQuery. Why.
       t = Foundation.utils.S(this)
@@ -132,7 +248,7 @@ $ ->
 
       $.wire_up_the_remaining_characters()
 
-    Foundation.utils.S('.delete-post').click ->
+    Foundation.utils.S('.streamPost .default-controls .delete-post').click ->
       global_parent = Foundation.utils.S(this).parent().parent().parent().parent()
       id = global_parent.data("id")
       user_id = global_parent.find(".user").data("id")

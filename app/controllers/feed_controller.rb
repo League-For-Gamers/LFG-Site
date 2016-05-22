@@ -1,6 +1,6 @@
 class FeedController < ApplicationController
-  before_action :set_post, only: [:show]
-  before_action :set_user, only: [:user_feed, :show]
+  before_action :set_post, only: [:show, :show_replies, :create_reply]
+  before_action :set_user, only: [:user_feed, :show, :show_replies]
   before_action :required_log_in, only: [:create]
 
   # GET /
@@ -36,13 +36,13 @@ class FeedController < ApplicationController
         render plain: "Must be logged in to view feed", status: 403 and return unless logged_in?
         generate_personal_feed_posts(30, { last_id: params[:id] })
       when "official"
-        @posts = Post.where("official = ?", true).where("id < ?", params[:id]).where("group_id IS NULL").includes(:user, :bans).limit(30).order("id DESC")
+        @posts = Post.where("official = ?", true).where("id < ?", params[:id]).where(parent_id: nil).where("group_id IS NULL").includes(:user, :bans).limit(30).order("id DESC")
       when /user\/([\w\d\/]*)/i
         user = User.includes(:posts).where("lower(username) = ?", $1.downcase).first or (render plain: "Cannot find user", status: 404 and return)
-        @posts = Post.where("user_id = ?", user.id).where("id < ?", params[:id]).limit(30).order("id DESC").includes(:user, :bans)
+        @posts = Post.where("user_id = ?", user.id).where("id < ?", params[:id]).where(parent_id: nil).limit(30).order("id DESC").includes(:user, :bans)
       when /group\/([\w\d]*)/i
         group = Group.includes(:users, :posts).find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
-        @posts = group.posts.where("id < ?", params[:id]).limit(30).order("id DESC").includes(:user, :bans)
+        @posts = group.posts.where("id < ?", params[:id]).where(parent_id: nil).limit(30).order("id DESC").includes(:user, :bans)
       else
         render plain: "Invalid feed parameter", status: 403 and return
       end
@@ -52,13 +52,13 @@ class FeedController < ApplicationController
         render plain: "Must be logged in to view feed", status: 403 and return unless logged_in?
         generate_personal_feed_posts(0, { latest_id: params[:id] })
       when "official"
-        @posts = Post.where("official = ?", true).where("id > ?", params[:id]).where("group_id IS NULL").includes(:user, :bans).order("id DESC")
+        @posts = Post.where("official = ?", true).where("id > ?", params[:id]).where(parent_id: nil).where("group_id IS NULL").includes(:user, :bans).order("id DESC")
       when /user\/([\w\d\/]*)/i
         user = User.includes(:posts).where("lower(username) = ?", $1.downcase).first or (render plain: "Cannot find user", status: 404 and return)
-        @posts = Post.where("user_id = ?", user.id).where("id > ?", params[:id]).order("id DESC").includes(:user, :bans)
+        @posts = Post.where("user_id = ?", user.id).where("id > ?", params[:id]).where(parent_id: nil).order("id DESC").includes(:user, :bans)
       when /group\/([\w\d]*)/i
         group = Group.includes(:users, :posts).find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
-        @posts = group.posts.where("id > ?", params[:id]).order("id DESC").includes(:user, :bans)
+        @posts = group.posts.where("id > ?", params[:id]).order("id DESC").where(parent_id: nil).includes(:user, :bans)
       else
         render plain: "Invalid feed parameter", status: 403 and return
       end
@@ -91,11 +91,11 @@ class FeedController < ApplicationController
         @page = 0 if @page < 0
         per_page = 30
         from = (@page * per_page)
-        @posts = Post.where("user_id = ?", @user.id).includes(:user, :bans).order("id DESC").limit(per_page).offset(from)
+        @posts = Post.where("user_id = ?", @user.id).where(parent_id: nil).includes(:user, :bans).order("id DESC").limit(per_page).offset(from)
       }
       # No json currently, I want draper for when I do that.
       format.rss {
-        @posts = Post.where("user_id = ?", @user.id).includes(:user, :bans).order("id DESC").limit(50)
+        @posts = Post.where("user_id = ?", @user.id).where(parent_id: nil).includes(:user, :bans).order("id DESC").limit(50)
         @feed_url = "user/#{@user.username}.rss"
         @feed_source = "user/#{@user.username}"
         render action: "rss.html.erb", content_type: "application/rss", layout: false
@@ -112,11 +112,11 @@ class FeedController < ApplicationController
         @page = 0 if @page < 0
         per_page = 30
         from = (@page * per_page)
-        @posts = Post.where("official = ?", true).where("group_id IS NULL").includes(:user, :bans).order("id DESC").limit(per_page).offset(from)
+        @posts = Post.where("official = ?", true).where(parent_id: nil).where("group_id IS NULL").includes(:user, :bans).order("id DESC").limit(per_page).offset(from)
       }
       # No json currently, I want draper for when I do that.
       format.rss { 
-        @posts = Post.where("official = ?", true).where("group_id IS NULL").includes(:user, :bans).order("id DESC").limit(50)
+        @posts = Post.where("official = ?", true).where(parent_id: nil).where("group_id IS NULL").includes(:user, :bans).order("id DESC").limit(50)
         @feed_url = "official.rss"
         @feed_source = "official"
         render action: "rss.html.erb", content_type: "application/rss", layout: false
@@ -129,12 +129,26 @@ class FeedController < ApplicationController
     begin
       not_found if @post.user != @user
     rescue ActionController::RoutingError 
-      render :template => 'shared/not_found', :status => 404
+      render :template => 'shared/not_found', :status => 404 and return
     end
 
     respond_to do |format|
       format.html { set_title @post.user.display_name || @post.user.username }
       format.json { render :json => {id: @post.id, body: @post.body, user_id: @post.user.username, created_at: @post.created_at, updated_at: @post.updated_at} }
+    end
+  end
+
+  # GET /feed/user/:user_id/:post_id/replies
+  def show_replies
+    begin
+      not_found if @post.user != @user
+    rescue ActionController::RoutingError 
+      render :template => 'shared/not_found', :status => 404 and return
+    end
+
+    @comments = @post.children.includes(:user, :bans).order("id DESC")
+    respond_to do |format|
+      format.html { render layout: false }
     end
   end
 
@@ -150,9 +164,9 @@ class FeedController < ApplicationController
 
   # PATCH /feed/user/:user_id/:post_id
   def update
-    render json: {errors: {'0' => 'You do not have permission to delete this post'}}, status: 403 and return unless logged_in?
+    render json: {errors: {'0' => 'You do not have permission to update this post'}}, status: 403 and return unless logged_in?
     post = Post.find(params["id"])
-    render json: {errors: {'0' => 'You do not have permission to delete this post'}}, status: 403 and return if (post.user_id != @current_user.id or !@current_user.has_permission? "can_edit_own_posts") and !@current_user.has_permission? "can_edit_all_users_posts"
+    render json: {errors: {'0' => 'You do not have permission to update this post'}}, status: 403 and return if (post.user_id != @current_user.id or !@current_user.has_permission? "can_edit_own_posts") and !@current_user.has_permission? "can_edit_all_users_posts"
     post.body = params["body"]
     if post.valid?
       post.save
@@ -175,6 +189,27 @@ class FeedController < ApplicationController
     post = Post.create(post_params)
     flash[:alert] = post.errors.full_messages.join("\n") unless post.valid?
     redirect_to request.referrer || root_url
+  end
+
+  # POST /user/:user_id/:post_id/comment
+  def create_reply
+    redirect_to '/signup' and return unless logged_in?
+    flash[:warning] = "You don't have permission to create a post." and redirect_to request.referrer || root_url and return if !@current_user.has_permission? "can_create_post"
+    post_params = params.permit(:body)
+    post_params["user"] = @current_user
+    post_params["parent_id"] = @post.id
+    post = Post.create(post_params)
+    comments = post.parent.children.includes(:user, :bans).order("id DESC")
+    respond_to do |format|
+      format.html {
+        flash[:alert] = post.errors.full_messages.join("\n") unless post.valid?
+        redirect_to request.referrer || root_url
+      }
+      format.json {
+        render json: {body: render_to_string(template: 'feed/_comments.html.erb', layout: false, locals: {comments: comments, user: post.parent.user})}
+      }
+    end
+    
   end
 
   private
@@ -205,10 +240,10 @@ class FeedController < ApplicationController
 
     def generate_personal_feed_posts(amount, options = {})
       unless options == {}
-        @posts = Post.includes(:user, :bans).from(build_main_feed_query).where("id < ?", options[:last_id]).order("id DESC").limit(amount) unless options[:last_id].blank?
-        @posts = Post.includes(:user, :bans).from(build_main_feed_query).where("id > ?", options[:latest_id]).order("id DESC") unless options[:latest_id].blank?
+        @posts = Post.includes(:user, :bans).from(build_main_feed_query).where("id < ?", options[:last_id]).where(parent_id: nil).order("id DESC").limit(amount) unless options[:last_id].blank?
+        @posts = Post.includes(:user, :bans).from(build_main_feed_query).where("id > ?", options[:latest_id]).where(parent_id: nil).order("id DESC") unless options[:latest_id].blank?
       else
-        @posts = Post.includes(:user, :bans).from(build_main_feed_query).order("id DESC").limit(amount)
+        @posts = Post.includes(:user, :bans).from(build_main_feed_query).where(parent_id: nil).order("id DESC").limit(amount)
         @posts.unshift(Post.includes(:user).where(official: true).order("id DESC").first) if @page == 0
       end
       @posts = @posts.compact

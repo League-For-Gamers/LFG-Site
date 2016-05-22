@@ -2,6 +2,8 @@ class Post < ActiveRecord::Base
   include Postable
   belongs_to :user
   belongs_to :group
+  belongs_to :parent, class_name: 'Post', foreign_key: :parent_id, counter_cache: :children_count
+  has_many :children, class_name: 'Post', foreign_key: :parent_id
 
   # TODO: Maximum of 5 stickied posts.
 

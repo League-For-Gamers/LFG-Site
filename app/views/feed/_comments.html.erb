@@ -1,0 +1,16 @@
+<% comments.each do |comment| %>
+  <div class="comment" id="comment-<%= comment.id %>" data-id="<%= comment.id %>">
+    <span class="title" data-id="<%= user.username %>"><%= link_to display_name(comment.user), "/user/#{comment.user.username}" -%></span>
+    <span class="body"><%= comment.body %></span>
+    <% if !@current_user.nil? and ((user == @current_user and (@current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_own_posts")) or @current_user.has_permission? "can_edit_all_users_posts" or @current_user.has_permission? "can_delete_all_posts") -%>
+      <div class="controls">
+        <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
+          <a class="edit-post">Edit</a>
+        <% end -%>
+        <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_all_posts" -%>
+          <a class="delete-post">Delete</a>
+        <% end -%>
+      <% end -%>
+    </div>
+  </div>
+<% end %>

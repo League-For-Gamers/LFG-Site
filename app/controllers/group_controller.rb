@@ -64,7 +64,7 @@ class GroupController < ApplicationController
   # GET /group/:id
   def show
     @stickied_posts = @group.posts.where(official: true)
-    @group_posts = @group.posts.limit(30)
+    @group_posts = @group.posts.limit(30).where(parent_id: nil)
     set_title @group.title
   end
 

@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe ApplicationController, :type => :controller do
+  controller do
+    def index
+      render nothing: true
+    end
+  end
   let(:bobby) { FactoryGirl.create(:user) }
   let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
   describe "user login helpers" do
@@ -51,6 +56,37 @@ RSpec.describe ApplicationController, :type => :controller do
       it 'login_user successfully sets user session' do
         controller.send(:login_user, bobby)
         expect(controller.send(:logged_in?)).to eq(true)
+      end
+      it 'remember_user successfully returns a HMAC cookie for login' do
+        controller.send(:remember_user, bobby, request)
+        expect(cookies[:remember]).to_not be_nil
+      end
+
+      context 'login_from_token' do
+        it 'does nothing if there is no login cookie' do
+          controller.send(:login_from_token)
+          expect(session[:user]).to be_nil
+        end
+
+        it 'will log in the user with a valid cookie' do
+          controller.send(:remember_user, bobby, request)
+          expect(cookies[:remember]).to_not be_nil
+          get :index
+          expect(session[:user]).to_not be_nil
+          expect(session[:user]).to eq(bobby.id)
+          expect(response).to redirect_to(root_url + "anonymous")
+        end
+
+        it 'will reject and delete an invalid cookie' do
+          t = 4.weeks.ago
+          auth = "#{bobby.id},#{request.ip},#{t.yday}#{t.year}"
+          hmac = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, ENV['SECRET_TOKEN'], auth)
+          cookies[:remember] = { value: "#{bobby.id}:#{hmac}", expires: 3.weeks.from_now }
+          get :index
+          expect(session[:user]).to be_nil
+          expect(session[:user]).to_not eq(bobby.id)
+          expect(cookies[:remember]).to be_nil
+        end
       end
     end
   end

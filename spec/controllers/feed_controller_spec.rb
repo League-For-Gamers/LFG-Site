@@ -183,6 +183,15 @@ RSpec.describe FeedController, type: :controller do
     end
   end
 
+   describe "GET /feed/user/:user_id/:post_id/replies" do
+    let(:post) { FactoryGirl.create(:post, user: bobby) }
+    let(:comment) { FactoryGirl.create(:post, user: bobby, parent: post)}
+    it "sets @comments" do
+      get :show_replies, user_id: bobby.username, post_id: post
+      expect(assigns(:comments)).to include(comment)
+    end
+   end
+
   describe "DELETE /feed/user/:user_id/:post_id" do
     let(:new_post) { FactoryGirl.create(:post, user: bobby) }
     context "when user is not logged in" do
@@ -283,6 +292,27 @@ RSpec.describe FeedController, type: :controller do
             expect(admin_bobby.posts.last.body).to eq(body)
             expect(admin_bobby.posts.last.official).to be(true)
           end
+        end
+      end
+    end
+  end
+
+  describe "POST /feed/user/:user_id/:post_id/comment" do
+    let(:new_post) { FactoryGirl.create(:post, user: bobby) }
+    context "while not logged in" do
+      it "should redirect to /signup" do
+        post :create_reply, { user_id: bobby.username, post_id: new_post.id }
+        expect(response).to redirect_to('/signup')
+      end
+    end
+    context "while logged in" do
+      before do
+        session[:user] = bobby.id
+      end
+      context "while passing arguments" do
+        it 'creates a new comment' do
+          post :create_reply, { user_id: bobby.username, post_id: new_post.id, body: "penis" }
+          expect(response).to redirect_to(root_url)
         end
       end
     end

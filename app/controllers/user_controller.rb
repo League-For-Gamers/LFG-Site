@@ -30,7 +30,10 @@ class UserController < ApplicationController
   def logout
     flash[:info] = "Successfully logged out"
     logout_user and redirect_to "/signup" and return
+    return redirect_to "/signup" # this is the weirdest thing on the planet and I hate to do this to make it work and it's infuriating
+    # :nocov:
     render plain: "" # You should never be able to get here but sometimes you can AND I DONT FUCKING KNOW WHY
+    # :nocov:
   end
 
   # GET /user/forgot_password

@@ -31,8 +31,10 @@ Rails.application.routes.draw do
     get '/official', action: 'official_feed'
     get '/user/:user_id', action: 'user_feed'
     get '/user/:user_id/:post_id', action: 'show'
+    get '/user/:user_id/:post_id/replies', action: 'show_replies'
     patch '/user/:user_id/:id', action: 'update'
     delete '/user/:user_id/:id', action: 'delete'
+    post '/user/:user_id/:post_id/comment', action: 'create_reply'
   end
 
   namespace :group, path: 'group' do

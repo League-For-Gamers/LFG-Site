@@ -1,4 +1,4 @@
-<div class="streamPost text-card <%= 'official' if post.official -%>" id="post-<%= post.id %>" data-id="<%= post.id %>">
+<div class="streamPost text-card hidden-comments <%= 'official' if post.official -%>" id="post-<%= post.id %>" data-id="<%= post.id %>">
   <div class="large-2 small-3 columns user" data-id="<%= user.username %>">
     <%= link_to image_tag(user.avatar(:med), class: "avatar"), "/user/#{user.username}" %>
     <% if !@current_user.nil? and ((user == @current_user and (@current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_own_posts")) or @current_user.has_permission? "can_edit_all_users_posts" or @current_user.has_permission? "can_delete_all_posts") -%>
@@ -37,5 +37,15 @@
       </div>
     <% end %>
     <%= post_time_ago(post) -%>
+    <span class="comment-count <%= "active" if post.children_count > 0 %>"><%= post.children_count %></span>
+  </div>
+</div>
+<div class="small-11 comments text-card hidden" id="comments-<%= post.id %>" data-id="<%= post.id %>">
+  <% if @current_user.has_permission? "can_create_post" -%>
+    <%= form_tag "/feed/user/#{user.username}/#{post.id}/comment", method: :post, class: "new-comment" do %>
+      <% text_field_tag :body %>
+    <% end %>
+  <% end %>
+  <div class="comment-contents unloaded">
   </div>
 </div>
