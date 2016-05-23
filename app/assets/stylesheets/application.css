@@ -9,5 +9,10 @@
 	margin: 0 auto;
 }
 .hidden {
-	display: none;
+	display: none !important;
+}
+.clearfix::after {
+    content: "";
+    display: block;
+    clear: both;
 }

@@ -1,16 +1,19 @@
 <% comments.each do |comment| %>
   <div class="comment" id="comment-<%= comment.id %>" data-id="<%= comment.id %>">
-    <span class="title" data-id="<%= user.username %>"><%= link_to display_name(comment.user), "/user/#{comment.user.username}" -%></span>
-    <span class="body"><%= comment.body %></span>
-    <% if !@current_user.nil? and ((user == @current_user and (@current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_own_posts")) or @current_user.has_permission? "can_edit_all_users_posts" or @current_user.has_permission? "can_delete_all_posts") -%>
-      <div class="controls">
-        <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
-          <a class="edit-post">Edit</a>
+    <%= link_to image_tag(user.avatar(:thumb), class: "avatar"), "/user/#{user.username}", class: "avatar-container clearfix" %>
+    <div class="body-container clearfix">
+      <span class="title" data-id="<%= user.username %>"><%= link_to display_name(comment.user), "/user/#{comment.user.username}" -%></span>
+      <p class="body"><%= comment.body %></p>
+      <% if !@current_user.nil? and ((user == @current_user and (@current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_own_posts")) or @current_user.has_permission? "can_edit_all_users_posts" or @current_user.has_permission? "can_delete_all_posts") -%>
+        <div class="controls">
+          <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
+            <a class="edit-post" title='Edit comment'></a>
+          <% end -%>
+          <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_all_posts" -%>
+            <a class="delete-post" title="Delete comment"></a>
+          <% end -%>
         <% end -%>
-        <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_all_posts" -%>
-          <a class="delete-post">Delete</a>
-        <% end -%>
-      <% end -%>
+      </div>
     </div>
   </div>
 <% end %>

@@ -7,3 +7,32 @@ $primary-cream: #f2f1ee;
 $primary-text: #2a384b;
 
 $font: 'Oswald', 'a-otf-ud-shin-go-pr6n', Meiryo, sans-serif;
+
+@mixin transform($params) {
+  -ms-transform: $params;
+  -moz-transform: $params;
+  -webkit-transform: $params;
+  -o-transform: $params;
+  transform: $params;
+}
+@mixin keyframes($animation-name) {
+  @-webkit-keyframes #{$animation-name} {
+    @content;
+  }
+  @-moz-keyframes #{$animation-name} {
+    @content;
+  }
+  @-o-keyframes #{$animation-name} {
+    @content;
+  }
+  @keyframes #{$animation-name} {
+    @content;
+  }
+}
+@mixin animation($params) {
+  -ms-animation: $params;
+  -moz-animation: $params;
+  -webkit-animation: $params;
+  -o-animation: $params;
+  animation: $params;
+}

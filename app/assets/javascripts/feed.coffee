@@ -39,11 +39,11 @@ update_comment_count = (postid) ->
   counter.attr('class', classes.join(' '))
   counter.text(count)
 
-set_actions_for_comments = ->
+set_actions_for_comments = (postid) ->
   # Gods I need to clean this.
-    Foundation.utils.S('.comment .controls .edit-post').click ->
+    Foundation.utils.S("#comments-#{postid} .comment .controls .edit-post").click ->
       t = Foundation.utils.S(this)
-      comment_div = t.parent().parent()
+      comment_div = t.parent().parent().parent()
       id = comment_div.data("id")
       user_id = comment_div.find(".title").data("id")
       $.ajax
@@ -56,7 +56,7 @@ set_actions_for_comments = ->
           body.addClass("hidden")
           body.after("<form class='edit-form'><input type='text' name='body' value='#{data.body}'></form>")
 
-          Foundation.utils.S('.comment .edit-form').on 'submit', (e) ->
+          Foundation.utils.S("#comment-#{id} .body-container .edit-form").on 'submit', (e) ->
             e.preventDefault()
             form = Foundation.utils.S(this)
             $.ajax
@@ -72,10 +72,9 @@ set_actions_for_comments = ->
                 body.removeClass('hidden')
                 t.parent().removeClass('hidden')
 
-
-    Foundation.utils.S('.comment .controls .delete-post').click ->
+    Foundation.utils.S("#comments-#{postid} .comment .controls .delete-post").click ->
       t = Foundation.utils.S(this)
-      comment_div = t.parent().parent()
+      comment_div = t.parent().parent().parent()
       post_id = comment_div.parent().parent().data('id')
       id = comment_div.data("id")
       user_id = comment_div.find(".user").data("id")
@@ -155,10 +154,13 @@ $ ->
             type: 'GET'
             dataType: 'html'
             success: (data) ->
+              loading_ring = Foundation.utils.S("#comments-#{post_id} .loading-ring")
               container = comments.find('.comment-contents')
               container.removeClass('unloaded')
+              loading_ring.hide ->
+                loading_ring.remove()
               container.html(data)
-              set_actions_for_comments()
+              set_actions_for_comments(post_id)
       else
         comments.slideUp ->
           comments.addClass("hidden")
@@ -184,7 +186,7 @@ $ ->
             form.find('input[name=body]').val('')
             sending = false
             update_comment_count(post_id)
-            set_actions_for_comments()
+            set_actions_for_comments(post_id)
 
     Foundation.utils.S('.streamPost .default-controls .edit-post').click ->
       # This is less terrible!

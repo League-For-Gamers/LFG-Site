@@ -420,7 +420,6 @@ a, button {
 		background: scale-color($primary-red, $lightness: 90%);
 	}
 }
-
 .blackout {
 	position: fixed;
 	top: 0;
@@ -431,4 +430,34 @@ a, button {
 	background-color: $primary-red;
 	opacity: 0.7;
 	z-index: 500;
+}
+@include keyframes(loading-ring) {
+  0% {
+    @include transform(rotate(0deg))
+  }
+  100% {
+    @include transform(rotate(360deg))
+  }
+}
+.loading-ring {
+  background: none;
+  position: relative;
+  width: rem-calc(150);
+  height: rem-calc(150);
+  margin: 0 auto;
+  &.small {
+  	width: rem-calc(50);
+  	height: rem-calc(50);
+  }
+  div {
+    position: absolute;
+    display: block;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    border-radius: 100%;
+    box-shadow: 0 rem-calc(2) 0 0 #BD0707;
+    @include animation(loading-ring 0.7s linear infinite);
+  }
 }
