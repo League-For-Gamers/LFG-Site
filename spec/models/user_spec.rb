@@ -132,6 +132,17 @@ RSpec.describe User, :type => :model do
     end
   end
 
+  describe '#follow?' do
+    it 'should return true if the user is following the other' do
+      admin_bobby.follow(bobby)
+      expect(bobby.follow?(admin_bobby)).to be true
+    end
+
+    it 'should return false if the user is following the other' do
+      expect(admin_bobby.follow?(bobby)).to be false
+    end
+  end
+
   describe '#ban' do
     let(:post) { FactoryGirl.create(:post, user: bobby) }
     it 'should ban the user' do

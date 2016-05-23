@@ -102,8 +102,10 @@ class MessagesController < ApplicationController
       MessageCountResolveJob.perform_later(@chat, @current_user, @chat.last_viewed(@current_user))
       @chat.update_timestamp(@current_user.id)
       render :raw_messages, layout: false
+    # :nocov: 
     else
       head :ok
+      # :nocov:
     end
   end
 

@@ -775,6 +775,41 @@ RSpec.describe GroupController, type: :controller do
     end
   end
 
+  describe "GET /group/:id/posts/:post_id" do
+    context 'when logged in' do
+      before do
+        session[:user] = bobby.id
+      end
+      let(:new_post) { FactoryGirl.create(:post, user: bobby, group: group) }
+      it "sets @post" do
+        get :show_post, id: group.slug, post_id: new_post.id
+        expect(assigns(:post)).to eq(new_post)
+      end
+      it "renders an error for an invalid id" do
+        get :show_post, id: group.slug, post_id: 9953259
+        expect(response).to render_template('shared/not_found')
+        expect(response.status).to eq(404)
+      end
+      it 'enforces alignment of group_id and post ownership' do
+        get :show_post, id: "non-existant-group", post_id: new_post.id
+        expect(response).to render_template('shared/not_found')
+        expect(response.status).to eq(404)
+      end
+    end
+  end
+
+  describe '#set_locale' do
+    context 'when the group language is set to japanese' do
+      let(:group) { FactoryGirl.create(:group, language: :japanese) }
+      it 'should set certain variables for encoding' do
+        get :show, id: group.slug
+        expect(assigns(:lang)).to eq('ja')
+        expect(assigns(:charset)).to eq('shift-jis')
+        expect(assigns(:encoding)).to eq(Encoding::Shift_JIS)
+      end
+    end
+  end
+
   describe '#universal_permission_check' do
     context 'when a user has a global permission' do
       it 'should return true' do

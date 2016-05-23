@@ -171,6 +171,7 @@ RSpec.describe FeedController, type: :controller do
     end
   end
   describe "GET /feed/user/:user_id/:post_id" do
+    let(:admin_bobby) { FactoryGirl.create(:administrator_user) }
     let(:post) { FactoryGirl.create(:post, user: bobby) }
     it "sets @post" do
       get :show, user_id: bobby.username, post_id: post.id
@@ -181,14 +182,25 @@ RSpec.describe FeedController, type: :controller do
       expect(response).to render_template('shared/not_found')
       expect(response.status).to eq(404)
     end
+    it 'enforces alignment of user_id and post ownership' do
+      get :show, user_id: admin_bobby.username, post_id: post.id
+      expect(response).to render_template('shared/not_found')
+      expect(response.status).to eq(404)
+    end
   end
 
    describe "GET /feed/user/:user_id/:post_id/replies" do
+    let(:admin_bobby) { FactoryGirl.create(:administrator_user) }
     let(:post) { FactoryGirl.create(:post, user: bobby) }
     let(:comment) { FactoryGirl.create(:post, user: bobby, parent: post)}
     it "sets @comments" do
       get :show_replies, user_id: bobby.username, post_id: post
       expect(assigns(:comments)).to include(comment)
+    end
+    it 'enforces alignment of user_id and post ownership' do
+      get :show_replies, user_id: admin_bobby.username, post_id: post.id
+      expect(response).to render_template('shared/not_found')
+      expect(response.status).to eq(404)
     end
    end
 
@@ -311,8 +323,16 @@ RSpec.describe FeedController, type: :controller do
       end
       context "while passing arguments" do
         it 'creates a new comment' do
-          post :create_reply, { user_id: bobby.username, post_id: new_post.id, body: "penis" }
+          body = "testing"
+          post :create_reply, { user_id: bobby.username, post_id: new_post.id, body: body }
+          expect(new_post.children.first.body).to eq(body)
           expect(response).to redirect_to(root_url)
+        end
+        it 'creates a new comment and returns in json format' do
+          body = "testing json"
+          post :create_reply, { user_id: bobby.username, post_id: new_post.id, body: body, format: :json }
+          parsed = JSON.parse(response.body)
+          expect(parsed["body"]).to_not be_nil
         end
       end
     end

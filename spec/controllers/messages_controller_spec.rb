@@ -69,6 +69,12 @@ RSpec.describe MessagesController, type: :controller do
       expect(assigns(:messages)).to include(new_post)
       expect(enqueued_jobs.size).to eq(1)
     end
+    it 'should return empty when there are no new posts' do
+      2.times { FactoryGirl.create(:private_message, user: bobby, chat: chat) }
+      last_post = chat.private_messages.first
+      get :new_messages, id: chat.id, timestamp: last_post.created_at
+      expect(response.status).to eq(200)
+    end
   end
 
   describe 'GET /messages/:id/older' do
