@@ -43,7 +43,6 @@ reset_orbit_height_for_comments = (postid) ->
   post_div = Foundation.utils.S("#post-#{postid}")
   container = post_div.parent().parent()
   if container.attr('class').includes('orbit-slides-container')
-    console.log post_div.parent().height()
     container.height(post_div.parent().height())
 
 set_actions_for_comments = (postid) ->

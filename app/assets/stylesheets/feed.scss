@@ -200,6 +200,11 @@
 			height: rem-calc(30);
 		}
 	}
+	.no-comments {
+		display: block;
+		text-align: center;
+		margin-bottom: rem-calc(3);
+	}
 	.comment {
 		border-bottom: rem-calc(1) solid #c4c4c4;
 		&:first-child {
