@@ -227,6 +227,33 @@ class GroupController < ApplicationController
     redirect_to request.referrer || root_url
   end
 
+  # POST /group/:id/posts/:post_id/comment
+  def create_reply
+    flash[:warning] = "You don't have permission to create a post." and redirect_to request.referrer || root_url and return unless universal_permission_check "can_create_post"
+
+    begin
+      @post = Post.includes(:user, :bans).find_by(id: params[:post_id]) or not_found
+      not_found if @post.group != @group
+    rescue ActionController::RoutingError 
+      render :template => 'shared/not_found', :status => 404 and return
+    end
+
+    post_params = params.permit(:body)
+    post_params["user"] = @current_user
+    post_params["parent_id"] = @post.id
+    post = Post.create(post_params)
+    comments = post.parent.children.includes(:user, :bans).order("id DESC")
+    respond_to do |format|
+      format.html {
+        flash[:alert] = post.errors.full_messages.join("\n") unless post.valid?
+        redirect_to request.referrer || root_url
+      }
+      format.json {
+        render json: {body: render_to_string(template: 'feed/_comments.html.erb', layout: false, locals: {comments: comments, user: post.parent.user})}
+      }
+    end
+  end
+
   # GET /group/:id/join
   def join
     flash[:warning] = "You cannot join groups while globally banned" and redirect_to request.referrer || root_url and return if !@current_user.has_permission? "can_join_group"
@@ -313,7 +340,7 @@ class GroupController < ApplicationController
   private
     def set_group
       begin
-        @group = Group.includes(:users, :posts).find_by(slug: params[:id]) or not_found
+        @group = Group.find_by(slug: params[:id]) or not_found
         @membership = @group.group_memberships.find_by(user: @current_user) if !!@current_user
         # Group unban mechanism
         if !!@current_user and !!@membership and @membership.role == "banned"

@@ -1,4 +1,4 @@
-<div class="streamPost text-card" id="post-<%= post.id %>" data-id="<%= post.id %>">
+<div class="streamPost text-card hidden-comments" id="post-<%= post.id %>" data-id="<%= post.id %>">
   <div class="large-2 small-3 columns user" data-id="<%= user.username %>">
     <%= link_to image_tag(user.avatar(:med), class: "avatar"), "/user/#{user.username}" %>
     <% if !!@permissions and ((GroupMembership.has_permission? "can_edit_own_posts", @permissions or GroupMembership.has_permission? "can_delete_own_posts", @permissions) or universal_permission_check "can_edit_all_users_posts" or universal_permission_check "can_delete_all_posts") -%>
@@ -33,6 +33,17 @@
         <% end -%>
       </div>
     <% end %>
-    <%= group_post_time_ago(post) -%>
+    <%= group_post_time_ago(post, group) -%>
+    <span class="comment-count <%= "active" if post.children_count > 0 %>"><%= post.children_count %></span>
   </div>
+</div>
+<div class="small-11 comments text-card hidden" id="comments-<%= post.id %>" data-id="<%= post.id %>">
+  <% if !!@current_user and GroupMembership.has_permission? "can_create_post", @permissions -%>
+    <%= form_tag "/group/#{group.slug}/posts/#{post.id}/comment", method: :post, class: "new-comment" do %>
+      <% text_field_tag :body, '', placeholder: 'Write a comment...' %>
+    <% end %>
+  <% end %>
+  <div class="comment-contents unloaded">
+  </div>
+  <div class="loading-ring small"><div></div></div>
 </div>

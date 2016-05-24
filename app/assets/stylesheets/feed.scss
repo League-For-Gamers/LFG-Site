@@ -40,7 +40,7 @@
 		min-height: 0;
 	}
 	&.hidden-comments {
-		margin-bottom: rem-calc(8);
+		margin-bottom: rem-calc(12);
 	}
 	.ban-user {
 		position: absolute;
@@ -189,7 +189,7 @@
 	}
 }
 .comments {
-	margin: rem-calc(-5) auto rem-calc(10) auto !important;
+	margin: rem-calc(-5) auto rem-calc(15) auto !important;
 	border: 1px solid black;
 	.new-comment {
 		input[name=body] {

@@ -39,38 +39,46 @@ update_comment_count = (postid) ->
   counter.attr('class', classes.join(' '))
   counter.text(count)
 
+reset_orbit_height_for_comments = (postid) ->
+  post_div = Foundation.utils.S("#post-#{postid}")
+  container = post_div.parent().parent()
+  if container.attr('class').includes('orbit-slides-container')
+    console.log post_div.parent().height()
+    container.height(post_div.parent().height())
+
 set_actions_for_comments = (postid) ->
   # Gods I need to clean this.
-    Foundation.utils.S("#comments-#{postid} .comment .controls .edit-post").click ->
-      t = Foundation.utils.S(this)
-      comment_div = t.parent().parent().parent()
-      id = comment_div.data("id")
-      user_id = comment_div.find(".title").data("id")
-      $.ajax
-        url: "/feed/user/#{user_id}/#{id}.json"
-        type: 'GET'
-        dataType: 'json'
-        success: (data) ->
-          t.parent().addClass('hidden')
-          body = comment_div.find(".body")
-          body.addClass("hidden")
-          body.after("<form class='edit-form'><input type='text' name='body' value='#{data.body}'></form>")
-
-          Foundation.utils.S("#comment-#{id} .body-container .edit-form").on 'submit', (e) ->
-            e.preventDefault()
-            form = Foundation.utils.S(this)
-            $.ajax
-              url: "/feed/user/#{user_id}/#{id}"
-              type: 'PATCH'
-              dataType: 'json'
-              data: form.serialize()
-              beforeSend: (xhr) ->
-                xhr.setRequestHeader('X-CSRF-Token', Foundation.utils.S('meta[name="csrf-token"]').attr('content'))
-              success: (data) ->
-                form.remove()
-                body.text(data.body)
-                body.removeClass('hidden')
-                t.parent().removeClass('hidden')
+  Foundation.utils.S("#comments-#{postid} .comment .controls .edit-post").click ->
+    t = Foundation.utils.S(this)
+    comment_div = t.parent().parent().parent()
+    id = comment_div.data("id")
+    user_id = comment_div.find(".title").data("id")
+    $.ajax
+      url: "/feed/user/#{user_id}/#{id}.json"
+      type: 'GET'
+      dataType: 'json'
+      success: (data) ->
+        t.parent().addClass('hidden')
+        body = comment_div.find(".body")
+        body.addClass("hidden")
+        body.after("<form class='edit-form'><input type='text' name='body' value='#{data.body}'></form>")
+        reset_orbit_height_for_comments(postid)
+        Foundation.utils.S("#comment-#{id} .body-container .edit-form").on 'submit', (e) ->
+          e.preventDefault()
+          form = Foundation.utils.S(this)
+          $.ajax
+            url: "/feed/user/#{user_id}/#{id}"
+            type: 'PATCH'
+            dataType: 'json'
+            data: form.serialize()
+            beforeSend: (xhr) ->
+              xhr.setRequestHeader('X-CSRF-Token', Foundation.utils.S('meta[name="csrf-token"]').attr('content'))
+            success: (data) ->
+              form.remove()
+              body.text(data.body)
+              body.removeClass('hidden')
+              t.parent().removeClass('hidden')
+              reset_orbit_height_for_comments(postid)
 
     Foundation.utils.S("#comments-#{postid} .comment .controls .delete-post").click ->
       t = Foundation.utils.S(this)
@@ -91,6 +99,7 @@ set_actions_for_comments = (postid) ->
             comment_div.slideUp ->
               comment_div.remove()
               update_comment_count(post_id)
+              reset_orbit_height_for_comments(postid)
           error: (data) ->
             alert("An error occured deleting your comment: #{data.statusText}")
 
@@ -107,36 +116,41 @@ $ ->
     else if window.location.pathname.match(/^\/group\/([\w\d]*)$/)
       feed_type = "group/#{RegExp.$1}"
     else
-      feed_type = window.location.pathname.match(/^\/feed\/([\w\d\/]*)$/i)[1]
-
-    Foundation.utils.S(window).scroll ->
-      # Each browser seems to treat all the elements used in this differently.
-      # So, this is the only method that seems to work for all
-      if @ie_browser or @ff_browser
-        detected = document.documentElement.clientHeight + document.documentElement.scrollTop >= document.body.scrollHeight - 500
+      regex = window.location.pathname.match(/^\/feed\/([\w\d\/]*)$/i)
+      if regex == null
+        feed_type = regex
       else
-        detected = window.innerHeight + document.body.scrollTop >= document.body.scrollHeight - 500
+        feed_type = null
 
-      if detected and !end_of_stream and !loading_messages
-        loading_messages = true
-        Foundation.utils.S("#loading-message").show()
-        last_id = Foundation.utils.S('#feed-posts').children().last().data("id")
-        if last_id == undefined or last_id == null
-          last_id = 0
-        $.ajax
-          url: "/timeline"
-          type: 'GET'
-          dataType: 'json'
-          data: {'feed': feed_type, 'id': last_id, 'direction': 'older'}
-          success: (data) ->
-            for post in data.posts
-              do ->
-                Foundation.utils.S('#feed-posts').append(post)
-                Foundation.utils.S(".time-ago a").last().timeago()
-            loading_messages = false
-            Foundation.utils.S("#loading-message").hide()
-          failure: (data) ->
-            end_of_stream = true
+    if feed_type != null
+      Foundation.utils.S(window).scroll ->
+        # Each browser seems to treat all the elements used in this differently.
+        # So, this is the only method that seems to work for all
+        if @ie_browser or @ff_browser
+          detected = document.documentElement.clientHeight + document.documentElement.scrollTop >= document.body.scrollHeight - 500
+        else
+          detected = window.innerHeight + document.body.scrollTop >= document.body.scrollHeight - 500
+
+        if detected and !end_of_stream and !loading_messages
+          loading_messages = true
+          Foundation.utils.S("#loading-message").show()
+          last_id = Foundation.utils.S('#feed-posts').children().last().data("id")
+          if last_id == undefined or last_id == null
+            last_id = 0
+          $.ajax
+            url: "/timeline"
+            type: 'GET'
+            dataType: 'json'
+            data: {'feed': feed_type, 'id': last_id, 'direction': 'older'}
+            success: (data) ->
+              for post in data.posts
+                do ->
+                  Foundation.utils.S('#feed-posts').append(post)
+                  Foundation.utils.S(".time-ago a").last().timeago()
+              loading_messages = false
+              Foundation.utils.S("#loading-message").hide()
+            failure: (data) ->
+              end_of_stream = true
 
     Foundation.utils.S('.streamPost .comment-count').click ->
       t = Foundation.utils.S(this)
@@ -148,6 +162,7 @@ $ ->
         post.removeClass("hidden-comments")
         comments.slideDown ->
           comments.removeClass("hidden")
+          reset_orbit_height_for_comments(post_id)
         if comments.find('.comment-contents').attr('class').includes('unloaded')
           $.ajax
             url: "/feed/user/#{user_id}/#{post_id}/replies"
@@ -161,10 +176,12 @@ $ ->
                 loading_ring.remove()
               container.html(data)
               set_actions_for_comments(post_id)
+              reset_orbit_height_for_comments(post_id)
       else
         comments.slideUp ->
           comments.addClass("hidden")
           post.addClass("hidden-comments")
+          reset_orbit_height_for_comments(post_id)
 
     sending = false
     Foundation.utils.S('.comments .new-comment').on 'submit', (e) ->
@@ -187,6 +204,7 @@ $ ->
             sending = false
             update_comment_count(post_id)
             set_actions_for_comments(post_id)
+            reset_orbit_height_for_comments(post_id)
 
     Foundation.utils.S('.streamPost .default-controls .edit-post').click ->
       # This is less terrible!
@@ -272,8 +290,9 @@ $ ->
           error: (data) ->
             alert("An error occured deleting your post: #{data.statusText}")
 
-    latest_id = Foundation.utils.S('#feed-posts').children().first().data("id")
-    get_new_posts(feed_type, Foundation.utils.S("meta[name='unique']").attr('content'))
+    if feed_type != null
+      latest_id = Foundation.utils.S('#feed-posts').children().first().data("id")
+      get_new_posts(feed_type, Foundation.utils.S("meta[name='unique']").attr('content'))
 
     Foundation.utils.S('#new-posts-button').click ->
       Foundation.utils.S(this).hide()

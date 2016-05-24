@@ -56,6 +56,7 @@ Rails.application.routes.draw do
     get   ':id/leave', action: 'leave'
     post  ':id/delete', action: 'delete'
     get   ':id/posts/:post_id', action: 'show_post'
+    post  ':id/posts/:post_id/comment', action: 'create_reply'
   end
 
   namespace :user, path: 'user' do

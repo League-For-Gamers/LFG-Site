@@ -80,7 +80,7 @@
           <div class="small-12 left" id="pinned-posts" data-orbit>
             <% @stickied_posts.each_with_index do |post, i| -%>
               <li data-orbit-slide="stickied-<%=i%>">
-                <%= render partial: "post", locals: {post: post, user: post.user} %>
+                <%= render partial: "post", locals: {post: post, user: post.user, group: @group} %>
               </li>
             <% end -%>
           </div>
@@ -103,7 +103,7 @@
         
         <div class="small-12 left" id="feed-posts">
           <% @group_posts.each do |post| -%>
-            <%= render partial: "post", locals: {post: post, user: post.user} %>
+            <%= render partial: "post", locals: {post: post, user: post.user, group: @group} %>
           <% end -%>
         </div>
       </div>

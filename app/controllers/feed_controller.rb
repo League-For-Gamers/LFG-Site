@@ -41,7 +41,7 @@ class FeedController < ApplicationController
         user = User.includes(:posts).where("lower(username) = ?", $1.downcase).first or (render plain: "Cannot find user", status: 404 and return)
         @posts = Post.where("user_id = ?", user.id).where("id < ?", params[:id]).where(parent_id: nil).limit(30).order("id DESC").includes(:user, :bans)
       when /group\/([\w\d]*)/i
-        group = Group.includes(:users, :posts).find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
+        group = Group.find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
         @posts = group.posts.where("id < ?", params[:id]).where(parent_id: nil).limit(30).order("id DESC").includes(:user, :bans)
       else
         render plain: "Invalid feed parameter", status: 403 and return
@@ -57,8 +57,8 @@ class FeedController < ApplicationController
         user = User.includes(:posts).where("lower(username) = ?", $1.downcase).first or (render plain: "Cannot find user", status: 404 and return)
         @posts = Post.where("user_id = ?", user.id).where("id > ?", params[:id]).where(parent_id: nil).order("id DESC").includes(:user, :bans)
       when /group\/([\w\d]*)/i
-        group = Group.includes(:users, :posts).find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
-        @posts = group.posts.where("id > ?", params[:id]).order("id DESC").where(parent_id: nil).includes(:user, :bans)
+        group = Group.find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
+        @posts = group.posts.where("id > ?", params[:id]).order("id DESC").where(parent_id: nil).includes(:user, :bans).limit(100)
       else
         render plain: "Invalid feed parameter", status: 403 and return
       end
@@ -68,7 +68,7 @@ class FeedController < ApplicationController
     posts = []
     @posts.each do |post|
       if params[:feed] =~ /group\/([\w\d]*)/i
-        posts << render_to_string(partial: "group/post", locals: {post: post, user: post.user})
+        posts << render_to_string(partial: "group/post", locals: {post: post, user: post.user, group: group})
       else
         posts << render_to_string(partial: "post", locals: {post: post, user: post.user})
       end
@@ -209,7 +209,6 @@ class FeedController < ApplicationController
         render json: {body: render_to_string(template: 'feed/_comments.html.erb', layout: false, locals: {comments: comments, user: post.parent.user})}
       }
     end
-    
   end
 
   private

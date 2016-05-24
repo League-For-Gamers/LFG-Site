@@ -798,6 +798,41 @@ RSpec.describe GroupController, type: :controller do
     end
   end
 
+  describe "POST /group/:id/posts/:post_id/comment" do
+    let(:new_post) { FactoryGirl.create(:post, user: bobby, group: group) }
+    context "while not logged in" do
+      it "should redirect to /signup" do
+        post :create_reply, { id: group.slug, post_id: new_post.id }
+        expect(response).to redirect_to('/signup')
+      end
+    end
+    context "while logged in" do
+      before do
+        session[:user] = bobby.id
+      end
+      context "while passing arguments" do
+        let(:mismatched_group) { FactoryGirl.create(:group, title: "Wrong Group") }
+        it 'creates a new comment' do
+          body = "testing"
+          post :create_reply, { id: group.slug, post_id: new_post.id, body: body }
+          expect(new_post.children.first.body).to eq(body)
+          expect(response).to redirect_to(root_url)
+        end
+        it 'creates a new comment and returns in json format' do
+          body = "testing json"
+          post :create_reply, { id: group.slug, post_id: new_post.id, body: body, format: :json }
+          parsed = JSON.parse(response.body)
+          expect(parsed["body"]).to_not be_nil
+        end
+        it 'should generate a 404 when a posts group does not match the one in the URL' do
+          post :create_reply, { id: mismatched_group.slug, post_id: new_post.id, body: 'testing' }
+          expect(response).to render_template('shared/not_found')
+          expect(response.status).to eq(404)
+        end
+      end
+    end
+  end
+
   describe '#set_locale' do
     context 'when the group language is set to japanese' do
       let(:group) { FactoryGirl.create(:group, language: :japanese) }

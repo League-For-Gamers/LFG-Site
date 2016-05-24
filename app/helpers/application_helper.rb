@@ -4,7 +4,14 @@ module ApplicationHelper
   end
 
   def display_name(user)
-    user.display_name || "@#{user.username}"
+    begin
+      user.display_name || "@#{user.username}"
+    rescue
+      # This shouldn't happen but I managed to run into it a few times. Might as well be save.
+      # :nocov:
+      "@#{user.username}"
+      # :nocov:
+    end
   end
 
   def full_urlify(url)
