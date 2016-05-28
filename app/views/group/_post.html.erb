@@ -40,7 +40,7 @@
 <div class="small-11 comments text-card hidden" id="comments-<%= post.id %>" data-id="<%= post.id %>">
   <% if !!@current_user and GroupMembership.has_permission? "can_create_post", @permissions -%>
     <%= form_tag "/group/#{group.slug}/posts/#{post.id}/comment", method: :post, class: "new-comment" do %>
-      <% text_field_tag :body, '', placeholder: 'Write a comment...' %>
+      <% text_field_tag :body, '', placeholder: 'Write a comment...', autocomplete: 'off' %>
     <% end %>
   <% end %>
   <div class="comment-contents unloaded">

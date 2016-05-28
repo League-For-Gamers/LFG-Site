@@ -30,7 +30,7 @@ update_comment_count = (postid) ->
   count = Foundation.utils.S("#comments-#{postid} .comment-contents").children().length
   counter = Foundation.utils.S("#post-#{postid}").find(".comment-count")
   classes = counter.attr('class').split(' ')
-  if classes.indexOf('active') > 0 
+  if classes.indexOf('active') > 0
     if count <= 0
       classes.splice(classes.indexOf('active'), 1) # Remove 'active' from the list
   else if count > 0
@@ -78,6 +78,8 @@ set_actions_for_comments = (postid) ->
               body.removeClass('hidden')
               t.parent().removeClass('hidden')
               reset_orbit_height_for_comments(postid)
+            error: (jqXHR) ->
+               alert(jqXHR.responseJSON.errors.join("\n"))
 
     Foundation.utils.S("#comments-#{postid} .comment .controls .delete-post").click ->
       t = Foundation.utils.S(this)
@@ -198,12 +200,15 @@ $ ->
           data: form.serialize()
           success: (data) ->
             form.parent().find('.comment-contents').html(data.body)
-          complete: ->
             form.find('input[name=body]').val('')
-            sending = false
             update_comment_count(post_id)
             set_actions_for_comments(post_id)
+          error: (jqXHR) ->
+            alert(jqXHR.responseJSON.errors.join("\n"))
+          complete: ->
+            sending = false
             reset_orbit_height_for_comments(post_id)
+
 
     Foundation.utils.S('.streamPost .default-controls .edit-post').click ->
       # This is less terrible!

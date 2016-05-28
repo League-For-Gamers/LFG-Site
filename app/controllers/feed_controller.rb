@@ -206,7 +206,11 @@ class FeedController < ApplicationController
         redirect_to request.referrer || root_url
       }
       format.json {
-        render json: {body: render_to_string(template: 'feed/_comments.html.erb', layout: false, locals: {comments: comments, user: post.parent.user})}
+        if post.valid?
+          render json: {body: render_to_string(template: 'feed/_comments.html.erb', layout: false, locals: {comments: comments, user: post.parent.user})}
+        else
+          render json: {errors: post.errors.full_messages }, status: 400
+        end
       }
     end
   end
