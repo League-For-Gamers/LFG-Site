@@ -3,7 +3,7 @@
     <%= link_to image_tag(comment.user.avatar(:thumb), class: "avatar"), "/user/#{comment.user.username}", class: "avatar-container clearfix" %>
     <div class="body-container clearfix">
       <span class="title" data-id="<%= comment.user.username %>"><%= link_to display_name(comment.user), "/user/#{comment.user.username}" -%></span>
-      <p class="body"><%= comment.body %></p>
+      <p class="body"><%= replace_urls comment.body %></p>
       <% if !@current_user.nil? and ((user == @current_user and (@current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_own_posts")) or @current_user.has_permission? "can_edit_all_users_posts" or @current_user.has_permission? "can_delete_all_posts") -%>
         <div class="controls">
           <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
