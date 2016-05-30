@@ -3,7 +3,7 @@ class Post < ActiveRecord::Base
   belongs_to :user
   belongs_to :group
   belongs_to :parent, class_name: 'Post', foreign_key: :parent_id, counter_cache: :children_count
-  has_many :children, class_name: 'Post', foreign_key: :parent_id
+  has_many :children, class_name: 'Post', foreign_key: :parent_id, dependent: :destroy
 
   # TODO: Maximum of 5 stickied posts.
 
