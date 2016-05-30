@@ -45,6 +45,73 @@ reset_orbit_height_for_comments = (postid) ->
   if container.attr('class').includes('orbit-slides-container')
     container.height(post_div.parent().height())
 
+wire_up_comments_for_new_posts = (post_id) ->
+  if post_id
+    console.log "post_id detected"
+    posts_click_selector = "#post-#{post_id}.streamPost .comment-count"
+    comments_submit_selector = "#comments-#{post_id}.comments .new-comment"
+  else
+    console.log "post_id not detected"
+    posts_click_selector = '.streamPost .comment-count'
+    comments_submit_selector = '.comments .new-comment'
+
+  Foundation.utils.S(posts_click_selector).click ->
+    t = Foundation.utils.S(this)
+    post = t.parent().parent()
+    if !post_id
+      post_id = post.data('id')
+    user_id = post.find(".user").data("id")
+    comments = Foundation.utils.S("#comments-#{post_id}")
+    if post.attr("class").includes("hidden-comments")
+      post.removeClass("hidden-comments")
+      comments.slideDown ->
+        comments.removeClass("hidden")
+        reset_orbit_height_for_comments(post_id)
+      if comments.find('.comment-contents').attr('class').includes('unloaded')
+        $.ajax
+          url: "/feed/user/#{user_id}/#{post_id}/replies"
+          type: 'GET'
+          dataType: 'html'
+          success: (data) ->
+            loading_ring = Foundation.utils.S("#comments-#{post_id} .loading-ring")
+            container = comments.find('.comment-contents')
+            container.removeClass('unloaded')
+            loading_ring.hide ->
+              loading_ring.remove()
+            container.html(data)
+            set_actions_for_comments(post_id)
+            reset_orbit_height_for_comments(post_id)
+    else
+      comments.slideUp ->
+        comments.addClass("hidden")
+        post.addClass("hidden-comments")
+        reset_orbit_height_for_comments(post_id)
+
+  Foundation.utils.S(comments_submit_selector).on 'submit', (e) ->
+    e.preventDefault()
+    form = Foundation.utils.S(this)
+    if !sending and form.find('input[name=body]').val().trim().length > 0
+      sending = true
+      message = form.find('input[name=body]').val().trim()
+      if !post_id
+        post_id = form.parent().data('id')
+      form.find('input[name=body]').val(message)
+      $.ajax
+        url: form.attr('action')
+        type: 'POST'
+        dataType: 'json'
+        data: form.serialize()
+        success: (data) ->
+          form.parent().find('.comment-contents').html(data.body)
+          form.find('input[name=body]').val('')
+          update_comment_count(post_id)
+          set_actions_for_comments(post_id)
+        error: (jqXHR) ->
+          alert(jqXHR.responseJSON.errors.join("\n"))
+        complete: ->
+          sending = false
+          reset_orbit_height_for_comments(post_id)
+
 set_actions_for_comments = (postid) ->
   # Gods I need to clean this.
   Foundation.utils.S("#comments-#{postid} .comment .controls .edit-post").click ->
@@ -104,6 +171,7 @@ set_actions_for_comments = (postid) ->
           error: (data) ->
             alert("An error occured deleting your comment: #{data.statusText}")
 
+sending = false
 $ ->
   if window.location.pathname.match(/^\/$|^\/feed\/([\w\d\/]*)$|^\/group\/((?!search)(?!members)(?!new)[\w\d]+)(\/posts\/\d+)?$/i)
     new_posts = []
@@ -153,62 +221,7 @@ $ ->
             failure: (data) ->
               end_of_stream = true
 
-    Foundation.utils.S('.streamPost .comment-count').click ->
-      t = Foundation.utils.S(this)
-      post = t.parent().parent()
-      post_id = post.data('id')
-      user_id = post.find(".user").data("id")
-      comments = Foundation.utils.S("#comments-#{post_id}")
-      if post.attr("class").includes("hidden-comments")
-        post.removeClass("hidden-comments")
-        comments.slideDown ->
-          comments.removeClass("hidden")
-          reset_orbit_height_for_comments(post_id)
-        if comments.find('.comment-contents').attr('class').includes('unloaded')
-          $.ajax
-            url: "/feed/user/#{user_id}/#{post_id}/replies"
-            type: 'GET'
-            dataType: 'html'
-            success: (data) ->
-              loading_ring = Foundation.utils.S("#comments-#{post_id} .loading-ring")
-              container = comments.find('.comment-contents')
-              container.removeClass('unloaded')
-              loading_ring.hide ->
-                loading_ring.remove()
-              container.html(data)
-              set_actions_for_comments(post_id)
-              reset_orbit_height_for_comments(post_id)
-      else
-        comments.slideUp ->
-          comments.addClass("hidden")
-          post.addClass("hidden-comments")
-          reset_orbit_height_for_comments(post_id)
-
-    sending = false
-    Foundation.utils.S('.comments .new-comment').on 'submit', (e) ->
-      e.preventDefault()
-      form = Foundation.utils.S(this)
-      if !sending and form.find('input[name=body]').val().trim().length > 0
-        sending = true
-        message = form.find('input[name=body]').val().trim()
-        post_id = form.parent().data('id')
-        form.find('input[name=body]').val(message)
-        $.ajax
-          url: form.attr('action')
-          type: 'POST'
-          dataType: 'json'
-          data: form.serialize()
-          success: (data) ->
-            form.parent().find('.comment-contents').html(data.body)
-            form.find('input[name=body]').val('')
-            update_comment_count(post_id)
-            set_actions_for_comments(post_id)
-          error: (jqXHR) ->
-            alert(jqXHR.responseJSON.errors.join("\n"))
-          complete: ->
-            sending = false
-            reset_orbit_height_for_comments(post_id)
-
+    wire_up_comments_for_new_posts()
 
     Foundation.utils.S('.streamPost .default-controls .edit-post').click ->
       # This is less terrible!
@@ -306,6 +319,9 @@ $ ->
       for post in posts # Why does the 'do' have to be a on a newline? wtf coffeescript?
         do ->
           Foundation.utils.S('#feed-posts').prepend(post)
-          Foundation.utils.S('.streamPost').sort((a, b) ->
+          latest_post = Foundation.utils.S('.streamPost').sort((a, b) ->
             Foundation.utils.S(b).data('id') - Foundation.utils.S(a).data('id')
-          ).first().find('.time-ago a').timeago()
+          ).first()
+          latest_post.find('.time-ago a').timeago()
+          wire_up_comments_for_new_posts(latest_post.data('id'))
+

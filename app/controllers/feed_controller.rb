@@ -41,6 +41,8 @@ class FeedController < ApplicationController
         user = User.includes(:posts).where("lower(username) = ?", $1.downcase).first or (render plain: "Cannot find user", status: 404 and return)
         @posts = Post.where("user_id = ?", user.id).where("id < ?", params[:id]).where(parent_id: nil).limit(30).order("id DESC").includes(:user, :bans)
       when /group\/([\w\d]*)/i
+        # TODO: Fix this.
+        # Uhhh jesus I can't believe I only just noticed this but this defeats private groups, if you know the group_id you can easily use this to get all the old posts.
         group = Group.find_by(slug: $1) or (render plain: "Cannot find group", status: 404 and return)
         @posts = group.posts.where("id < ?", params[:id]).where(parent_id: nil).limit(30).order("id DESC").includes(:user, :bans)
       else
@@ -68,6 +70,8 @@ class FeedController < ApplicationController
     posts = []
     @posts.each do |post|
       if params[:feed] =~ /group\/([\w\d]*)/i
+        membership = group.group_memberships.find_by(user: @current_user) if !!@current_user
+        @permissions = GroupMembership.get_permission(membership, group) if !!@current_user
         posts << render_to_string(partial: "group/post", locals: {post: post, user: post.user, group: group})
       else
         posts << render_to_string(partial: "post", locals: {post: post, user: post.user})
