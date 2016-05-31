@@ -22,7 +22,7 @@ gem 'rails_autolink'
 # For env[] management
 gem 'figaro'
 gem 'httpclient'
-gem 'sucker_punch'
+gem 'sucker_punch', '~> 1.6.0'
 
 # For S3 access
 gem 'paperclip'
