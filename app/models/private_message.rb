@@ -1,6 +1,6 @@
 class PrivateMessage < ActiveRecord::Base
   belongs_to :user
-  belongs_to :chat
+  belongs_to :chat, touch: true
 
   validates :user, :chat, :body, presence: true
   validates :decrypted_body, length: { maximum: 512 }

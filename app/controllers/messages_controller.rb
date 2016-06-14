@@ -18,7 +18,7 @@ class MessagesController < ApplicationController
   def index
     @chats = Chat.includes(:private_messages, :users)
                  .find_by_sql(["SELECT chats.*, chats_users.last_read FROM chats_users INNER JOIN chats ON chats_users.chat_id = chats.id WHERE chats_users.user_id = ? ORDER BY chats.updated_at DESC LIMIT 12", @current_user.id])
-    @chats.sort! {|a,b| b.private_messages.first.created_at <=> a.private_messages.first.created_at} # Newest message takes precedent.
+    #@chats.sort! {|a,b| b.private_messages.first.created_at <=> a.private_messages.first.created_at} # Newest message takes precedent.
     @messages_count = @chats.count
 
     @notifications = @current_user.notifications.includes(:user, :group).all.limit(12)
@@ -37,7 +37,7 @@ class MessagesController < ApplicationController
     when "messages"
       @chats = Chat.includes(:private_messages, :users)
                    .find_by_sql(["SELECT chats.*, chats_users.last_read FROM chats_users INNER JOIN chats ON chats_users.chat_id = chats.id WHERE chats_users.user_id = ? ORDER BY chats.updated_at DESC LIMIT #{per_page} OFFSET #{(page)*per_page}", @current_user.id])
-      @chats.sort! {|a,b| b.private_messages.first.created_at <=> a.private_messages.first.created_at} # Newest message takes precedent.
+      #@chats.sort! {|a,b| b.private_messages.first.created_at <=> a.private_messages.first.created_at} # Newest message takes precedent.
       render :raw_chat_cards, layout: false
     when "notifications"
       @notifications = @current_user.notifications.includes(:user, :group).all.limit(per_page).offset((page)*per_page)
