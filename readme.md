@@ -16,6 +16,8 @@ There are two users created from seed, simply named `admin` and `boring_user`, t
 
 Be sure to occasionally run `rake db:permission_migration` as we update the site. This will ensure your database has the latest permission configuration.
 
+It is recommended that you have both optipng and jpegoptim installed on your system and in path, for image uploads. However, this is optional and will gracefully fail without them.
+
 ## Contributing
 All pull requests are welcome, however it's greatly appreciated if your tests pass 100% and you write tests for all new code. We use RSpec, so tests can be run via `rake spec`
 

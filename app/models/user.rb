@@ -6,11 +6,15 @@ class User < ActiveRecord::Base
   enum skill_status: [:empty, :looking_for_group, :looking_for_more]
 
   has_attached_file :avatar,
+                  processors: [:thumbnail, :paperclip_optimizer],
+                  paperclip_optimizer: {
+                    optipng: { level: 6 }
+                  },
                   path: "users/avatars/:style/:id.:extension",
                   styles: {
-                    thumb: '64x64>',
-                    med:   '150x150#',
-                    large: '256x256#'
+                    thumb: { geometry: '64x64>' },
+                    med:   { geometry: '150x150#' },
+                    large: { geometry: '256x256#' }
                   }
 
   attr_accessor :old_password, :email_confirm, :skip_old_password

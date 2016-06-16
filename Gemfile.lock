@@ -106,6 +106,7 @@ GEM
     erubis (2.7.0)
     excon (0.49.0)
     execjs (2.6.0)
+    exifr (1.2.4)
     factory_girl (4.7.0)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.7.0)
@@ -246,11 +247,20 @@ GEM
     foundation-rails (5.5.3.2)
       railties (>= 3.1.0)
       sass (>= 3.3.0, < 3.5)
+    fspath (2.1.1)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
     hitimes (1.2.3)
     httpclient (2.8.0)
     i18n (0.7.0)
+    image_optim (0.22.1)
+      exifr (~> 1.2, >= 1.2.2)
+      fspath (~> 2.1)
+      image_size (~> 1.3)
+      in_threads (~> 1.3)
+      progress (~> 3.0, >= 3.0.1)
+    image_size (1.4.2)
+    in_threads (1.3.1)
     inflecto (0.0.2)
     ipaddress (0.8.3)
     jbuilder (2.4.1)
@@ -288,11 +298,15 @@ GEM
       cocaine (~> 0.5.5)
       mime-types
       mimemagic (= 0.3.0)
+    paperclip-optimizer (2.0.0)
+      image_optim (~> 0.19)
+      paperclip (>= 3.4)
     pg (0.18.4)
     pg_search (1.0.5)
       activerecord (>= 3.1)
       activesupport (>= 3.1)
       arel
+    progress (3.1.1)
     pry (0.10.3)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -444,6 +458,7 @@ DEPENDENCIES
   jquery-turbolinks
   newrelic_rpm
   paperclip
+  paperclip-optimizer
   pg (= 0.18.4)
   pg_search
   pry-rails

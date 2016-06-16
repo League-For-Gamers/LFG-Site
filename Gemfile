@@ -27,6 +27,7 @@ gem 'sucker_punch', '~> 1.6.0'
 # For S3 access
 gem 'paperclip'
 gem 'aws-sdk', '< 2.0'
+gem 'paperclip-optimizer'
 
 gem 'foundation-rails', '~> 5.5.3.2'
 
