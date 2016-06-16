@@ -58,8 +58,8 @@ wire_up_comments_for_new_posts = (post_id) ->
   Foundation.utils.S(posts_click_selector).click ->
     t = Foundation.utils.S(this)
     post = t.parent().parent()
-    if !post_id
-      post_id = post.data('id')
+
+    post_id = post.data('id')
     user_id = post.find(".user").data("id")
     comments = Foundation.utils.S("#comments-#{post_id}")
     if post.attr("class").includes("hidden-comments")
