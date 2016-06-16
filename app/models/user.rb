@@ -136,9 +136,9 @@ class User < ActiveRecord::Base
     end
   end
 
-  # Usage: user_that_current_user_wants_to_follow.follow(current_user)
+  # Usage: current_user.follow(user_that_current_user_wants_to_follow)
   def follow(user)
-    Follow.create(user: user, following: self)
+    Follow.create(user: self, following: user)
   end
 
   def create_notification(variant, group = nil, message = nil)

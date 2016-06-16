@@ -126,7 +126,7 @@ RSpec.describe User, :type => :model do
   describe '#follow' do
     let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
     it 'should follow another user' do
-      admin_bobby.follow(bobby)
+      bobby.follow(admin_bobby)
       expect(User.find(bobby.id).follows.map(&:following)).to include(admin_bobby)
       expect(User.find(admin_bobby.id).followers.map(&:user)).to include(bobby)
     end
@@ -134,7 +134,7 @@ RSpec.describe User, :type => :model do
 
   describe '#follow?' do
     it 'should return true if the user is following the other' do
-      admin_bobby.follow(bobby)
+      bobby.follow(admin_bobby)
       expect(bobby.follow?(admin_bobby)).to be true
     end
 
