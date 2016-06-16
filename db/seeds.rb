@@ -6,7 +6,7 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-u = User.create(id: 1, username: "admin", password: "admin", email: "admin@admin.com", role: Role.find_by(name: "administrator"))
+u = User.create(id: 1, username: "admin", password: "admin", email: "admin@admin.com", email_confirm: "admin@admin.com", role: Role.find_by(name: "administrator"))
 g = Group.create(id: 1, title: "League for Gamers", description: "Welcome to the League for Gamers", privacy: :public_group, membership: :public_membership, official: true)
 m = GroupMembership.create(group: g, user: u, role: :owner)
 
