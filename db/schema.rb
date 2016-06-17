@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160505080727) do
+ActiveRecord::Schema.define(version: 20160617095607) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,9 +43,9 @@ ActiveRecord::Schema.define(version: 20160505080727) do
   end
 
   create_table "chats_users", id: false, force: :cascade do |t|
-    t.integer  "chat_id",                     null: false
-    t.integer  "user_id",                     null: false
-    t.datetime "last_read", default: "now()"
+    t.integer  "chat_id",                                   null: false
+    t.integer  "user_id",                                   null: false
+    t.datetime "last_read", default: '2016-06-16 07:59:58'
   end
 
   add_index "chats_users", ["user_id", "chat_id"], name: "index_chats_users_on_user_id_and_chat_id", unique: true, using: :btree
@@ -119,6 +119,7 @@ ActiveRecord::Schema.define(version: 20160505080727) do
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
     t.boolean  "acknowledged", default: false
+    t.integer  "post_id"
   end
 
   add_index "notifications", ["group_id"], name: "index_notifications_on_group_id", using: :btree

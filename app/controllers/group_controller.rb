@@ -243,6 +243,8 @@ class GroupController < ApplicationController
     post_params["parent_id"] = @post.id
     post = Post.create(post_params)
     comments = post.parent.children.includes(:user, :bans).order("id DESC")
+    # Notify the owner of the post
+    post.parent.user.create_notification("new_comment", [post, @group], (@current_user.display_name || "@#{@current_user.username}") + " in group #{@group.title}") if post.user != @current_user
     respond_to do |format|
       format.html {
         flash[:alert] = post.errors.full_messages.join("\n") unless post.valid?

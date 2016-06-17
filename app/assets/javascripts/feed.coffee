@@ -45,22 +45,8 @@ reset_orbit_height_for_comments = (postid) ->
   if container.attr('class').includes('orbit-slides-container')
     container.height(post_div.parent().height())
 
-wire_up_comments_for_new_posts = (post_id) ->
-  if post_id
-    console.log "post_id detected"
-    posts_click_selector = "#post-#{post_id}.streamPost .comment-count"
-    comments_submit_selector = "#comments-#{post_id}.comments .new-comment"
-  else
-    console.log "post_id not detected"
-    posts_click_selector = '.streamPost .comment-count'
-    comments_submit_selector = '.comments .new-comment'
-
-  Foundation.utils.S(posts_click_selector).click ->
-    t = Foundation.utils.S(this)
-    post = t.parent().parent()
-
-    post_id = post.data('id')
-    user_id = post.find(".user").data("id")
+toggle_comments = (post, post_id, user_id) ->
+  new Promise (resolve, reject) ->
     comments = Foundation.utils.S("#comments-#{post_id}")
     if post.attr("class").includes("hidden-comments")
       post.removeClass("hidden-comments")
@@ -78,14 +64,34 @@ wire_up_comments_for_new_posts = (post_id) ->
             container.removeClass('unloaded')
             loading_ring.hide ->
               loading_ring.remove()
-            container.html(data)
-            set_actions_for_comments(post_id)
-            reset_orbit_height_for_comments(post_id)
+            $.when(container.html(data)).then () ->
+              set_actions_for_comments(post_id)
+              reset_orbit_height_for_comments(post_id)
+              return resolve(true)
     else
       comments.slideUp ->
         comments.addClass("hidden")
         post.addClass("hidden-comments")
         reset_orbit_height_for_comments(post_id)
+        return resolve(false)
+
+wire_up_comments_for_new_posts = (post_id) ->
+  if post_id
+    console.log "post_id detected"
+    posts_click_selector = "#post-#{post_id}.streamPost .comment-count"
+    comments_submit_selector = "#comments-#{post_id}.comments .new-comment"
+  else
+    console.log "post_id not detected"
+    posts_click_selector = '.streamPost .comment-count'
+    comments_submit_selector = '.comments .new-comment'
+
+  Foundation.utils.S(posts_click_selector).click ->
+    t = Foundation.utils.S(this)
+    post = t.parent().parent()
+
+    post_id = post.data('id')
+    user_id = post.find(".user").data("id")
+    toggle_comments(post, post_id, user_id)
 
   Foundation.utils.S(comments_submit_selector).on 'submit', (e) ->
     e.preventDefault()
@@ -222,6 +228,16 @@ $ ->
               end_of_stream = true
 
     wire_up_comments_for_new_posts()
+
+    # Open comments and scroll to relevant comment when using an anchor to select a comment
+    if window.location.pathname.match(/^\/feed\/user\/([\w\d\/]*)\/([\d\/]*)$|^\/group\/((?!search)(?!members)(?!new)[\w\d]+)(\/posts\/\d+)$/i) and window.location.hash.startsWith("#comment-")
+      post = Foundation.utils.S('.streamPost')
+      post_id = post.data('id')
+      user_id = post.find(".user").data("id")
+      toggle_comments(post, post_id, user_id).then (f) ->
+        comment = Foundation.utils.S(window.location.hash)
+        comment.addClass('highlight-comment')
+        comment[0].scrollIntoView(false)
 
     Foundation.utils.S('.streamPost .default-controls .edit-post').click ->
       # This is less terrible!

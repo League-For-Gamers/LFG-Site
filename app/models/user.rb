@@ -145,8 +145,24 @@ class User < ActiveRecord::Base
     Follow.create(user: self, following: user)
   end
 
-  def create_notification(variant, group = nil, message = nil)
-    Notification.create(variant: Notification.variants[variant], user: self, group: group, message: message)
+  def create_notification(variant, relation = nil, message = nil)
+    if !relation.nil?
+      if relation.class == Group
+        Notification.create(variant: Notification.variants[variant], user: self, group: relation, message: message)
+        return
+      elsif relation.class == Post
+        Notification.create(variant: Notification.variants[variant], user: self, post: relation, message: message)
+        return
+      elsif relation.class == Array
+        # Both a post and a group it is a part of referenced.
+        if relation.size == 2 and Set[Group, Post].subset?(relation.map(&:class).to_set)
+          rel = relation.sort {|a, b| a.class.to_s <=> b.class.to_s } # Group first, then post.
+          Notification.create(variant: Notification.variants[variant], user: self, group: rel[0], post: rel[1], message: message)
+          return
+        end
+      end
+    end
+    Notification.create(variant: Notification.variants[variant], user: self, message: message)
   end
 
   def follow?(user)

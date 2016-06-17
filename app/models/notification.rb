@@ -1,11 +1,12 @@
 class Notification < ActiveRecord::Base
   belongs_to :group
+  belongs_to :post
   belongs_to :user
 
   after_initialize :default_values
   after_create :delete_older_messages
 
-  enum variant: [:group_invite, :group_invited, :group_accepted, :group_ban, :group_unban, :ban, :unban, :mention]
+  enum variant: [:group_invite, :group_invited, :group_accepted, :group_ban, :group_unban, :ban, :unban, :mention, :new_comment]
 
   def resolve_url
     case self.variant
@@ -19,6 +20,12 @@ class Notification < ActiveRecord::Base
       "/group/#{self.group.slug}"
     when "ban", "unban"
       "/"
+    when "new_comment"
+      if self.group.present?
+        "/group/#{self.group.slug}/posts/#{self.post.parent_id}#comment-#{self.post.id}"
+      else
+        "/feed/user/#{self.user.username}/#{self.post.parent_id}#comment-#{self.post.id}"
+      end
     when "mention"
     end
   end
@@ -52,6 +59,10 @@ class Notification < ActiveRecord::Base
     # Sent to user when explicitly unbanned (not when ban is lapsted)
     when "unban"
       "You have been unbanned from the site #{self.message}" # Message same as group_unban
+
+    # Sent to user when a post of theirs has been commented on
+    when "new_comment"
+      "#{self.message} has commented on your post"
 
     # Sent to user when mentioned. Not currently implemented.
     when "mention"
