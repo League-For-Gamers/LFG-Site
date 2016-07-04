@@ -1,6 +1,9 @@
 class OmniController < ApplicationController
   def create
-    raise [access_token.token, access_token.secret, raw_info.screen_name].inspect
+    TwitterVerification.create(user_id: @current_user.id,
+                               secret: access_token.secret,
+                               token: access_token.token,
+                               screen_name: raw_info.screen_name)
     redirect_to '/'
   end
 
