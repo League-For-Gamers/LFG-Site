@@ -12,6 +12,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'bcrypt', '~> 3.1.7'
 
 gem 'omniauth-twitter'
+gem 'twitter'
 
 ## Aftermarket rails
 gem 'pg', '0.18.4'
