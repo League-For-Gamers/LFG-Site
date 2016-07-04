@@ -15,6 +15,8 @@ Rails.application.routes.draw do
 
   get 'timeline', to: 'feed#timeline'
 
+  get '/auth/twitter/callback', to: 'omni#create'
+
   namespace :messages, path: 'messages' do
     root action: 'index'
     # put '/new', action: 'new'
