@@ -75,7 +75,7 @@
             </label>
             <label>Twitter username
               <% if f.object.social["link_twitter"].present? %>
-                [VERIFY]
+                <a href="/auth/twitter">[VERIFY]</a>
               <% end %>
               <%= s.text_field :link_twitter, value: f.object.social["link_twitter"] , placeholder: "Twitter" %>
             </label>

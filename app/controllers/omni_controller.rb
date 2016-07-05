@@ -4,7 +4,7 @@ class OmniController < ApplicationController
                                secret: access_token.secret,
                                token: access_token.token,
                                screen_name: raw_info.screen_name)
-    redirect_to '/'
+    redirect_to '/account'
   end
 
   protected
