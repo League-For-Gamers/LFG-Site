@@ -42,18 +42,18 @@ update_comment_count = (postid) ->
 reset_orbit_height_for_comments = (postid) ->
   post_div = Foundation.utils.S("#post-#{postid}")
   container = post_div.parent().parent()
-  if container.attr('class').includes('orbit-slides-container')
+  if container.attr('class').search('orbit-slides-container') > -1
     container.height(post_div.parent().height())
 
 toggle_comments = (post, post_id, user_id) ->
   new Promise (resolve, reject) ->
     comments = Foundation.utils.S("#comments-#{post_id}")
-    if post.attr("class").includes("hidden-comments")
+    if post.attr("class").search("hidden-comments") > -1
       post.removeClass("hidden-comments")
       comments.slideDown ->
         comments.removeClass("hidden")
         reset_orbit_height_for_comments(post_id)
-      if comments.find('.comment-contents').attr('class').includes('unloaded')
+      if comments.find('.comment-contents').attr('class').search('unloaded') > -1
         $.ajax
           url: "/feed/user/#{user_id}/#{post_id}/replies"
           type: 'GET'
