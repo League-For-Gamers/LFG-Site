@@ -92,8 +92,8 @@ RSpec.describe User, :type => :model do
     let(:bobby) { FactoryGirl.create(:administrator_user) }
 
     it 'should return true for a user that has the permission' do
-      permission = bobby.role.permissions.first
-      expect(bobby.has_permission?(permission.name)).to be(true)
+      permission = bobby.role.get_permissions.first
+      expect(bobby.has_permission?(permission)).to be(true)
     end
 
     it 'should return false for when the user does not have a permission' do

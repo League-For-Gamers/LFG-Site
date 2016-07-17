@@ -110,7 +110,8 @@ class User < ActiveRecord::Base
 
   def has_permission?(permission)
     return false if self.role.nil?
-    self.role.permissions.map(&:name).include? permission
+    role.has_permission? permission
+    #self.role.permissions.map(&:name).include? permission
   end
 
   def ban(reason, end_date, banner, post = nil)
@@ -147,13 +148,14 @@ class User < ActiveRecord::Base
 
   def create_notification(variant, relation = nil, message = nil)
     if !relation.nil?
-      if relation.class == Group
+      case relation.class
+      when Group
         Notification.create(variant: Notification.variants[variant], user: self, group: relation, message: message)
         return
-      elsif relation.class == Post
+      when Post
         Notification.create(variant: Notification.variants[variant], user: self, post: relation, message: message)
         return
-      elsif relation.class == Array
+      when Array
         # Both a post and a group it is a part of referenced.
         if relation.size == 2 and Set[Group, Post].subset?(relation.map(&:class).to_set)
           rel = relation.sort {|a, b| a.class.to_s <=> b.class.to_s } # Group first, then post.

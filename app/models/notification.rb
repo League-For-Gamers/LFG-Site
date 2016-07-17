@@ -1,4 +1,5 @@
 class Notification < ActiveRecord::Base
+  # I hate this. I absolutely hate this. I need to completely rewrite it all. Gah!
   belongs_to :group
   belongs_to :post
   belongs_to :user

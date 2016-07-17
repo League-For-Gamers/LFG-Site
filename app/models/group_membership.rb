@@ -14,9 +14,9 @@ class GroupMembership < ActiveRecord::Base
     # I'm pretty sure this can be cleaner.
     if !membership
       if group.privacy == "public_group" and group.post_control == "public_posts" and group.membership != "owner_verified"
-        permissions << Permission.find_by(name: "can_create_post")
-        permissions << Permission.find_by(name: "can_edit_own_posts")
-        permissions << Permission.find_by(name: "can_view_group_members")
+        permissions << "can_create_post"
+        permissions << "can_edit_own_posts"
+        permissions << "can_view_group_members"
       end
       # If we go any further, we'll run into methods for classes that don't exist.
       return permissions
@@ -27,35 +27,35 @@ class GroupMembership < ActiveRecord::Base
     end
 
     if ["member", "moderator", "owner", "administrator"].include? membership.role
-      permissions << Permission.find_by(name: "can_view_group_members")
+      permissions << "can_view_group_members"
     end
     if ["moderator", "owner", "administrator"].include? membership.role
-      permissions << Permission.find_by(name: "can_ban_users")
+      permissions << "can_ban_users"
     end
     if ["owner", "administrator"].include? membership.role
-      permissions << Permission.find_by(name: "can_create_official_posts")
-      permissions << Permission.find_by(name: "can_update_group")
-      permissions << Permission.find_by(name: "can_edit_group_member_roles")
+      permissions << "can_create_official_posts"
+      permissions << "can_update_group"
+      permissions << "can_edit_group_member_roles"
     end
     if ["owner"].include? membership.role
-      permissions << Permission.find_by(name: "can_delete_group")
+      permissions << "can_delete_group"
     end
 
     case membership.group.post_control
     when "public_posts"
       if ["member", "moderator", "owner", "administrator", "unverified"].include? membership.role
-        permissions << Permission.find_by(name: "can_create_post")
-        permissions << Permission.find_by(name: "can_edit_own_posts")
+        permissions << "can_create_post"
+        permissions << "can_edit_own_posts"
       end
     when "members_only_post"
       if ["member", "moderator", "owner", "administrator"].include? membership.role
-        permissions << Permission.find_by(name: "can_create_post")
-        permissions << Permission.find_by(name: "can_edit_own_posts")
+        permissions << "can_create_post"
+        permissions << "can_edit_own_posts"
       end
     when "management_only_post"
       if ["moderator", "owner", "administrator"].include? membership.role
-        permissions << Permission.find_by(name: "can_create_post")
-        permissions << Permission.find_by(name: "can_edit_own_posts")
+        permissions << "can_create_post"
+        permissions << "can_edit_own_posts"
       end
     end
     permissions
@@ -63,7 +63,7 @@ class GroupMembership < ActiveRecord::Base
 
   def self.has_permission?(permission, list)
     return false if list.blank?
-    list.map(&:name).include? permission
+    list.include? permission
   end
 
   def ban(reason, end_date, banner, post = nil)

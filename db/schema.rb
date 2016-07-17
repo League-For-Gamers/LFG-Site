@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160617095607) do
+ActiveRecord::Schema.define(version: 20160717101118) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -124,19 +124,6 @@ ActiveRecord::Schema.define(version: 20160617095607) do
 
   add_index "notifications", ["group_id"], name: "index_notifications_on_group_id", using: :btree
   add_index "notifications", ["user_id"], name: "index_notifications_on_user_id", using: :btree
-
-  create_table "permissions", force: :cascade do |t|
-    t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "permissions_roles", id: false, force: :cascade do |t|
-    t.integer "permission_id", null: false
-    t.integer "role_id",       null: false
-  end
-
-  add_index "permissions_roles", ["role_id", "permission_id"], name: "index_permissions_roles_on_role_id_and_permission_id", unique: true, using: :btree
 
   create_table "pg_search_documents", force: :cascade do |t|
     t.text     "content"

@@ -363,6 +363,12 @@ RSpec.describe FeedController, type: :controller do
           parsed = JSON.parse(response.body)
           expect(parsed["body"]).to_not be_nil
         end
+        it 'creates an error message in json format when an error is present' do
+          body = ""
+          500.times { body << "testing json " } # create a body too large.
+          post :create_reply, { user_id: bobby.username, post_id: new_post.id, body: body, format: :json }
+          expect(response.status).to eq(400)
+        end
       end
     end
   end

@@ -824,6 +824,12 @@ RSpec.describe GroupController, type: :controller do
           parsed = JSON.parse(response.body)
           expect(parsed["body"]).to_not be_nil
         end
+        it 'creates an error message in json format when an error is present' do
+          body = ""
+          500.times { body << "testing json " } # create a body too large.
+          post :create_reply, { id: group.slug, post_id: new_post.id, body: body, format: :json }
+          expect(response.status).to eq(400)
+        end
         it 'should generate a 404 when a posts group does not match the one in the URL' do
           post :create_reply, { id: mismatched_group.slug, post_id: new_post.id, body: 'testing' }
           expect(response).to render_template('shared/not_found')

@@ -19,7 +19,7 @@ SimpleCov.start 'rails'
 RSpec.configure do |config|
   config.before(:suite) do
     require 'rake'
-    DatabaseCleaner.strategy = :truncation, {:only => %w[roles permissions permissions_roles]}
+    DatabaseCleaner.strategy = :truncation, {:only => %w[roles]}
     DatabaseCleaner.clean
     load "#{Rails.root}/lib/tasks/permission_migration.rake"
     Rake::Task.define_task(:environment)
