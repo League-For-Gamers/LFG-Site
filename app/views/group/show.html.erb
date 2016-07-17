@@ -18,8 +18,10 @@
 
 
 <div class="row group-banner">
-  <% unless @group.banner.blank? -%>
-    <%= image_tag @group.banner.url(:large), class: "banner" %>
+  <% cache ["group-banner", @group.id, @group.updated_at] do -%>
+    <% unless @group.banner.blank? -%>
+      <%= image_tag @group.banner.url(:large), class: "banner" %>
+    <% end -%>
   <% end -%>
   <h1 class="<%= "no-banner" if @group.banner.blank? %>"><%= @group.title -%></h1>
 </div>

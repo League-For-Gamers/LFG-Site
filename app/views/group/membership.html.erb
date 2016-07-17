@@ -11,8 +11,10 @@
   <div class="large-3 medium-6 small-12 columns">
     <div class="text-card pad user-card">
       <h3><%= @user_membership.role.titleize %></h3>
-      <%= image_tag @user.avatar(:large), class: "avatar group #{@user_membership.role}" %>
-
+        <% cache [@user.id, @user.updated_at, "avatar", "group-membership-large", @user_membership.role] do -%>
+          <%= image_tag @user.avatar(:large), class: "avatar group #{@user_membership.role}" %>
+        <% end -%>
+      
       <% if !["owner", "unverified"].include? @user_membership.role and (@membership.role == "owner" or @current_user.role == Role.find(1)) %>
         <%= form_for @user_membership, url: "/group/#{@group.slug}/members/#{@user.username}", action: "patch" do |f| %>
           <%= hidden_field_tag :goal, :promote %>

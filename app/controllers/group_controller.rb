@@ -63,8 +63,8 @@ class GroupController < ApplicationController
 
   # GET /group/:id
   def show
-    @stickied_posts = @group.posts.includes(:bans).where(official: true)
-    @group_posts = @group.posts.includes(:bans).limit(30).where(parent_id: nil)
+    @stickied_posts = @group.posts.includes(:user, :bans).where(official: true)
+    @group_posts = @group.posts.includes(:user, :bans).limit(30).where(parent_id: nil)
     @posts_count = @group.posts.where(parent_id: nil).count
     set_title @group.title
   end

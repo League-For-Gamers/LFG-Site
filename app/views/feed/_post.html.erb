@@ -1,52 +1,62 @@
-<div class="streamPost text-card hidden-comments <%= 'official' if post.official -%>" id="post-<%= post.id %>" data-id="<%= post.id %>">
-  <div class="large-2 small-3 columns user" data-id="<%= user.username %>">
-    <%= link_to image_tag(user.avatar(:med), class: "avatar"), "/user/#{user.username}" %>
-    <% if !@current_user.nil? and ((user == @current_user and (@current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_own_posts")) or @current_user.has_permission? "can_edit_all_users_posts" or @current_user.has_permission? "can_delete_all_posts") -%>
-      <div class="user-controls">
-        <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
-          <div class="edit-controls">
-            <a class="submit-post">Submit</a>
-            <a class="cancel-post">Cancel</a>
+<% cache [post.id, post.updated_at] do -%>
+  <div class="streamPost text-card hidden-comments <%= 'official' if post.official -%>" id="post-<%= post.id %>" data-id="<%= post.id %>">
+    <div class="large-2 small-3 columns user" data-id="<%= user.username %>">
+      <a href="<%= "/user/#{user.username}" %>">
+        <% cache [user.id, user.updated_at, "avatar", "med"] do -%>
+          <%= image_tag(user.avatar(:med), class: "avatar") %>
+        <% end -%>
+      </a>
+      <% cache [post.id, post.updated_at, "controls", @current_user] do -%>
+        <% if !@current_user.nil? and ((user == @current_user and (@current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_own_posts")) or @current_user.has_permission? "can_edit_all_users_posts" or @current_user.has_permission? "can_delete_all_posts") -%>
+          <div class="user-controls">
+            <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
+              <div class="edit-controls">
+                <a class="submit-post">Submit</a>
+                <a class="cancel-post">Cancel</a>
+              </div>
+            <% end -%>
+            <div class="default-controls">
+              <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
+                <a class="edit-post">Edit</a>
+              <% end -%>
+              <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_all_posts" -%>
+                <a class="delete-post"></a>
+              <% end -%>
+            </div>
           </div>
         <% end -%>
-        <div class="default-controls">
-          <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
-            <a class="edit-post">Edit</a>
-          <% end -%>
-          <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_all_posts" -%>
-            <a class="delete-post"></a>
+      <% end -%>
+      <% if post.official -%>
+        <%= image_tag 'ui/official-shield.png', class: 'official-shield' %>
+      <% end -%>
+    </div>
+    <div class="large-10 small-9 columns body">
+      <span class="title"><%= link_to display_name(user), "/user/#{user.username}" -%>
+      <% if !!@current_user and !@current_user.follow? user and @current_user != user -%>
+        <a class="follow-user" href="/user/<%= user.username -%>/follow" title="Follow" data-tooltip></a>
+      <% end -%></span>
+      <p><%= replace_urls post.body -%></p>
+      <% unless post.bans.empty? -%>
+        <div class="bans">
+          <% post.bans.each do |ban| -%>
+            <p><%= ban_string(ban) %></p>
           <% end -%>
         </div>
-      </div>
+      <% end %>
+      <%= post_time_ago(post) -%>
+      <span class="comment-count <%= "active" if post.children_count > 0 %>"><%= post.children_count %></span>
+    </div>
+  </div>
+  <div class="small-11 comments text-card hidden" id="comments-<%= post.id %>" data-id="<%= post.id %>">
+    <% cache [post.id, post.updated_at, "comment", @current_user] do -%>
+      <% if @current_user.has_permission? "can_create_post" -%>
+        <%= form_tag "/feed/user/#{user.username}/#{post.id}/comment", method: :post, class: "new-comment" do %>
+          <% text_field_tag :body, '', placeholder: 'Write a comment...', autocomplete: 'off' %>
+        <% end %>
+      <% end %>
     <% end -%>
-    <% if post.official -%>
-      <%= image_tag 'ui/official-shield.png', class: 'official-shield' %>
-    <% end -%>
+    <div class="comment-contents unloaded">
+    </div>
+    <div class="loading-ring small"><div></div></div>
   </div>
-  <div class="large-10 small-9 columns body">
-    <span class="title"><%= link_to display_name(user), "/user/#{user.username}" -%>
-    <% if !!@current_user and !@current_user.follow? user and @current_user != user -%>
-      <a class="follow-user" href="/user/<%= user.username -%>/follow" title="Follow" data-tooltip></a>
-    <% end -%></span>
-    <p><%= replace_urls post.body -%></p>
-    <% unless post.bans.empty? -%>
-      <div class="bans">
-        <% post.bans.each do |ban| -%>
-          <p><%= ban_string(ban) %></p>
-        <% end -%>
-      </div>
-    <% end %>
-    <%= post_time_ago(post) -%>
-    <span class="comment-count <%= "active" if post.children_count > 0 %>"><%= post.children_count %></span>
-  </div>
-</div>
-<div class="small-11 comments text-card hidden" id="comments-<%= post.id %>" data-id="<%= post.id %>">
-  <% if @current_user.has_permission? "can_create_post" -%>
-    <%= form_tag "/feed/user/#{user.username}/#{post.id}/comment", method: :post, class: "new-comment" do %>
-      <% text_field_tag :body, '', placeholder: 'Write a comment...', autocomplete: 'off' %>
-    <% end %>
-  <% end %>
-  <div class="comment-contents unloaded">
-  </div>
-  <div class="loading-ring small"><div></div></div>
-</div>
+<% end -%>

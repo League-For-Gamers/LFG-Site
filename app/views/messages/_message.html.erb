@@ -1,6 +1,10 @@
 <div class="message <%= "own" if message.user == @current_user %>" data-timestamp="<%= message.created_at %>">
   <div class="avatar-container">
-    <%= link_to image_tag(message.user.avatar.url(:thumb), class: "avatar"), "/user/#{message.user.username}" %>
+    <a href="<%= "/user/#{message.user.username}" %>">
+      <% cache [message.user.id, message.user.updated_at, "avatar", "thumb"] do -%>
+        <%= image_tag(message.user.avatar.url(:thumb), class: "avatar") %>
+      <% end -%>
+    </a>
   </div>
   <p class="body"><%= message.decrypted_body.force_encoding(Encoding::UTF_8) %></p>
 </div>

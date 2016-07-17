@@ -1,6 +1,10 @@
 <% comments.each do |comment| %>
   <div class="comment" id="comment-<%= comment.id %>" data-id="<%= comment.id %>">
-    <%= link_to image_tag(comment.user.avatar(:thumb), class: "avatar"), "/user/#{comment.user.username}", class: "avatar-container clearfix" %>
+    <a href="<%= "/user/#{comment.user.username}" %>" class="avatar-container clearfix">
+        <% cache [user.id, user.updated_at, "avatar", "thumb"] do -%>
+          <%= image_tag(comment.user.avatar(:thumb), class: "avatar") %>
+        <% end -%>
+      </a>
     <div class="body-container clearfix">
       <span class="title" data-id="<%= comment.user.username %>"><%= link_to display_name(comment.user), "/user/#{comment.user.username}" -%></span>
       <p class="body"><%= replace_urls comment.body %></p>

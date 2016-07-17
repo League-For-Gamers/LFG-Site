@@ -26,7 +26,7 @@ module LeagueForGamers
     config.assets.image_optim = false
 
     if Rails.env.production? or Rails.env.staging?
-      config.cache_store = :redis_store, ENV['REDIS_CACHE_ADDRESS'], { :expires_in => 3.days }
+      config.cache_store = :redis_store, ENV['REDIS_CACHE_ADDRESS'], { expires_in: 3.days, compress: true }
     else
       config.cache_store = :null_store
     end

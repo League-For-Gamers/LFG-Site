@@ -5,7 +5,9 @@
     </div>
     <div class="last-message message">
       <div class="avatar-container">
-        <%= image_tag chat.private_messages.first.user.avatar.url(:thumb), class: "avatar" %>
+        <% cache [chat.private_messages.first.user.id, chat.private_messages.first.user.updated_at, "avatar", "thumb"] do -%>
+          <%= image_tag chat.private_messages.first.user.avatar.url(:thumb), class: "avatar" %>
+        <% end -%>
       </div>
       <p class="body"><%= chat.private_messages.first.decrypted_body -%></p>
     </div>
