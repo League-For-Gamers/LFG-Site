@@ -14,7 +14,7 @@ gem 'bcrypt', '~> 3.1.7'
 ## Aftermarket rails
 gem 'pg', '0.18.4'
 gem 'pg_search'
-gem 'fog', '~> 1.33', require: 'fog/aws'
+gem 'fog', '~> 1.33', require: 'fog/aws/storage'
 gem 'asset_sync'
 gem 'redis-rails'
 gem 'rails_autolink'
