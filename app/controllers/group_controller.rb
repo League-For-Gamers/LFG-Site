@@ -108,7 +108,7 @@ class GroupController < ApplicationController
     keys = GroupMembership.roles.keys
     keys.delete("unverified") unless universal_permission_check("can_edit_group_member_roles")
     render plain: "Invalid source parameter", status: 403 and return unless keys.include? params[:source]
-    @members = @group.group_memberships.includes(:user).where(role: GroupMembership.roles[params[:source]]).limit(per_page).offset((page)*per_page).order("created_at ASC")
+    @members = @group.group_memberships.includes(:user).where(role: GroupMembership.roles[params[:source]]).limit(per_page).offset((page)*per_page).order("created_at DESC")
     render :raw_user_cards, layout: false and return
   end
 

@@ -71,27 +71,35 @@
 	min-height: rem-calc(226);
 	margin-bottom: rem-calc(10);
 	float: left !important;
-	img .avatar{
-		min-width: rem-calc(226);
-		min-height: rem-calc(226);
-	}
-	.username {
+	.overlay-container {
 		position: relative;
-		display: block;
-		width: 100%;
-		word-wrap: break-word;
-		text-align: right;
-		padding: 0 rem-calc(10);
 		margin-bottom: rem-calc(-40);
-		top: rem-calc(-40);
-		color: white;
-		font-size: 18pt;
-		font-weight: 600;
-		text-shadow:
-		   rem-calc(-1) rem-calc(-1) 0 #000,  
-			rem-calc(1) rem-calc(-1) 0 #000,
-		   rem-calc(-1)  rem-calc(1) 0 #000,
-			rem-calc(1)  rem-calc(1) 0 #000;
+		width: 100%;
+		img .avatar{
+			min-width: rem-calc(226);
+			min-height: rem-calc(226);
+		}
+		.username {
+			position: absolute;
+			bottom: rem-calc(2);
+			width: 100%;
+			padding: 0 rem-calc(10);
+
+			word-wrap: break-word;
+			text-align: right;
+
+			color: white;
+			font-size: 18pt;
+			font-weight: 600;
+			text-shadow:
+			   rem-calc(-1) rem-calc(-1) 0 #000,  
+				rem-calc(1) rem-calc(-1) 0 #000,
+			   rem-calc(-1)  rem-calc(1) 0 #000,
+				rem-calc(1)  rem-calc(1) 0 #000;
+			&.small {
+				font-size: 15pt;
+			}
+		}
 	}
 	.user-mod {
 		position: absolute;

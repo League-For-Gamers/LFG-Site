@@ -22,7 +22,7 @@
     <div class="row collection" data-page="0">
       <% group = true if universal_permission_check "can_edit_group_member_roles" -%>
       <% role[1].each do |u| %>
-        <%= render partial: "shared/user_card", locals: {user: u, role: role[0], group: group} %>
+        <%= render partial: "shared/user_card", locals: {user: u, role: role[0], group: group, un: display_name(u)} %>
       <% end %>
     </div>
   <% end %>
