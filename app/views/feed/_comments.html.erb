@@ -1,7 +1,7 @@
 <% comments.each do |comment| %>
   <div class="comment" id="comment-<%= comment.id %>" data-id="<%= comment.id %>">
     <a href="<%= "/user/#{comment.user.username}" %>" class="avatar-container clearfix">
-        <% cache [user.id, user.updated_at, "avatar", "thumb"] do -%>
+        <% cache [comment.user.id, comment.user.updated_at, "avatar", "thumb"] do -%>
           <%= image_tag(comment.user.avatar(:thumb), class: "avatar") %>
         <% end -%>
       </a>
