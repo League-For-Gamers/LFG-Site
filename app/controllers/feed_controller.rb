@@ -208,7 +208,7 @@ class FeedController < ApplicationController
     post = Post.create(post_params)
     comments = post.parent.children.includes(:user, :bans).order("id DESC")
     # Notify the owner of the post
-    post.parent.user.create_notification("new_comment", post, @current_user.display_name || "@#{@current_user.username}") if post.user != @current_user
+    Notification.create(user: post.parent.user, variant: Notification.variants["new_comment"], post: post, data: {user: post.user_id}) if post.parent.user != @current_user
     respond_to do |format|
       format.html {
         flash[:alert] = post.errors.full_messages.join("\n") unless post.valid?

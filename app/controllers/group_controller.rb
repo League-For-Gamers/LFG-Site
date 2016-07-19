@@ -151,7 +151,7 @@ class GroupController < ApplicationController
       @user_membership.role = :owner
     when "approve"
       @user_membership.role = :member
-      @user.create_notification("group_accepted", @group)
+      Notification.create(user: @user, variant: Notification.variants["group_accepted"], group: @group)
     else
       flash[:warning] = "Invalid goal parameter" and redirect_to request.referrer || root_url and return
     end
@@ -245,7 +245,7 @@ class GroupController < ApplicationController
     post = Post.create(post_params)
     comments = post.parent.children.includes(:user, :bans).order("id DESC")
     # Notify the owner of the post
-    post.parent.user.create_notification("new_comment", [post, @group], (@current_user.display_name || "@#{@current_user.username}") + " in group #{@group.title}") if post.user != @current_user
+    Notification.create(user: post.parent.user, variant: Notification.variants["new_comment"], post: post, group: @group, data: {user: post.user_id}) if post.parent.user != @current_user
     respond_to do |format|
       format.html {
         flash[:alert] = post.errors.full_messages.join("\n") unless post.valid?

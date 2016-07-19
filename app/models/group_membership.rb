@@ -119,11 +119,7 @@ class GroupMembership < ActiveRecord::Base
       self.role = :banned
       self.save
 
-      notification_message = "for #{ban.duration_string}"
-      notification_message = 'until the end of time' if end_date.nil?
-      notification_message = "by #{banner.display_name || banner.username}"
-      notification_message << ": #{reason}" unless reason.blank?
-      self.user.create_notification("group_ban", self.group, notification_message)
+      Notification.create(user: self.user, variant: Notification.variants["group_ban"], group: self.group, data: {ban: ban.id})
     else
       raise ban.errors.full_messages.join(", ")
     end
@@ -137,9 +133,7 @@ class GroupMembership < ActiveRecord::Base
       ban.save
       self.role = old_role
       self.save
-      notification_message = "by #{banner.display_name || banner.username}"
-      notification_message << ": #{reason}" unless reason.blank?
-      self.user.create_notification("group_unban", self.group, notification_message)
+      Notification.create(user: self.user, variant: Notification.variants["group_unban"], group: self.group, data: {ban: ban.id})
     else
       raise ban.errors.full_messages.join(", ")
     end

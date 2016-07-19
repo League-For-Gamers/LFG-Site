@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160717101118) do
+ActiveRecord::Schema.define(version: 20160719091703) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -112,17 +112,21 @@ ActiveRecord::Schema.define(version: 20160717101118) do
   add_index "groups", ["slug"], name: "index_groups_on_slug", using: :btree
 
   create_table "notifications", force: :cascade do |t|
-    t.integer  "variant"
-    t.string   "message"
+    t.integer  "variant",                    null: false
+    t.hstore   "data",       default: {},    null: false
+    t.boolean  "read",       default: false, null: false
     t.integer  "group_id"
-    t.integer  "user_id"
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.boolean  "acknowledged", default: false
+    t.integer  "user_id",                    null: false
     t.integer  "post_id"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
   end
 
   add_index "notifications", ["group_id"], name: "index_notifications_on_group_id", using: :btree
+  add_index "notifications", ["post_id"], name: "index_notifications_on_post_id", using: :btree
+  add_index "notifications", ["user_id", "post_id", "group_id"], name: "index_notifications_on_user_id_and_post_id_and_group_id", using: :btree
+  add_index "notifications", ["user_id", "post_id"], name: "index_notifications_on_user_id_and_post_id", using: :btree
+  add_index "notifications", ["user_id", "variant"], name: "index_notifications_on_user_id_and_variant", using: :btree
   add_index "notifications", ["user_id"], name: "index_notifications_on_user_id", using: :btree
 
   create_table "pg_search_documents", force: :cascade do |t|
@@ -222,6 +226,7 @@ ActiveRecord::Schema.define(version: 20160717101118) do
   add_foreign_key "group_memberships", "groups"
   add_foreign_key "group_memberships", "users"
   add_foreign_key "notifications", "groups"
+  add_foreign_key "notifications", "posts"
   add_foreign_key "notifications", "users"
   add_foreign_key "posts", "groups"
   add_foreign_key "posts", "users"

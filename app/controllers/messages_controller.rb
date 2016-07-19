@@ -21,7 +21,7 @@ class MessagesController < ApplicationController
     #@chats.sort! {|a,b| b.private_messages.first.created_at <=> a.private_messages.first.created_at} # Newest message takes precedent.
     @messages_count = @chats.count
 
-    @notifications = @current_user.notifications.includes(:user, :group).all.limit(12)
+    @notifications = @current_user.notifications.includes(:user, :group).all.limit(12).order("id DESC")
     @notification_count = @notifications.count
 
     MarkNotificationsAsReadJob.perform_later(@notifications.to_a)

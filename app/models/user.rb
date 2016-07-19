@@ -166,11 +166,7 @@ class User < ActiveRecord::Base
       ban.save  
       self.role = banned_role
       self.save
-      notification_message = "for #{ban.duration_string}"
-      notification_message = 'until the end of time' if end_date.nil?
-      notification_message = "by #{banner.display_name || banner.username}"
-      notification_message << ": #{reason}" unless reason.blank?
-      self.create_notification("ban", nil, notification_message)
+      Notification.create(user: self, variant: Notification.variants["ban"], data: {ban: ban.id})
     else
       raise ban.errors.full_messages.join(", ")
     end
@@ -179,27 +175,6 @@ class User < ActiveRecord::Base
   # Usage: current_user.follow(user_that_current_user_wants_to_follow)
   def follow(user)
     Follow.create(user: self, following: user)
-  end
-
-  def create_notification(variant, relation = nil, message = nil)
-    if !relation.nil?
-      case relation.class
-      when Group
-        Notification.create(variant: Notification.variants[variant], user: self, group: relation, message: message)
-        return
-      when Post
-        Notification.create(variant: Notification.variants[variant], user: self, post: relation, message: message)
-        return
-      when Array
-        # Both a post and a group it is a part of referenced.
-        if relation.size == 2 and Set[Group, Post].subset?(relation.map(&:class).to_set)
-          rel = relation.sort {|a, b| a.class.to_s <=> b.class.to_s } # Group first, then post.
-          Notification.create(variant: Notification.variants[variant], user: self, group: rel[0], post: rel[1], message: message)
-          return
-        end
-      end
-    end
-    Notification.create(variant: Notification.variants[variant], user: self, message: message)
   end
 
   def follow?(user)

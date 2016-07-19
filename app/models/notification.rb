@@ -1,82 +1,31 @@
 class Notification < ActiveRecord::Base
-  # I hate this. I absolutely hate this. I need to completely rewrite it all. Gah!
   belongs_to :group
   belongs_to :post
   belongs_to :user
 
-  after_initialize :default_values
+  validates_presence_of :variant
+
+  scope :unread, lambda { where(read: false) }
+
   after_create :delete_older_messages
 
-  enum variant: [:group_invite, :group_invited, :group_accepted, :group_ban, :group_unban, :ban, :unban, :mention, :new_comment]
+  enum variant: [:group_invite, # Sent to group admins when a user requests invitation
+    :group_invited, # Sent to user when they've been invited to a group
+    :group_accepted, # Sent to a user when their invitation has been acccepted
+    :group_ban, # Sent to a user when they've been banned from a group
+    :group_unban, # Sent to a user when they've been unbanned from a group
+    :ban, # Sent to a user upon global ban
+    :unban, # Sent to a user upon global unban
+    :mention, # Sent to a user when their name is mentioned
+    :new_comment] # Sent to a user when someone has commented on their post
 
-  def resolve_url
-    case self.variant
-    when "group_invite"
-      "/group/#{self.group.slug}/members"
-    when "group_invited"
-      "/group/#{self.group.slug}/join"
-    when "group_accepted"
-      "/group/#{self.group.slug}"
-    when "group_ban", "group_unban"
-      "/group/#{self.group.slug}"
-    when "ban", "unban"
-      "/"
-    when "new_comment"
-      if self.group.present?
-        "/group/#{self.group.slug}/posts/#{self.post.parent_id}#comment-#{self.post.id}"
-      else
-        "/feed/user/#{self.user.username}/#{self.post.parent_id}#comment-#{self.post.id}"
-      end
-    when "mention"
-    end
-  end
+  MAX_NOTIFICATION_COUNT = 30
 
-  def resolve_message
-    case self.variant
-    # Sent to admins and owners of group when a user requests the join
-    when "group_invite"
-      "The user #{self.message} has requested to join your group #{self.group.title}" # Message is requestee display_name
-
-    # Sent to user when they're invited to join a group
-    when "group_invited"
-      "You have been invited to join the group #{self.group.title} by #{self.message}"
-
-    # Sent to user who requested to join when accepted
-    when "group_accepted"
-      "You have been accepted into the group #{self.group.title}"
-
-    # Sent to banned user when banned from group
-    when "group_ban"
-      "You have been banned from the group #{self.group.title} #{self.message}" # Message eg: "for 24 days by admin: 'wanker'"
-
-    # Send to unbanned user when explicitly unbanned (not when ban is lapsed) from group
-    when "group_unban"
-      "You have been unbanned from the group #{self.group.title} #{self.message}" # Message eg: "by admin: not a massive wanker"
-
-    # Sent to banned user
-    when "ban"
-      "You have been banned from the site #{self.message}" # Message same as group_ban
-
-    # Sent to user when explicitly unbanned (not when ban is lapsted)
-    when "unban"
-      "You have been unbanned from the site #{self.message}" # Message same as group_unban
-
-    # Sent to user when a post of theirs has been commented on
-    when "new_comment"
-      "#{self.message} has commented on your post"
-
-    # Sent to user when mentioned. Not currently implemented.
-    when "mention"
-    end
-  end
+  # TODO: Job that coalesces multiple comments on one post into one notification
 
   private
-    def default_values
-      self.acknowledged ||= false
-    end
-
     def delete_older_messages
-      to_delete = Notification.where(user: @current_user, acknowledged: true).order("created_at DESC").offset(30)
-      to_delete.each {|n| n.destroy}
+      to_delete = Notification.where(user: @current_user, read: true).order("created_at DESC").offset(MAX_NOTIFICATION_COUNT)
+      to_delete.each(&:destroy)
     end
 end
