@@ -258,14 +258,51 @@ RSpec.describe GroupMembership, type: :model do
     end
   end
 
-  describe '#has_permission' do
+  describe '#has_global_permission?' do
     let(:permissions) { GroupMembership.get_permission(membership) }
-    it 'should return true for a user that has the permission' do
-      expect(GroupMembership.has_permission?("can_create_post", permissions)).to be(true)
+    context 'when passing a single permission' do
+      it 'should return false when the user has no permission' do
+        expect(GroupMembership.has_global_permission?("cannot_own_anything", nil, bobby)).to be(false)
+      end
+
+      it 'should return true when a user has either a group or global permission' do
+        expect(GroupMembership.has_global_permission?("can_edit_own_posts", permissions, bobby)).to be(true)
+        expect(GroupMembership.has_global_permission?("can_edit_own_posts", nil, admin_bobby)).to be(true)
+      end
     end
 
-    it 'should return false for when the user does not have a permission' do
-      expect(GroupMembership.has_permission?("fake_permission", permissions)).to be(false)
+    context 'when passing an array of permissions' do
+      it 'should return false when the user has no permission' do
+        expect(GroupMembership.has_global_permission?(["cannot_own_anything", "blah_own_shit"], nil, bobby)).to be(false)
+      end
+
+      it 'should return true when a user has either a group or global permission' do
+        expect(GroupMembership.has_global_permission?(["can_edit_own_posts", "can_delete_own_posts"], permissions, bobby)).to be(true)
+        expect(GroupMembership.has_global_permission?(["can_edit_own_posts", "can_delete_own_posts"], nil, admin_bobby)).to be(true)
+      end
+    end
+  end
+
+  describe '#has_permission' do
+    let(:permissions) { GroupMembership.get_permission(membership) }
+    context 'when passing a single permission' do
+      it 'should return true for a user that has the permission' do
+        expect(GroupMembership.has_permission?("can_create_post", permissions)).to be(true)
+      end
+
+      it 'should return false for when the user does not have a permission' do
+        expect(GroupMembership.has_permission?("fake_permission", permissions)).to be(false)
+      end
+    end
+
+    context 'when passing an array of permissions' do
+      it 'should return true for a user that one of the permissions' do
+        expect(GroupMembership.has_permission?(["can_create_post", "does_not_exit"], permissions)).to be(true)
+      end
+
+      it 'should return false for when the user does not have a permission given' do
+        expect(GroupMembership.has_permission?(["fake_permission", "also_fake"], permissions)).to be(false)
+      end
     end
   end
 end

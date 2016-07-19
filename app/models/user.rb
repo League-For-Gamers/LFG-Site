@@ -108,10 +108,45 @@ class User < ActiveRecord::Base
     "http://leagueforgamers.com/user/forgot_password/#{self.verification_digest}"
   end
 
+  def can_modify_post?(owner)
+    (owner == self and self.has_permission? ["can_edit_own_posts", "can_delete_own_posts"]) or self.has_permission? ["can_edit_all_users_posts", "can_delete_all_users_posts"] 
+  end
+
+  def has_global_permission?(permission)
+    retval = false
+    
+    case permission
+    when Array
+      permission.each do |p|
+        # Eg can_edit_own_posts becomes can_edit_all_users_posts
+        global_permission = p.sub("_own_", "_all_users_")
+        retval = (self.has_permission?(p) ? true : retval)
+        retval = (self.has_permission?(global_permission) ? true : retval)
+      end
+    when String
+      global_permission = permission.sub("_own_", "_all_users_")
+      retval = (self.has_permission?(permission) ? true : retval)
+      retval = (self.has_permission?(global_permission) ? true : retval)
+    end
+
+    return retval
+  end
+
   def has_permission?(permission)
     return false if self.role.nil?
-    role.has_permission? permission
-    #self.role.permissions.map(&:name).include? permission
+
+    retval = false
+
+    case permission
+    when Array
+      permission.each do |p|
+        retval = (role.has_permission?(p) ? true : retval)
+      end
+    when String
+      retval = (role.has_permission?(permission) ? true : retval)
+    end
+
+    return retval
   end
 
   def ban(reason, end_date, banner, post = nil)

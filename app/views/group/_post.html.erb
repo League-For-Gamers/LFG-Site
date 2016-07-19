@@ -8,19 +8,19 @@
       </a>
       <%# I'm sorry for this. I tried to spread it out against multiple lines but it doesnt work. %>
       <% cache [post.id, post.updated_at, "controls", @current_user, @membership] do -%>
-        <% if (post.user == @current_user or universal_permission_check "can_edit_all_users_posts" or universal_permission_check "can_delete_all_posts") and !!@permissions and (GroupMembership.has_permission? "can_edit_own_posts", @permissions or GroupMembership.has_permission? "can_delete_own_posts", @permissions or universal_permission_check "can_edit_all_users_posts" or universal_permission_check "can_delete_all_posts") -%>
+        <% if universal_permission_check ["can_edit_all_users_posts", "can_delete_all_users_posts"] or (post.user == @current_user and GroupMembership.has_permission?(["can_edit_own_posts", "can_delete_own_posts"], @permissions)) -%>
           <div class="user-controls">
-            <% if GroupMembership.has_permission? "can_edit_own_posts", @permissions or universal_permission_check "can_edit_all_users_posts" -%>
+            <% if GroupMembership.has_global_permission? "can_edit_own_posts", @permissions, @current_user-%>
               <div class="edit-controls">
                 <a class="submit-post">Submit</a>
                 <a class="cancel-post">Cancel</a>
               </div>
             <% end -%>
             <div class="default-controls">
-              <% if GroupMembership.has_permission? "can_edit_own_posts", @permissions or universal_permission_check "can_edit_all_users_posts" -%>
+              <% if GroupMembership.has_global_permission? "can_edit_own_posts", @permissions, @current_user -%>
                 <a class="edit-post">Edit</a>
               <% end -%>
-              <% if GroupMembership.has_permission? "can_edit_own_posts", @permissions or universal_permission_check "can_delete_all_posts" -%>
+              <% if GroupMembership.has_global_permission? "can_delete_own_posts", @permissions, @current_user -%>
                 <a class="delete-post"></a>
               <% end -%>
             </div>

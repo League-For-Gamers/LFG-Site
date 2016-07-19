@@ -88,17 +88,88 @@ RSpec.describe User, :type => :model do
     end
   end
 
+  describe '#can_modify_post?' do
+    let(:bobby) { FactoryGirl.create(:user) }
+    let(:admin_bobby) { FactoryGirl.create(:administrator_user) }
+
+    it 'should allow for an unbanned user to edit their own post' do
+      expect(bobby.can_modify_post?(bobby)).to be(true)
+    end
+
+    it 'should allow an admin to modify a users post' do
+      expect(admin_bobby.can_modify_post?(bobby)).to be(true)
+    end
+
+    it 'should forbid a normal user from modifying another users' do
+      expect(bobby.can_modify_post?(admin_bobby)).to be(false)
+    end
+
+    it 'should forbid a banned user from modifying their post' do
+      bobby.ban("test", 1.week.from_now, admin_bobby)
+      expect(bobby.can_modify_post?(bobby)).to be(false)
+    end
+  end
+
+  describe '#has_global_permission?' do
+    let(:bobby) { FactoryGirl.create(:user) }
+    let(:admin_bobby) { FactoryGirl.create(:administrator_user) }
+
+    context 'when passing an array of permissions' do
+      it 'should return true when a user has either a local or global permission given' do
+        expect(bobby.has_global_permission?(['can_edit_own_posts', 'can_delete_own_posts'])).to be(true)
+        # The user now only has can_edit_all_users_posts. 
+        bobby.role = Role.find_by(name: 'testing')
+        bobby.save
+        expect(bobby.has_global_permission?(['can_edit_own_posts', 'can_delete_own_posts'])).to be(true)
+      end
+
+      it 'should return false when a user has neither local or global permissions' do
+        bobby.ban("test", 1.week.from_now, admin_bobby)
+        expect(bobby.has_global_permission?(['can_edit_own_posts', 'can_delete_own_posts'])).to be(false)
+      end
+    end
+
+    context 'when passing a single permission' do
+      it 'should return true when a user has either a local or global permission' do
+        expect(bobby.has_global_permission?('can_edit_own_posts')).to be(true)
+        # The user now only has can_edit_all_users_posts. 
+        bobby.role = Role.find_by(name: 'testing')
+        bobby.save
+        expect(bobby.has_global_permission?('can_edit_own_posts')).to be(true)
+      end
+
+      it 'should return false when a user has neither local or global permission' do
+        bobby.ban("test", 1.week.from_now, admin_bobby)
+        expect(bobby.has_global_permission?('can_edit_own_posts')).to be(false)
+      end
+    end
+  end
+
   describe '#has_permission?' do
-    let(:bobby) { FactoryGirl.create(:administrator_user) }
+    let(:bobby) { FactoryGirl.create(:user) }
 
-    it 'should return true for a user that has the permission' do
-      permission = bobby.role.get_permissions.first
-      expect(bobby.has_permission?(permission)).to be(true)
+    context 'when passing a single permission' do
+      it 'should return true for a user that has the permission' do
+        permission = bobby.role.get_permissions.first
+        expect(bobby.has_permission?(permission)).to be(true)
+      end
+
+      it 'should return false for when the user does not have a permission' do
+        expect(bobby.has_permission?("fake_permission")).to be(false)
+      end
     end
 
-    it 'should return false for when the user does not have a permission' do
-      expect(bobby.has_permission?("fake_permission")).to be(false)
+    context 'when passing an array of permissions' do
+      it 'should return true for a user that has one of the listed permissions' do
+        permission = bobby.role.get_permissions.first
+        expect(bobby.has_permission?(["doesnt_exist", permission])).to be(true)
+      end
+
+      it 'should return false for when the user does not have any given permission' do
+        expect(bobby.has_permission?(["doesnt_exist", "also_doesnt"])).to be(false)
+      end
     end
+    
   end
 
   describe '#generate_verification_digest' do

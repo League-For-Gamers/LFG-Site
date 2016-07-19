@@ -7,19 +7,19 @@
         <% end -%>
       </a>
       <% cache [post.id, post.updated_at, "controls", @current_user] do -%>
-        <% if !@current_user.nil? and ((user == @current_user and (@current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_own_posts")) or @current_user.has_permission? "can_edit_all_users_posts" or @current_user.has_permission? "can_delete_all_posts") -%>
+        <% if !@current_user.nil? and @current_user.can_modify_post?(user) -%>
           <div class="user-controls">
-            <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
+            <% if @current_user.has_global_permission? "can_edit_own_posts" -%>
               <div class="edit-controls">
                 <a class="submit-post">Submit</a>
                 <a class="cancel-post">Cancel</a>
               </div>
             <% end -%>
             <div class="default-controls">
-              <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
+              <% if @current_user.has_global_permission? "can_edit_own_posts" -%>
                 <a class="edit-post">Edit</a>
               <% end -%>
-              <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_all_posts" -%>
+              <% if @current_user.has_global_permission? "can_delete_own_posts" -%>
                 <a class="delete-post"></a>
               <% end -%>
             </div>

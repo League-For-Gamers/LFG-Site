@@ -7,6 +7,7 @@ namespace :db do
     moderator = Role.find_or_create_by(id: 2, name: "moderator")
     default = Role.find_or_create_by(id: 3, name: "default")
     banned = Role.find_or_create_by(id: 4, name: "banned")
+    testing = Role.find_or_create_by(id: 999, name: "testing") if Rails.env.test?
   end
 
   task :object_migration => :environment do

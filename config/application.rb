@@ -22,7 +22,7 @@ module LeagueForGamers
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
-    config.autoload_paths += %W(#{config.root}/lib/development) if Rails.env.development?
+    config.autoload_paths += %W(#{config.root}/lib/development) if Rails.env.development? or Rails.env.test?
     config.assets.image_optim = false
 
     if Rails.env.production? or Rails.env.staging?

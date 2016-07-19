@@ -1,5 +1,5 @@
-# :nocov:
 module DevelopmentProfiler
+  # :nocov:
   def self.prof(file_name)
     RubyProf.start
     yield
@@ -17,5 +17,5 @@ module DevelopmentProfiler
       RubyProf::CallStackPrinter.new(results).print(file)
     end
   end
+  # :nocov:
 end
-# :nocov:

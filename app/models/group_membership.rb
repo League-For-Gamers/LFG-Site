@@ -61,9 +61,45 @@ class GroupMembership < ActiveRecord::Base
     permissions
   end
 
-  def self.has_permission?(permission, list)
-    return false if list.blank?
-    list.include? permission
+  def self.has_global_permission?(permission, list, user)
+    retval = false
+    
+    case permission
+    when Array
+      permission.each do |p|
+        # Eg can_edit_own_posts becomes can_edit_all_users_posts
+        global_permission = p.sub("_own_", "_all_users_")
+        retval = (self.has_permission?(p, list) ? true : retval)
+        retval = (self.has_permission?(global_permission, list, user) ? true : retval)
+      end
+    when String
+      global_permission = permission.sub("_own_", "_all_users_")
+      retval = (self.has_permission?(permission, list) ? true : retval)
+      retval = (self.has_permission?(global_permission, list, user) ? true : retval)
+    end
+
+    return retval
+  end
+
+  def self.has_permission?(permission, list, user = nil)
+    retval = false
+
+    # Something fucked up and the user is out of the game entirely. No permission granted.
+    return false if !user.nil? and user.role.nil?
+
+    case permission 
+    when Array
+      permission.each do |p|
+        # Don't return false, but return the existing retval, so we dont overwrite it.
+        retval = (user.role.has_permission?(p) ? true : retval) unless user.nil?
+        retval = (list.include?(p) ? true : retval) unless list.nil?
+      end
+    when String
+      retval = (user.role.has_permission?(permission) ? true : retval) unless user.nil?
+      retval = (list.include?(permission) ? true : retval) unless list.nil?
+    end
+    
+    return retval
   end
 
   def ban(reason, end_date, banner, post = nil)

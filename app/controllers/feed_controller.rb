@@ -160,7 +160,7 @@ class FeedController < ApplicationController
   def delete
     render plain: "You do not have permission to delete this post", status: 403 and return unless logged_in?
     post = Post.find(params["id"])
-    render plain: "You do not have permission to delete this post", status: 403 and return if (post.user_id != @current_user.id or !@current_user.has_permission? "can_edit_own_posts") and !@current_user.has_permission? "can_edit_all_users_posts"
+    render plain: "You do not have permission to delete this post", status: 403 and return if (post.user != @current_user or !@current_user.has_permission? "can_edit_own_posts") and !@current_user.has_permission? "can_edit_all_users_posts"
     post.destroy
     render plain: "OK"
   end
@@ -170,7 +170,7 @@ class FeedController < ApplicationController
   def update
     render json: {errors: {'0' => 'You do not have permission to update this post'}}, status: 403 and return unless logged_in?
     post = Post.find(params["id"])
-    render json: {errors: {'0' => 'You do not have permission to update this post'}}, status: 403 and return if (post.user_id != @current_user.id or !@current_user.has_permission? "can_edit_own_posts") and !@current_user.has_permission? "can_edit_all_users_posts"
+    render json: {errors: {'0' => 'You do not have permission to update this post'}}, status: 403 and return if (post.user != @current_user or !@current_user.has_permission? "can_edit_own_posts") and !@current_user.has_permission? "can_edit_all_users_posts"
     post.body = params["body"]
     if post.valid?
       post.save
