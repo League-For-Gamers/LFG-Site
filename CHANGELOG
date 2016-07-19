@@ -1,0 +1,47 @@
+Changelog
+=========
+
+19th July 2016:
+	Updated to Puma 3.5
+	Overhauled usage of permissions some more:
+		- User and group has_permission? can now accept an array and will return true if any of the permissions are valid, and the group can check if the user has the permission globally.
+		- Added has_global_permission? to both user and groups. Will check if the user has both local and global variant of a permission. Eg: enter "comment_own_posts" and it will check for that and "comment_all_users_posts".
+	Cleanup of code in views with permission usage.
+	Completely rewrote notification system. Dumps all the notification table and creates a new one. We didn't have many anyway. Now vastly more flexible and extensible. Has a hstore data field for general extensible data usage if needed, layouts are done in the _notifications partial rather than a string from the model. This allows each notification type to have it's own partial of sorts. Notification partials are also cached.
+	Fixed the "Forgot my Password" link layoug on the login form. Should not break and newline anymore.
+	Fixed caching bug on comments, where they displayed the avatar as the original poster.
+
+18th July 2016:
+	Updated overall gems, this includes:
+		- Rails 4.2.7
+		- sucker_punch 2.0
+		- AWS SDK 2.3
+		- Rspec 3.5
+		- Capistrano 3.5
+		- Image_optim 0.23
+		- pg_search 1.0.6
+		- redis-rails 5.0
+		- simplecov 0.12
+	Rewrote CSS for group cards and user cards. These are on the group index page and group user membership pages. 
+	Fixed bug with sorting in group membership pages. The order on ajax-loaded pages were the opposite of the default index.
+
+
+17th July 2016:
+	Implemented front-end fragment view caching on:
+		- Every usage of an avatar, group banner or game boxard
+		- Comments
+		- Posts
+	Performance optimizations in: 
+		- Posts in the group show page
+		- Everything that used permissions, see overhaul.
+		- Minor changes that effects everything
+	Completely overhauled permission system. This effects everything, namely:
+		- Posting on feed and groups
+		- Commenting on feed and groups
+		- Modifying groups
+		- Deleting groups
+		- Joining groups
+		- Changing membership in groups
+		- Sending private messages
+		- Banning users
+		- Creating offficial posts
