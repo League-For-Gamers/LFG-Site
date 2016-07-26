@@ -4,7 +4,7 @@ class OmniController < ApplicationController
 
     set_the_current_users_twitter_name_to raw_info.screen_name
 
-    redirect_to '/account'
+    redirect_to '/account', notice: "Twitter account authenticated"
   end
 
   protected
