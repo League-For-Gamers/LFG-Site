@@ -74,10 +74,8 @@
               <%= s.text_field :link_linkedin, value: f.object.social["link_linkedin"] , placeholder: "LinkedIn" %>
             </label>
             <label>Twitter username
-              <% if f.object.social["link_twitter"].present? %>
-                <a href="/auth/twitter">[VERIFY]</a>
-              <% end %>
-              <%= s.text_field :link_twitter, value: f.object.social["link_twitter"] , placeholder: "Twitter" %>
+              <a href="/auth/twitter">[Link to your twitter]</a>
+              <%= f.object.social["link_twitter"] %>
             </label>
             <label>Youtube URL (Just the last part)
               <%= s.text_field :link_youtube, value: f.object.social["link_youtube"] , placeholder: "Youtube" %>
