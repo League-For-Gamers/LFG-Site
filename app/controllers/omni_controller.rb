@@ -1,9 +1,9 @@
 class OmniController < ApplicationController
   def create
-    TwitterVerification.create(user_id: @current_user.id,
-                               secret: access_token.secret,
-                               token: access_token.token,
-                               screen_name: raw_info.screen_name)
+    record_the_twitter_verification
+
+    set_the_current_users_twitter_name_to raw_info.screen_name
+
     redirect_to '/account'
   end
 
@@ -19,5 +19,19 @@ class OmniController < ApplicationController
 
   def auth_hash
     request.env['omniauth.auth']
+  end
+
+  private
+
+  def record_the_twitter_verification
+    TwitterVerification.create(user_id: @current_user.id,
+                               secret: access_token.secret,
+                               token: access_token.token,
+                               screen_name: raw_info.screen_name)
+  end
+
+  def set_the_current_users_twitter_name_to name
+    @current_user.social['link_twitter'] = name
+    @current_user.save
   end
 end
