@@ -151,7 +151,7 @@ class UserController < ApplicationController
     render status: 403, plain: "Must be logged in" and return if @current_user.nil?
     render status: 403, plain: "You cannot follow yourself" and return if @user == @current_user
     if !@current_user.follows.map(&:following).include? @user
-      @user.follow(@current_user)
+      @current_user.follow(@user)
     else
       Follow.find_by(user: @current_user, following: @user).destroy
     end
@@ -236,7 +236,7 @@ class UserController < ApplicationController
 
     def set_user
       begin
-        @user = User.includes(:skills, :games, :posts).where("lower(username) = ?", params[:id].downcase).first or not_found
+        @user = User.includes(:skills, :games).where("lower(username) = ?", params[:id].downcase).first or not_found
       rescue ActionController::RoutingError
         render :template => 'shared/not_found', :status => 404
       end

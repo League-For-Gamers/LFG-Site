@@ -18,8 +18,10 @@
 
 
 <div class="row group-banner">
-  <% unless @group.banner.blank? -%>
-    <%= image_tag @group.banner.url(:large), class: "banner" %>
+  <% cache ["group-banner", @group.id, @group.updated_at] do -%>
+    <% unless @group.banner.blank? -%>
+      <%= image_tag @group.banner.url(:large), class: "banner" %>
+    <% end -%>
   <% end -%>
   <h1 class="<%= "no-banner" if @group.banner.blank? %>"><%= @group.title -%></h1>
 </div>
@@ -27,7 +29,7 @@
   <div class="large-4 medium-4 small-12 right columns text-card" id="description">
     <div class="stats row">
       <span class="small-4 columns"><% if !!@current_user and universal_permission_check "can_view_group_members" -%><a href="/group/<%= @group.slug %>/members"><%= number_to_cardinal @group.group_memberships.count %> members</a><% else -%><%= number_to_cardinal @group.group_memberships.count %> members</a><% end -%></span>
-      <span class="small-4 columns"><%= number_to_cardinal @group.posts.count %> posts</span>
+      <span class="small-4 columns"><%= number_to_cardinal @posts_count %> posts</span>
       <% if !!@current_user and !@membership and ["public_membership", "owner_verified"].include? @group.membership %>
         <span class="small-4 columns"><a href="/group/<%= @group.slug %>/join">Join Group</a></span>
       <% elsif !!@membership and @membership.role != "unverified" %>

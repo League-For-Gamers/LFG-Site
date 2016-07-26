@@ -49,32 +49,32 @@ RSpec.describe GroupMembership, type: :model do
         end
         it 'should not give posting permissions to non-members' do
           permissions = GroupMembership.get_permission(nil, group)
-          expect(permissions.map(&:name)).to_not include("can_create_post")
-          expect(permissions.map(&:name)).to_not include("can_edit_own_posts")
+          expect(permissions).to_not include("can_create_post")
+          expect(permissions).to_not include("can_edit_own_posts")
         end
         it 'should give posting permissions to verified members' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
         end
         it 'should not give posting permissions to unverified members' do
           membership.role = :unverified
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to_not include("can_create_post")
+          expect(permissions).to_not include("can_create_post")
         end
       end
 
       it 'should give posting permissions to non members' do
         permissions = GroupMembership.get_permission(nil, group)
-        expect(permissions.map(&:name)).to include("can_create_post")
-        expect(permissions.map(&:name)).to include("can_edit_own_posts")
+        expect(permissions).to include("can_create_post")
+        expect(permissions).to include("can_edit_own_posts")
       end
 
       context 'and the user is a member' do
         it 'should give posting permisison to the user' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
         end
       end
 
@@ -84,9 +84,9 @@ RSpec.describe GroupMembership, type: :model do
         end
         it 'should give the user posting and banning permisisons' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
-          expect(permissions.map(&:name)).to include("can_ban_users")
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
+          expect(permissions).to include("can_ban_users")
         end
       end
 
@@ -96,11 +96,11 @@ RSpec.describe GroupMembership, type: :model do
         end
         it 'should give the user posting, banning and official posting permisisons' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
-          expect(permissions.map(&:name)).to include("can_ban_users")
-          expect(permissions.map(&:name)).to include("can_create_official_posts")
-          expect(permissions.map(&:name)).to include("can_update_group")
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
+          expect(permissions).to include("can_ban_users")
+          expect(permissions).to include("can_create_official_posts")
+          expect(permissions).to include("can_update_group")
         end
       end
 
@@ -110,8 +110,8 @@ RSpec.describe GroupMembership, type: :model do
         end
         it 'should give the user no permissions' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to_not include("can_create_post")
-          expect(permissions.map(&:name)).to_not include("can_edit_own_posts")
+          expect(permissions).to_not include("can_create_post")
+          expect(permissions).to_not include("can_edit_own_posts")
           expect(permissions).to be_empty
         end
       end
@@ -123,16 +123,16 @@ RSpec.describe GroupMembership, type: :model do
       context 'and the user is not a member' do
         it 'should not give the user posting permissions' do
           permissions = GroupMembership.get_permission(nil, group)
-          expect(permissions.map(&:name)).to_not include("can_create_post")
-          expect(permissions.map(&:name)).to_not include("can_edit_own_posts")
+          expect(permissions).to_not include("can_create_post")
+          expect(permissions).to_not include("can_edit_own_posts")
         end
       end
 
       context 'and the user is a member' do
         it 'should give posting permisison to the user' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
         end
       end
 
@@ -142,9 +142,9 @@ RSpec.describe GroupMembership, type: :model do
         end
         it 'should give the user posting and banning permisisons' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
-          expect(permissions.map(&:name)).to include("can_ban_users")
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
+          expect(permissions).to include("can_ban_users")
         end
       end
 
@@ -154,11 +154,11 @@ RSpec.describe GroupMembership, type: :model do
         end
         it 'should give the user posting, banning and official posting permisisons' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
-          expect(permissions.map(&:name)).to include("can_ban_users")
-          expect(permissions.map(&:name)).to include("can_create_official_posts")
-          expect(permissions.map(&:name)).to include("can_update_group")
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
+          expect(permissions).to include("can_ban_users")
+          expect(permissions).to include("can_create_official_posts")
+          expect(permissions).to include("can_update_group")
         end
       end
     end
@@ -170,16 +170,16 @@ RSpec.describe GroupMembership, type: :model do
       context 'and the user is not a member' do
         it 'should not give the user posting permissions' do
           permissions = GroupMembership.get_permission(nil, group)
-          expect(permissions.map(&:name)).to_not include("can_create_post")
-          expect(permissions.map(&:name)).to_not include("can_view_group_members")
+          expect(permissions).to_not include("can_create_post")
+          expect(permissions).to_not include("can_view_group_members")
         end
       end
 
       context 'and the user is a member' do
         it 'should not give posting permisison to the user' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to_not include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_view_group_members")
+          expect(permissions).to_not include("can_create_post")
+          expect(permissions).to include("can_view_group_members")
         end
       end
 
@@ -189,9 +189,9 @@ RSpec.describe GroupMembership, type: :model do
         end
         it 'should give the user posting and banning permisisons' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
-          expect(permissions.map(&:name)).to include("can_ban_users")
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
+          expect(permissions).to include("can_ban_users")
         end
       end
 
@@ -201,11 +201,11 @@ RSpec.describe GroupMembership, type: :model do
         end
         it 'should give the user posting, banning and official posting permisisons' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
-          expect(permissions.map(&:name)).to include("can_ban_users")
-          expect(permissions.map(&:name)).to include("can_create_official_posts")
-          expect(permissions.map(&:name)).to include("can_update_group")
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
+          expect(permissions).to include("can_ban_users")
+          expect(permissions).to include("can_create_official_posts")
+          expect(permissions).to include("can_update_group")
         end
       end
     end
@@ -217,16 +217,16 @@ RSpec.describe GroupMembership, type: :model do
       context 'and the user is not a member' do
         it 'should not give the user posting permissions' do
           permissions = GroupMembership.get_permission(nil, group)
-          expect(permissions.map(&:name)).to_not include("can_create_post")
-          expect(permissions.map(&:name)).to_not include("can_edit_own_posts")
+          expect(permissions).to_not include("can_create_post")
+          expect(permissions).to_not include("can_edit_own_posts")
         end
       end
 
       context 'and the user is a member' do
         it 'should give posting permisison to the user' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
         end
       end
 
@@ -236,9 +236,9 @@ RSpec.describe GroupMembership, type: :model do
         end
         it 'should give the user posting and banning permisisons' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
-          expect(permissions.map(&:name)).to include("can_ban_users")
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
+          expect(permissions).to include("can_ban_users")
         end
       end
 
@@ -248,24 +248,61 @@ RSpec.describe GroupMembership, type: :model do
         end
         it 'should give the user posting, banning and official posting permisisons' do
           permissions = GroupMembership.get_permission(membership)
-          expect(permissions.map(&:name)).to include("can_create_post")
-          expect(permissions.map(&:name)).to include("can_edit_own_posts")
-          expect(permissions.map(&:name)).to include("can_ban_users")
-          expect(permissions.map(&:name)).to include("can_update_group")
-          expect(permissions.map(&:name)).to include("can_create_official_posts")
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
+          expect(permissions).to include("can_ban_users")
+          expect(permissions).to include("can_update_group")
+          expect(permissions).to include("can_create_official_posts")
         end
+      end
+    end
+  end
+
+  describe '#has_global_permission?' do
+    let(:permissions) { GroupMembership.get_permission(membership) }
+    context 'when passing a single permission' do
+      it 'should return false when the user has no permission' do
+        expect(GroupMembership.has_global_permission?("cannot_own_anything", nil, bobby)).to be(false)
+      end
+
+      it 'should return true when a user has either a group or global permission' do
+        expect(GroupMembership.has_global_permission?("can_edit_own_posts", permissions, bobby)).to be(true)
+        expect(GroupMembership.has_global_permission?("can_edit_own_posts", nil, admin_bobby)).to be(true)
+      end
+    end
+
+    context 'when passing an array of permissions' do
+      it 'should return false when the user has no permission' do
+        expect(GroupMembership.has_global_permission?(["cannot_own_anything", "blah_own_shit"], nil, bobby)).to be(false)
+      end
+
+      it 'should return true when a user has either a group or global permission' do
+        expect(GroupMembership.has_global_permission?(["can_edit_own_posts", "can_delete_own_posts"], permissions, bobby)).to be(true)
+        expect(GroupMembership.has_global_permission?(["can_edit_own_posts", "can_delete_own_posts"], nil, admin_bobby)).to be(true)
       end
     end
   end
 
   describe '#has_permission' do
     let(:permissions) { GroupMembership.get_permission(membership) }
-    it 'should return true for a user that has the permission' do
-      expect(GroupMembership.has_permission?("can_create_post", permissions)).to be(true)
+    context 'when passing a single permission' do
+      it 'should return true for a user that has the permission' do
+        expect(GroupMembership.has_permission?("can_create_post", permissions)).to be(true)
+      end
+
+      it 'should return false for when the user does not have a permission' do
+        expect(GroupMembership.has_permission?("fake_permission", permissions)).to be(false)
+      end
     end
 
-    it 'should return false for when the user does not have a permission' do
-      expect(GroupMembership.has_permission?("fake_permission", permissions)).to be(false)
+    context 'when passing an array of permissions' do
+      it 'should return true for a user that one of the permissions' do
+        expect(GroupMembership.has_permission?(["can_create_post", "does_not_exit"], permissions)).to be(true)
+      end
+
+      it 'should return false for when the user does not have a permission given' do
+        expect(GroupMembership.has_permission?(["fake_permission", "also_fake"], permissions)).to be(false)
+      end
     end
   end
 end

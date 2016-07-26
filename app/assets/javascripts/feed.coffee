@@ -42,8 +42,38 @@ update_comment_count = (postid) ->
 reset_orbit_height_for_comments = (postid) ->
   post_div = Foundation.utils.S("#post-#{postid}")
   container = post_div.parent().parent()
-  if container.attr('class').includes('orbit-slides-container')
+  if container.attr('class').search('orbit-slides-container') > -1
     container.height(post_div.parent().height())
+
+toggle_comments = (post, post_id, user_id) ->
+  new Promise (resolve, reject) ->
+    comments = Foundation.utils.S("#comments-#{post_id}")
+    if post.attr("class").search("hidden-comments") > -1
+      post.removeClass("hidden-comments")
+      comments.slideDown ->
+        comments.removeClass("hidden")
+        reset_orbit_height_for_comments(post_id)
+      if comments.find('.comment-contents').attr('class').search('unloaded') > -1
+        $.ajax
+          url: "/feed/user/#{user_id}/#{post_id}/replies"
+          type: 'GET'
+          dataType: 'html'
+          success: (data) ->
+            loading_ring = Foundation.utils.S("#comments-#{post_id} .loading-ring")
+            container = comments.find('.comment-contents')
+            container.removeClass('unloaded')
+            loading_ring.hide ->
+              loading_ring.remove()
+            $.when(container.html(data)).then () ->
+              set_actions_for_comments(post_id)
+              reset_orbit_height_for_comments(post_id)
+              return resolve(true)
+    else
+      comments.slideUp ->
+        comments.addClass("hidden")
+        post.addClass("hidden-comments")
+        reset_orbit_height_for_comments(post_id)
+        return resolve(false)
 
 wire_up_comments_for_new_posts = (post_id) ->
   if post_id
@@ -58,34 +88,10 @@ wire_up_comments_for_new_posts = (post_id) ->
   Foundation.utils.S(posts_click_selector).click ->
     t = Foundation.utils.S(this)
     post = t.parent().parent()
-    if !post_id
-      post_id = post.data('id')
+
+    post_id = post.data('id')
     user_id = post.find(".user").data("id")
-    comments = Foundation.utils.S("#comments-#{post_id}")
-    if post.attr("class").includes("hidden-comments")
-      post.removeClass("hidden-comments")
-      comments.slideDown ->
-        comments.removeClass("hidden")
-        reset_orbit_height_for_comments(post_id)
-      if comments.find('.comment-contents').attr('class').includes('unloaded')
-        $.ajax
-          url: "/feed/user/#{user_id}/#{post_id}/replies"
-          type: 'GET'
-          dataType: 'html'
-          success: (data) ->
-            loading_ring = Foundation.utils.S("#comments-#{post_id} .loading-ring")
-            container = comments.find('.comment-contents')
-            container.removeClass('unloaded')
-            loading_ring.hide ->
-              loading_ring.remove()
-            container.html(data)
-            set_actions_for_comments(post_id)
-            reset_orbit_height_for_comments(post_id)
-    else
-      comments.slideUp ->
-        comments.addClass("hidden")
-        post.addClass("hidden-comments")
-        reset_orbit_height_for_comments(post_id)
+    toggle_comments(post, post_id, user_id)
 
   Foundation.utils.S(comments_submit_selector).on 'submit', (e) ->
     e.preventDefault()
@@ -222,6 +228,16 @@ $ ->
               end_of_stream = true
 
     wire_up_comments_for_new_posts()
+
+    # Open comments and scroll to relevant comment when using an anchor to select a comment
+    if window.location.pathname.match(/^\/feed\/user\/([\w\d\/]*)\/([\d\/]*)$|^\/group\/((?!search)(?!members)(?!new)[\w\d]+)(\/posts\/\d+)$/i) and window.location.hash.startsWith("#comment-")
+      post = Foundation.utils.S('.streamPost')
+      post_id = post.data('id')
+      user_id = post.find(".user").data("id")
+      toggle_comments(post, post_id, user_id).then (f) ->
+        comment = Foundation.utils.S(window.location.hash)
+        comment.addClass('highlight-comment')
+        comment[0].scrollIntoView(false)
 
     Foundation.utils.S('.streamPost .default-controls .edit-post').click ->
       # This is less terrible!

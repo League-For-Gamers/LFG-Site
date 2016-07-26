@@ -11,10 +11,12 @@ require 'aws-sdk'
 # role :web, %w{user1@primary.com user2@additional.com}, other_property: :other_value
 # role :db,  %w{deploy@example.com}
 
-ec2 = AWS::EC2.new(
-      access_key_id: APP_CONFIG['AWS_ACCESS_KEY_ID'],
-      secret_access_key: APP_CONFIG['AWS_SECRET_ACCESS_KEY'])
-servers = ec2.instances.tagged('web').map(&:ip_address).compact
+Aws.config.update({
+  region: 'us-east-1',
+  credentials: Aws::Credentials.new(APP_CONFIG['AWS_ACCESS_KEY_ID'], APP_CONFIG['AWS_SECRET_ACCESS_KEY'])
+})
+ec2 = Aws::EC2::Resource.new()
+servers = ec2.instances({filters: [{name: 'tag-key', values: ['web']}]}).map(&:public_ip_address).compact
 
 role :app, servers, user: 'deploy'
 role :web, servers, user: 'deploy'

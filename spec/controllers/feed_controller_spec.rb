@@ -292,6 +292,35 @@ RSpec.describe FeedController, type: :controller do
           expect(response).to redirect_to(root_url)
           expect(bobby.posts.last.body).to eq(body)
         end
+
+        describe "testing that the submitted content is available to the view" do
+          let(:the_content_from_the_last_submission) do
+            begin
+              response.instance_values['request'].session['flash']['flashes']['last_body']
+            rescue
+              nil
+            end
+          end
+
+          context "when the post is invalidly-long" do
+            let(:the_body) { (1...2000).to_a.map { |x| 'a' }.join '' }
+
+            it "should persist the body in the flash" do
+              post :create, { body: the_body }
+              expect(the_content_from_the_last_submission).to eq(the_body)
+            end
+          end
+
+          context "when the post is ok" do
+            let(:the_body) { (1...100).to_a.map { |x| 'a' }.join ' ' }
+
+            it "should NOT persist the body in the flash" do
+              post :create, { body: the_body }
+              expect(the_content_from_the_last_submission).to be_nil
+            end
+          end
+        end
+
         context "while being an administrator and passing the official flag" do
           let(:admin_bobby) { FactoryGirl.create(:administrator_user) }
           before do
@@ -333,6 +362,12 @@ RSpec.describe FeedController, type: :controller do
           post :create_reply, { user_id: bobby.username, post_id: new_post.id, body: body, format: :json }
           parsed = JSON.parse(response.body)
           expect(parsed["body"]).to_not be_nil
+        end
+        it 'creates an error message in json format when an error is present' do
+          body = ""
+          500.times { body << "testing json " } # create a body too large.
+          post :create_reply, { user_id: bobby.username, post_id: new_post.id, body: body, format: :json }
+          expect(response.status).to eq(400)
         end
       end
     end

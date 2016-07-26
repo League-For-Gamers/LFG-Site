@@ -47,4 +47,8 @@ RSpec.describe "permission_migrate", type: :rake do
       expect(Ban.find(b.id).duration_string).to_not be_blank
     end
   end
+
+  it 'getting rid of stupid coverage bugs' do
+    DevelopmentProfiler
+  end
 end

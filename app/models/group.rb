@@ -10,11 +10,15 @@ class Group < ActiveRecord::Base
   enum language: [:english, :japanese]
 
   has_attached_file :banner,
+                  processors: [:thumbnail, :paperclip_optimizer],
+                  paperclip_optimizer: {
+                    jpegoptim: { max_quality: 95 }
+                  },
                   default_url: "/group/banner/:style/missing.png",
                   path: "/group/banner/:style/:id.:extension",
                   styles: {
-                    thumb: '356x200#',
-                    large: '1500x400#'
+                    thumb: { geometry: '356x200#' },
+                    large: { geometry: '1500x400#' }
                   }
 
   default_scope { order("membership_count DESC, title ASC") }

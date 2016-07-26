@@ -10,6 +10,6 @@ module GroupHelper
   def universal_permission_check(permission, options = {})
     permissions = options[:permissions] || @permissions
     user = options[:user] || @current_user
-    !!user and (GroupMembership.has_permission? permission, permissions or user.has_permission? permission)
+    !!user and GroupMembership.has_permission? permission, permissions, user
   end
 end

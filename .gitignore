@@ -25,6 +25,7 @@
 /public/users
 /public/games
 
+/bench
 /coverage
 /public/assets
 config/newrelic.yml

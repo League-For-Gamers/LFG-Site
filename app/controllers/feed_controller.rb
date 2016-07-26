@@ -160,7 +160,7 @@ class FeedController < ApplicationController
   def delete
     render plain: "You do not have permission to delete this post", status: 403 and return unless logged_in?
     post = Post.find(params["id"])
-    render plain: "You do not have permission to delete this post", status: 403 and return if (post.user_id != @current_user.id or !@current_user.has_permission? "can_edit_own_posts") and !@current_user.has_permission? "can_edit_all_users_posts"
+    render plain: "You do not have permission to delete this post", status: 403 and return if (post.user != @current_user or !@current_user.has_permission? "can_edit_own_posts") and !@current_user.has_permission? "can_edit_all_users_posts"
     post.destroy
     render plain: "OK"
   end
@@ -170,7 +170,7 @@ class FeedController < ApplicationController
   def update
     render json: {errors: {'0' => 'You do not have permission to update this post'}}, status: 403 and return unless logged_in?
     post = Post.find(params["id"])
-    render json: {errors: {'0' => 'You do not have permission to update this post'}}, status: 403 and return if (post.user_id != @current_user.id or !@current_user.has_permission? "can_edit_own_posts") and !@current_user.has_permission? "can_edit_all_users_posts"
+    render json: {errors: {'0' => 'You do not have permission to update this post'}}, status: 403 and return if (post.user != @current_user or !@current_user.has_permission? "can_edit_own_posts") and !@current_user.has_permission? "can_edit_all_users_posts"
     post.body = params["body"]
     if post.valid?
       post.save
@@ -191,7 +191,10 @@ class FeedController < ApplicationController
     end
     post_params["user"] = @current_user
     post = Post.create(post_params)
-    flash[:alert] = post.errors.full_messages.join("\n") unless post.valid?
+    unless post.valid?
+      flash[:last_body] = params[:body]
+      flash[:alert] = post.errors.full_messages.join("\n")
+    end
     redirect_to request.referrer || root_url
   end
 
@@ -204,6 +207,8 @@ class FeedController < ApplicationController
     post_params["parent_id"] = @post.id
     post = Post.create(post_params)
     comments = post.parent.children.includes(:user, :bans).order("id DESC")
+    # Notify the owner of the post
+    Notification.create(user: post.parent.user, variant: Notification.variants["new_comment"], post: post, data: {user: post.user_id}) if post.parent.user != @current_user
     respond_to do |format|
       format.html {
         flash[:alert] = post.errors.full_messages.join("\n") unless post.valid?

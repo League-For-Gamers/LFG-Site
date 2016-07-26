@@ -73,31 +73,36 @@
 	float: left !important;
 	max-width: rem-calc(330);
 	max-height: rem-calc(168);
-	img.banner {
-		min-width: rem-calc(297);
-		min-height: rem-calc(168);
-		border: rem-calc(1) solid #000;
-	}
-	.title {
+	.overlay-container {
 		position: relative;
-		display: block;
 		width: 100%;
-		word-wrap: break-word;
-		text-align: right;
-		padding: 0 rem-calc(5);
-		top: rem-calc(-35);
-		color: white;
-		font-size: 17pt;
-		font-weight: 600;
-		z-index: 9;
-		text-shadow:
-		   rem-calc(-1) rem-calc(-1) 0 #000,  
-			rem-calc(1) rem-calc(-1) 0 #000,
-		   rem-calc(-1)  rem-calc(1) 0 #000,
-			rem-calc(1)  rem-calc(1) 0 #000;
-		&.small {
-			font-size: 12pt;
-			top: rem-calc(-27);
+		img.banner {
+			min-width: rem-calc(297);
+			min-height: rem-calc(168);
+			border: rem-calc(1) solid #000;
+		}
+		.title {
+			position: absolute;
+			left: 0;
+			bottom: rem-calc(1);
+			width: 100%;
+			padding: 0 rem-calc(5);
+
+			word-wrap: break-word;
+			text-align: right;
+
+			color: white;
+			font-size: 17pt;
+			font-weight: 600;
+			z-index: 9;
+			text-shadow:
+			   rem-calc(-1) rem-calc(-1) 0 #000,  
+				rem-calc(1) rem-calc(-1) 0 #000,
+			   rem-calc(-1)  rem-calc(1) 0 #000,
+				rem-calc(1)  rem-calc(1) 0 #000;
+			&.small {
+				font-size: 12pt;
+			}
 		}
 	}
 	.official-shield {

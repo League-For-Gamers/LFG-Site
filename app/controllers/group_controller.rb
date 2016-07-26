@@ -63,8 +63,9 @@ class GroupController < ApplicationController
 
   # GET /group/:id
   def show
-    @stickied_posts = @group.posts.where(official: true)
-    @group_posts = @group.posts.limit(30).where(parent_id: nil)
+    @stickied_posts = @group.posts.includes(:user, :bans).where(official: true)
+    @group_posts = @group.posts.includes(:user, :bans).limit(30).where(parent_id: nil)
+    @posts_count = @group.posts.where(parent_id: nil).count
     set_title @group.title
   end
 
@@ -107,7 +108,7 @@ class GroupController < ApplicationController
     keys = GroupMembership.roles.keys
     keys.delete("unverified") unless universal_permission_check("can_edit_group_member_roles")
     render plain: "Invalid source parameter", status: 403 and return unless keys.include? params[:source]
-    @members = @group.group_memberships.includes(:user).where(role: GroupMembership.roles[params[:source]]).limit(per_page).offset((page)*per_page).order("created_at ASC")
+    @members = @group.group_memberships.includes(:user).where(role: GroupMembership.roles[params[:source]]).limit(per_page).offset((page)*per_page).order("created_at DESC")
     render :raw_user_cards, layout: false and return
   end
 
@@ -150,7 +151,7 @@ class GroupController < ApplicationController
       @user_membership.role = :owner
     when "approve"
       @user_membership.role = :member
-      @user.create_notification("group_accepted", @group)
+      Notification.create(user: @user, variant: Notification.variants["group_accepted"], group: @group)
     else
       flash[:warning] = "Invalid goal parameter" and redirect_to request.referrer || root_url and return
     end
@@ -243,6 +244,8 @@ class GroupController < ApplicationController
     post_params["parent_id"] = @post.id
     post = Post.create(post_params)
     comments = post.parent.children.includes(:user, :bans).order("id DESC")
+    # Notify the owner of the post
+    Notification.create(user: post.parent.user, variant: Notification.variants["new_comment"], post: post, group: @group, data: {user: post.user_id}) if post.parent.user != @current_user
     respond_to do |format|
       format.html {
         flash[:alert] = post.errors.full_messages.join("\n") unless post.valid?
@@ -391,6 +394,6 @@ class GroupController < ApplicationController
     def universal_permission_check(permission, options = {})
       permissions = options[:permissions] || @permissions
       user = options[:user] || @current_user
-      !!user and (GroupMembership.has_permission? permission, permissions or user.has_permission? permission)
+      !!user and GroupMembership.has_permission? permission, permissions, user
     end
 end

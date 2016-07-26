@@ -15,7 +15,9 @@
     <div class="large-4 small-12 columns left">
       <div class="pad text-card profile-card settings-card bio-card">
         <span class="title">Basic Info</span>
-        <%= image_tag @current_user.avatar.url(:med), class: "avatar" %>
+        <% cache [@current_user.id, @current_user.updated_at, "avatar", "med"] do -%>
+          <%= image_tag @current_user.avatar.url(:med), class: "avatar" %>
+        <% end -%>
 
         <div class="avatar-upload">
           <label>Avatar

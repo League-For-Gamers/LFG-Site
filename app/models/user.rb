@@ -6,11 +6,15 @@ class User < ActiveRecord::Base
   enum skill_status: [:empty, :looking_for_group, :looking_for_more]
 
   has_attached_file :avatar,
+                  processors: [:thumbnail, :paperclip_optimizer],
+                  paperclip_optimizer: {
+                    optipng: { level: 6 }
+                  },
                   path: "users/avatars/:style/:id.:extension",
                   styles: {
-                    thumb: '64x64>',
-                    med:   '150x150#',
-                    large: '256x256#'
+                    thumb: { geometry: '64x64>' },
+                    med:   { geometry: '150x150#' },
+                    large: { geometry: '256x256#' }
                   }
 
   attr_accessor :old_password, :email_confirm, :skip_old_password
@@ -104,9 +108,45 @@ class User < ActiveRecord::Base
     "http://leagueforgamers.com/user/forgot_password/#{self.verification_digest}"
   end
 
+  def can_modify_post?(owner)
+    (owner == self and self.has_permission? ["can_edit_own_posts", "can_delete_own_posts"]) or self.has_permission? ["can_edit_all_users_posts", "can_delete_all_users_posts"] 
+  end
+
+  def has_global_permission?(permission)
+    retval = false
+    
+    case permission
+    when Array
+      permission.each do |p|
+        # Eg can_edit_own_posts becomes can_edit_all_users_posts
+        global_permission = p.sub("_own_", "_all_users_")
+        retval = (self.has_permission?(p) ? true : retval)
+        retval = (self.has_permission?(global_permission) ? true : retval)
+      end
+    when String
+      global_permission = permission.sub("_own_", "_all_users_")
+      retval = (self.has_permission?(permission) ? true : retval)
+      retval = (self.has_permission?(global_permission) ? true : retval)
+    end
+
+    return retval
+  end
+
   def has_permission?(permission)
     return false if self.role.nil?
-    self.role.permissions.map(&:name).include? permission
+
+    retval = false
+
+    case permission
+    when Array
+      permission.each do |p|
+        retval = (role.has_permission?(p) ? true : retval)
+      end
+    when String
+      retval = (role.has_permission?(permission) ? true : retval)
+    end
+
+    return retval
   end
 
   def ban(reason, end_date, banner, post = nil)
@@ -126,23 +166,15 @@ class User < ActiveRecord::Base
       ban.save  
       self.role = banned_role
       self.save
-      notification_message = "for #{ban.duration_string}"
-      notification_message = 'until the end of time' if end_date.nil?
-      notification_message = "by #{banner.display_name || banner.username}"
-      notification_message << ": #{reason}" unless reason.blank?
-      self.create_notification("ban", nil, notification_message)
+      Notification.create(user: self, variant: Notification.variants["ban"], data: {ban: ban.id})
     else
       raise ban.errors.full_messages.join(", ")
     end
   end
 
-  # Usage: user_that_current_user_wants_to_follow.follow(current_user)
+  # Usage: current_user.follow(user_that_current_user_wants_to_follow)
   def follow(user)
-    Follow.create(user: user, following: self)
-  end
-
-  def create_notification(variant, group = nil, message = nil)
-    Notification.create(variant: Notification.variants[variant], user: self, group: group, message: message)
+    Follow.create(user: self, following: user)
   end
 
   def follow?(user)

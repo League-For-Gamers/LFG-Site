@@ -210,6 +210,9 @@
 		&:first-child {
 			border-top: rem-calc(1) solid #c4c4c4;
 		}
+		&.highlight-comment {
+			background-color: rgba(246, 255, 0, 0.15);
+		}
 		.avatar-container {
 			float: left;
 			max-width: rem-calc(32);

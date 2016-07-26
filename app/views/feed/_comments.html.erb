@@ -1,15 +1,19 @@
 <% comments.each do |comment| %>
   <div class="comment" id="comment-<%= comment.id %>" data-id="<%= comment.id %>">
-    <%= link_to image_tag(comment.user.avatar(:thumb), class: "avatar"), "/user/#{comment.user.username}", class: "avatar-container clearfix" %>
+    <a href="<%= "/user/#{comment.user.username}" %>" class="avatar-container clearfix">
+        <% cache [comment.user.id, comment.user.updated_at, "avatar", "thumb"] do -%>
+          <%= image_tag(comment.user.avatar(:thumb), class: "avatar") %>
+        <% end -%>
+      </a>
     <div class="body-container clearfix">
       <span class="title" data-id="<%= comment.user.username %>"><%= link_to display_name(comment.user), "/user/#{comment.user.username}" -%></span>
       <p class="body"><%= replace_urls comment.body %></p>
-      <% if !@current_user.nil? and ((user == @current_user and (@current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_own_posts")) or @current_user.has_permission? "can_edit_all_users_posts" or @current_user.has_permission? "can_delete_all_posts") -%>
+      <% if !@current_user.nil? and @current_user.can_modify_post?(comment.user) -%>
         <div class="controls">
-          <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_edit_all_users_posts" -%>
+          <% if @current_user.has_global_permission? "can_edit_own_posts" -%>
             <a class="edit-post" title='Edit comment'></a>
           <% end -%>
-          <% if @current_user.has_permission? "can_edit_own_posts" or @current_user.has_permission? "can_delete_all_posts" -%>
+          <% if @current_user.has_global_permission? "can_edit_own_posts" -%>
             <a class="delete-post" title="Delete comment"></a>
           <% end -%>
         <% end -%>

@@ -17,6 +17,6 @@ production:
   REDIS_CACHE_ADDRESS: 'redis://:password@hostname:6379/0/cache'
   REDIS_SESSION_ADDRESS: 'redis://:password@hostname:6379/1/sessions'
   SMTP_ADDRESS:  'smtp-host.address-goes.here'
-  SMTP_PORT:     587
+  SMTP_PORT:     '587'
   SMTP_USERNAME: 'smtp_username'
   SMTP_PASSWORD: 'smtp_password'

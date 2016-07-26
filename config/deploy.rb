@@ -1,6 +1,6 @@
 APP_CONFIG = YAML.load_file("config/application.yml")
 # config valid only for current version of Capistrano
-lock '3.4.0'
+lock '3.5.0'
 
 set :application, 'LeagueForGamers'
 set :repo_url, APP_CONFIG['GIT_REPO'] # Keeping the current git repo hidden for when we launch on github

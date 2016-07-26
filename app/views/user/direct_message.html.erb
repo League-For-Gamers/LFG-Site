@@ -5,7 +5,9 @@
       <li class="user">
         <a href="/user/<%= user.username %>">
           <div class="avatar-container">
-            <%= image_tag(user.avatar.url(:thumb), class: "avatar") -%>
+            <% cache [user.id, user.updated_at, "avatar", "thumb"] do -%>
+              <%= image_tag(user.avatar.url(:thumb), class: "avatar") -%>
+            <% end -%>
           </div>
           <span><%= display_name user -%></span>
         </a>

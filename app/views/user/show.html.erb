@@ -4,7 +4,11 @@
       <div class="edit-section">
       </div>
     <% end -%>
-    <%= link_to image_tag(@user.avatar.url(:med), class: "avatar"), @user.avatar.url(:original), title: (@user.display_name || "@" + @user.username) %>
+    <a title="<%= @user.display_name || "@" + @user.username %>" url="<%= @user.avatar.url(:original) %>">
+      <% cache [@user.id, @user.updated_at, "avatar", "med"] do -%>
+        <%= image_tag(@user.avatar.url(:med), class: "avatar") %>
+      <% end -%>
+    </a>
     <span class="title <%= "long" if display_name(@user).length > 18 %>"><%= display_name(@user) %></span>
     <p><%= replace_urls @user.bio %></p>
     <div class="bottom">
@@ -74,14 +78,16 @@
       <% if @user == @current_user -%>
         <div class="hidden-section <%= "active" if to_b @user.hidden["games"] %>"></div>
         <div class="edit-section">
-          <a class="hide <%= "disabled" if to_b  @user.hidden["games"] %>" data-section="games"></a>
+          <a class="hide <%= "disabled" if to_b @user.hidden["games"] %>" data-section="games"></a>
         </div>
       <% end -%>
       <span class="title"><span title="Favourite">Favorite</span> Games</span>
       <ul class="games-list small-block-grid-3">
         <% @user.games.each do |game| -%>
           <li class="game">
-            <%= image_tag game.boxart.url(:small) %>
+            <% cache [game.id, game.updated_at, "boxart", "small"] do -%>
+              <%= image_tag game.boxart.url(:small) %>
+            <% end -%>
             <span class="game-title"><%= game.name %></span>
           </li>
         <% end -%>
