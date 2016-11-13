@@ -265,26 +265,37 @@ class GroupController < ApplicationController
   def join
     flash[:warning] = "You cannot join groups while globally banned" and redirect_to request.referrer || root_url and return if !@current_user.has_permission? "can_join_group"
     flash[:warning] = "This group is invite only. Please message the owner of the group to request access" and redirect_to request.referrer || root_url and return if @group.membership == "invite_only"
-    flash[:warning] = "You are already part of this group" and redirect_to request.referrer || root_url and return if !!@membership
-    message = "You have successfully joined the group"
-    g = GroupMembership.new(user: @current_user, group: @group)
-    if @group.membership == "owner_verified"
-      g.role = :unverified
-      message = "You have requested to join this group. You will be notified when you are accepted"
+    if !!@membership and @membership.role = :invited
+      @membership.role = :member
+      message = "You've successfully joined the group"
+      if @membership.valid?
+        @membership.save
+        url = "/group/#{@group.slug}"
+      else
+        message = "There was an error joining the group: #{g.errors.full_messages.join("\n")}"
+      end
     else
-      g.role = :member
-    end
-    # I couldn't find a way to make a request genuinely invalid in tests so I have to force it...
-    if Rails.env.test? and params[:invalid]
-      g.role = nil
-    end
-    if g.valid?
-      g.save
-    else
-      message = "There was an error joining the group: #{g.errors.full_messages.join("\n")}"
+      flash[:warning] = "You are already part of this group" and redirect_to request.referrer || root_url and return if !!@membership
+      message = "You have successfully joined the group"
+      g = GroupMembership.new(user: @current_user, group: @group)
+      if @group.membership == "owner_verified"
+        g.role = :unverified
+        message = "You have requested to join this group. You will be notified when you are accepted"
+      else
+        g.role = :member
+      end
+      # I couldn't find a way to make a request genuinely invalid in tests so I have to force it...
+      if Rails.env.test? and params[:invalid]
+        g.role = nil
+      end
+      if g.valid?
+        g.save
+      else
+        message = "There was an error joining the group: #{g.errors.full_messages.join("\n")}"
+      end
     end
     flash[:info] = message
-    redirect_to request.referrer || root_url
+    redirect_to url || request.referrer || root_url
   end
 
   # GET /group/:id/leave

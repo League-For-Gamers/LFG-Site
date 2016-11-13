@@ -83,15 +83,16 @@ Rails.application.configure do
   config.active_job.queue_adapter = :sucker_punch
 
   config.paperclip_defaults = {
-    :storage => :s3,
-    :url => ":s3_alias_url",
-    :s3_host_alias => ENV['ASSET_HOST'],
-    :s3_protocol => :https,
-    :s3_headers => { cache_control: 'max-age=315576000', expires: 1.year.from_now.httpdate },
-    :s3_credentials => {
-      :bucket => ENV['S3_BUCKET_NAME'],
-      :access_key_id => ENV['AWS_ACCESS_KEY_ID'],
-      :secret_access_key => ENV['AWS_SECRET_ACCESS_KEY']
+    storage: :s3,
+    url: ":s3_alias_url",
+    s3_host_alias: ENV['ASSET_HOST'],
+    s3_protocol: :https,
+    s3_headers: { cache_control: 'max-age=315576000', expires: 1.year.from_now.httpdate },
+    s3_region: ENV['AWS_REGION'],
+    s3_credentials: {
+      bucket: ENV['S3_BUCKET_NAME'],
+      access_key_id: ENV['AWS_ACCESS_KEY_ID'],
+      secret_access_key: ENV['AWS_SECRET_ACCESS_KEY']
     }
   }
 

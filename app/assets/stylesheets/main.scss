@@ -411,14 +411,38 @@ a, button {
 .text-white {
 	color: $primary-cream
 }
+.username {
+	a {
+		color: scale-color($primary-red, $lightness: -40%);
+		&:active, &:focus {
+			color: scale-color($primary-darker-red, $lightness: -40%);
+		}
+		&:hover {
+			color: scale-color($primary-lighter-red, $lightness: -40%);
+		}
+	}
+}
 
 .notification {
 	width: 100%;
-	height: rem-calc(35);
-	background: $primary-cream;
+	min-height: rem-calc(35);
+	max-height: rem-calc(80);
 	line-height: 2em;
 	&:hover, &:focus {
 		background: scale-color($primary-red, $lightness: 90%);
+	}
+	&.new_comment {	
+		.avatar-container {
+			padding: 0;
+			margin: rem-calc(2) 0;
+		}
+		.post-body {
+			p {
+				margin-bottom: 0;
+				font-size: 10pt;
+				color: scale-color($primary-text, $lightness: 30%);
+			}
+		}
 	}
 }
 .blackout {

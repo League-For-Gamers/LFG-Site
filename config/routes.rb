@@ -80,4 +80,5 @@ Rails.application.routes.draw do
   get 'terms', to: 'static#terms'
   get 'faq', to: 'static#faq'
   get 'privacy', to: 'static#privacy'
+  get 'license', to: 'static#license'
 end

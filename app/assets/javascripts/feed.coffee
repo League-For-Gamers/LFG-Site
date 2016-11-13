@@ -267,9 +267,12 @@ $ ->
       cancel_post = global_parent.find(".user .user-controls .edit-controls .cancel-post")
       submit_post = global_parent.find(".user .user-controls .edit-controls .submit-post")
 
-      post = global_parent.find(".body p")
+      post = global_parent.find(".body .main-section .content")
       original_html = post.html()
       text_height = post.height()
+
+      metacard = global_parent.find(".body .main-section .metadata-card").parent()
+      metacard.hide()
 
       post.replaceWith $("<textarea id=\"#{this_control.attr('id')}\" maxlength=\"512\" class='edit-box'>#{original_text}</textarea>")
       text_area = global_parent.find("textarea")
@@ -278,9 +281,10 @@ $ ->
       edit_controls.show()
 
       cancel_post.click ->
-        text_area.replaceWith $("<p>#{original_html}</p>")
+        text_area.replaceWith $("<p class='content'>#{original_html}</p>")
         edit_controls.hide()
         default_controls.show()
+        metacard.show()
 
       submit_post.click ->
         text = text_area.val()
@@ -292,9 +296,10 @@ $ ->
           beforeSend: (xhr) ->
             xhr.setRequestHeader('X-CSRF-Token', Foundation.utils.S('meta[name="csrf-token"]').attr('content'))
           success: (data) ->
-            text_area.replaceWith $("<p>#{data.body}</p>")
+            text_area.replaceWith $("<p class='content'>#{data.body}</p>")
             edit_controls.hide()
             default_controls.show()
+            metacard.remove()
           error: (data) ->
             console.log data.responseJSON.errors.join("\n")
             alert("An error occured editing your post:\n#{data.responseJSON.errors.join("\n")}")

@@ -2,21 +2,27 @@ class GroupMembership < ActiveRecord::Base
   belongs_to :group, counter_cache: :membership_count
   belongs_to :user
 
-  enum role: [:owner, :administrator, :moderator, :member, :banned, :unverified]
+  enum role: [:owner, :administrator, :moderator, :member, :banned, :unverified, :invited]
 
   validates :role, presence: true
   validate :validates_ownership_uniqueness
 
+  PLIST = ["can_create_post", # 0
+           "can_edit_own_posts", # 1
+           "can_view_group_members", # 2
+           "can_ban_users", # 3
+           "can_create_official_posts", # 4
+           "can_edit_group_member_roles", # 5
+           "can_update_group", # 6
+           "can_delete_group"] # 7
+
   def self.get_permission(membership, group = nil)
     permissions = []
 
-    # Permissions are inherited by higher roles. 
-    # I'm pretty sure this can be cleaner.
     if !membership
       if group.privacy == "public_group" and group.post_control == "public_posts" and group.membership != "owner_verified"
-        permissions << "can_create_post"
-        permissions << "can_edit_own_posts"
-        permissions << "can_view_group_members"
+        # Create post, edit own posts, view members
+        permissions = [PLIST[0], PLIST[1], PLIST[2]]
       end
       # If we go any further, we'll run into methods for classes that don't exist.
       return permissions
@@ -26,38 +32,38 @@ class GroupMembership < ActiveRecord::Base
       return permissions
     end
 
-    if ["member", "moderator", "owner", "administrator"].include? membership.role
-      permissions << "can_view_group_members"
-    end
-    if ["moderator", "owner", "administrator"].include? membership.role
-      permissions << "can_ban_users"
-    end
-    if ["owner", "administrator"].include? membership.role
-      permissions << "can_create_official_posts"
-      permissions << "can_update_group"
-      permissions << "can_edit_group_member_roles"
-    end
-    if ["owner"].include? membership.role
-      permissions << "can_delete_group"
-    end
-
     case membership.group.post_control
     when "public_posts"
-      if ["member", "moderator", "owner", "administrator", "unverified"].include? membership.role
-        permissions << "can_create_post"
-        permissions << "can_edit_own_posts"
-      end
+      # Create post, edit own posts
+      permissions += [PLIST[0], PLIST[1]]
     when "members_only_post"
-      if ["member", "moderator", "owner", "administrator"].include? membership.role
-        permissions << "can_create_post"
-        permissions << "can_edit_own_posts"
+      case membership.role
+      when "owner", "administrator", "moderator", "member"
+        permissions += [PLIST[0], PLIST[1]]
       end
     when "management_only_post"
-      if ["moderator", "owner", "administrator"].include? membership.role
-        permissions << "can_create_post"
-        permissions << "can_edit_own_posts"
+      case membership.role
+      when "owner", "administrator", "moderator"
+        permissions += [PLIST[0], PLIST[1]]
       end
     end
+
+    case membership.role
+    when "owner"
+      # View members, Ban users, create official posts, edit roles, update group, delete group
+      permissions += [PLIST[2], PLIST[3], PLIST[4], PLIST[5], PLIST[6], PLIST[7]]
+    when "administrator"
+      # View members, Ban users, create official posts, edit roles, update group
+      permissions += [PLIST[2], PLIST[3], PLIST[4], PLIST[5], PLIST[6]]
+    when "moderator"
+      # View members, Ban users
+      permissions += [PLIST[2], PLIST[3]]
+    when "member"
+      # View membership
+      permissions += [PLIST[2]]
+    when "unverified"
+    end
+    
     permissions
   end
 

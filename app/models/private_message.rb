@@ -33,6 +33,8 @@ class PrivateMessage < ActiveRecord::Base
       crypt.iv = self.iv
       crypt.update(self.body) + crypt.final
     rescue # I should have specific cases here but it'll be a lot...
+      # TODO: append to the message a warning about how the 
+      # message is not decrypted, timestamp and to report to admin
       self.body
     end
   end

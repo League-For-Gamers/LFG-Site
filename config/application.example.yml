@@ -8,6 +8,7 @@ SSH_KEY_DIR: 'local\uri\pointing\to\private\key\with\access\to\server'
 # For S3 and deploying
 AWS_ACCESS_KEY_ID: 'access_key'
 AWS_SECRET_ACCESS_KEY: 'secret_access_key'
+AWS_REGION: 'us-east-1'
 # For S3 access
 S3_BUCKET_NAME: &bucket 'bucket_name'
 FOG_DIRECTORY: *bucket

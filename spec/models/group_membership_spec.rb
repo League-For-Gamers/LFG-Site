@@ -195,6 +195,21 @@ RSpec.describe GroupMembership, type: :model do
         end
       end
 
+      context 'and the user is a moderator' do
+        before do
+          membership.role = :administrator
+        end
+        it 'should give the user posting and banning permisisons' do
+          permissions = GroupMembership.get_permission(membership)
+          expect(permissions).to include("can_create_post")
+          expect(permissions).to include("can_edit_own_posts")
+          expect(permissions).to include("can_ban_users")
+          expect(permissions).to include("can_create_official_posts")
+          expect(permissions).to include("can_edit_group_member_roles")
+          expect(permissions).to include("can_update_group")
+        end
+      end
+
       context 'and the user is the owner' do
         before do
           membership.role = :owner

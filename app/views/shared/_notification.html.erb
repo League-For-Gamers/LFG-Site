@@ -1,20 +1,20 @@
 <% cache [notification.id, notification.updated_at] do -%>
   <div class="notification <%= notification.variant %>">
     <% case notification.variant -%>
-    <% when :group_invite -%>
+    <% when "group_invite" -%>
       <% user = User.find(notification.data["user"]) -%>
       <a href="/group/<%= notification.group.slug %>/members/<%= user.username %>">
         The user <%= display_name(user) %> has requested to join the group: <%= notification.group.title %>
       </a>
-    <% when :group_invited -%>
+    <% when "group_invited" -%>
       <a href="/group/<%= notification.group.slug %>/join">
         You have been invited to join the group <%= notification.group.title %> by <%= display_name(User.find(notification.data["user"])) %>
       </a>
-    <% when :group_accepted -%>
+    <% when "group_accepted" -%>
       <a href="/group/<%= notification.group.slug %>">
         You have been accepted into the group <%= notification.group.title %>
       </a>
-    <% when :group_ban -%>
+    <% when "group_ban" -%>
       <% ban = Ban.find(notification.data["ban"]) -%>
       <% if ban.post.present? -%>
         <a href="/group/<%= notification.group.slug %>/posts/<%= ban.post_id %>">
@@ -24,7 +24,7 @@
         You have been banned from the group <%= notification.group.title %> by <%= display_name(ban.banner) %><br /><%= " for" unless ban.end_date.nil? %> <%= ban.duration_string %><br />
         <%= ban.reason %>
       </a>
-    <% when :group_unban -%>
+    <% when "group_unban" -%>
       <% ban = Ban.find(notification.data["ban"]) -%>
       <% if ban.post.present? -%>
         <a href="/group/<%= notification.group.slug %>/posts/<%= ban.post_id %>">
@@ -35,7 +35,7 @@
         <%= ban.reason %>
       </a>
 
-    <% when :ban -%>
+    <% when "ban" -%>
       <% ban = Ban.find(notification.data["ban"]) -%>
       <% if ban.post.present? -%>
         <a href="/group/<%= notification.group.slug %>/posts/<%= ban.post_id %>">
@@ -45,7 +45,7 @@
         You have been banned from League for Gamers <%= notification.group.title %> by <%= display_name(ban.banner) %><%= " for" unless ban.end_date.nil? %> <%= ban.duration_string %><br />
         <%= ban.reason %>
       </a>
-    <% when :unban -%>
+    <% when "unban" -%>
       <% ban = Ban.find(notification.data["ban"]) -%>
       <% if ban.post.present? -%>
         <a href="/group/<%= notification.group.slug %>/posts/<%= ban.post_id %>">
@@ -56,15 +56,28 @@
         <%= ban.reason %>
       </a>
     <% when "new_comment" %>
+      <% user = User.find(notification.data["user"]) -%>
       <% if notification.group.present? -%>
-        <a href="/group/<%= notification.group.slug %>/posts/<%= notification.post.parent_id %>#comment-<%= notification.post_id %>">
+        <% c_url = "/group/#{notification.group.slug}/posts/{#{notification.post.parent_id}#comment-#{notification.post_id}" -%>
       <% else -%>
-        <a href="/feed/user/<%= notification.user.username %>/<%= notification.post.parent_id %>#comment-<%= notification.post_id %>">
+        <% c_url = "/feed/user/#{notification.user.username}/#{notification.post.parent_id}#comment-#{notification.post_id}" -%>
       <% end -%>
 
-        <%= display_name(User.find(notification.data["user"])) %> has commented on your post <%= "in group #{notification.group.title}" if notification.group.present? %>
-      </a>
-    <% when :mention -%>
+      <div class="small-1 columns avatar-container">
+        <% cache [user.id, user.updated_at, "avatra", "thumb"] do -%>
+          <%= image_tag(user.avatar.url(:thumb), class: "avatar") %>
+        <% end -%>
+      </div>
+
+      <div class="small-11 columns">
+        <span class="username"><a href="/user/<%= user.username %>"><%= display_name(user) %></a></span> <a href="<%= c_url %>">has has commented on your post<%= " in group #{notification.group.title}" if notification.group.present? %>, in reply to:</a>
+      </div>
+
+      <div class="small-11 columns post-body">
+        <p><%= replace_urls notification.post.parent.body %></p>
+      </div>
+      
+    <% when "mention" -%>
 
     <% end -%>
   </div>
