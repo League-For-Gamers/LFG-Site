@@ -189,7 +189,8 @@ $ ->
     if window.location.pathname.match(/^\/$/)
       feed_type = "main"
     else if window.location.pathname.match(/^\/group\/([\w\d]*)$/)
-      feed_type = "group/#{RegExp.$1}"
+      group_id = RegExp.$1
+      feed_type = "group/#{group_id}"
     else
       regex = window.location.pathname.match(/^\/feed\/([\w\d\/]*)$/i)
       if regex == null
@@ -327,6 +328,52 @@ $ ->
               Turbolinks.visit("/")
           error: (data) ->
             alert("An error occured deleting your post: #{data.statusText}")
+
+    if window.location.pathname.match(/^\/group\/([\w\d]*)$/)
+      Foundation.utils.S('.streamPost .default-controls .pin-post').click ->
+        t = Foundation.utils.S(this)
+        global_parent = t.parent().parent().parent().parent()
+        id = global_parent.data("id")
+        
+        $.ajax
+          url: "/group/#{group_id}/posts/#{id}/pin"
+          type: 'POST'
+          dataType: 'text'
+          data: {id: id}
+          beforeSend: (xhr) ->
+            xhr.setRequestHeader('X-CSRF-Token', Foundation.utils.S('meta[name="csrf-token"]').attr('content'))
+          success: (data) ->
+            # what a mess...
+            sticked = false 
+            for post in $(".streamPost[data-id='#{id}']")
+              do ->
+                post = $(post)
+                post.find('.pin-post').toggleClass("active")
+                if post.hasClass("stick")
+                  sticked = true
+                  post.parent().remove()
+                  i = 0
+                  for elm in $(".orbit-slides-container").children()
+                    do ->
+                      $(elm).attr("data-orbit-slide", "stickied-#{i}")
+                      i++
+                  $("#stickied-button-#{i}").remove()
+                  reset_orbit_height_for_comments($('.orbit-slides-container').children().first().children().first().data('id'))
+                  $(document).foundation('orbit', 'reflow');
+                else if sticked != true
+                  $('.orbit-slides-container').prepend('<li></li>')
+                  post.clone(true, true).appendTo($('.orbit-slides-container').children().first())
+                  nav_size = $('.orbit-nav').children().size()
+                  $('.orbit-nav').append("<a data-orbit-link='stickied-#{nav_size}' id='stickied-button-#{nav_size}'></a>")
+                  i = 0
+                  for elm in $(".orbit-slides-container").children()
+                    do ->
+                      $(elm).attr("data-orbit-slide", "stickied-#{i}")
+                      i++
+                  reset_orbit_height_for_comments($('.orbit-slides-container').children().first().children().first().data('id'))
+                  $(document).foundation('orbit', 'reflow');
+          error: (data) ->
+            alert("An error occured pinning the comment: #{data.statusText}")
 
     if feed_type != null
       latest_id = Foundation.utils.S('#feed-posts').children().first().data("id")

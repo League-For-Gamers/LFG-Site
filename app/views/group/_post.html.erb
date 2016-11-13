@@ -1,5 +1,5 @@
 <% cache [post.id, post.updated_at] do -%>
-  <div class="streamPost text-card hidden-comments" id="post-<%= post.id %>" data-id="<%= post.id %>">
+  <div class="streamPost text-card hidden-comments <%= "stick" if defined? stick %>" id="post-<%= post.id %>" data-id="<%= post.id %>">
     <div class="large-2 small-3 columns user" data-id="<%= user.username %>">
       <a href="<%= "/user/#{user.username}" %>">
         <% cache [user.id, user.updated_at, "avatar", "med"] do -%>
@@ -22,6 +22,9 @@
               <% end -%>
               <% if GroupMembership.has_global_permission? "can_delete_own_posts", @permissions, @current_user -%>
                 <a class="delete-post"></a>
+              <% end -%>
+              <% if GroupMembership.has_global_permission? "can_create_official_posts", @permissions, @current_user -%>
+                <a class="pin-post <%= "active" if post.official %>"></a>
               <% end -%>
             </div>
           </div>

@@ -353,6 +353,21 @@ class GroupController < ApplicationController
     end
   end
 
+  # POST /group/:id/posts/:post_id/pin
+  def pin
+    flash[:warning] = "You don't have permission to pin this post." and redirect_to request.referrer || root_url and return unless universal_permission_check("can_create_official_posts")
+    begin
+      post = Post.find_by(id: params[:post_id]) or not_found
+      not_found if post.group != @group
+    rescue ActionController::RoutingError
+      render :template => 'shared/not_found', :status => 404
+    end
+
+    post.official = !post.official
+    post.save
+    render plain: "OK"
+  end
+
   # TODO: Moderation log, group invite
 
   private

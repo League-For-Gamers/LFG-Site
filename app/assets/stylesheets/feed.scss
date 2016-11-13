@@ -109,6 +109,17 @@
 				height: rem-calc(32);
 				vertical-align: bottom;
 			}
+			&.pin-post {
+				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABRklEQVQ4y62VPU7DQBCFn52StIC5AIoEFS0pkgaFhitgodwCUfBT5ACcISdAiij4kbgCEpFowaREIZ1RPgoGsSyOY8t+zWpn15/ezI53pYICVoAroKO6ZNA7vjWrDQ6sA0/86gNo1wVfAx4deD3OgQAY8lfVnQPnBnsDxrXAgb4DbQER8FwJDvSAFJgAWxbbBaZeWYrXHNgG3gtA/8EDB3IgKXK4oaQTG7tBEIwt3ZGkZo6fmaR9113LauhrYOttq2WWhl6fj/zUF8Evc6AX1oqRwR+AZlZdF8F9pUA/4w9t5h3a4RLoFOiVba9V4CUHmgA7ZaEhcL3E7VERVujNjyXtOfNEUixp4sTmZd12gE/H2S0Q2dom8GrxuOx9m9iHc2AANLw9P/C4KLQB3DiXTDdnb6twNwBnBr0HNup8z1Lg1E+9qr4Aw/e2+oiqYaEAAAAASUVORK5CYII=);
+				background-repeat: no-repeat;
+				background-position: 50% rem-calc(4);
+				width: rem-calc(32);
+				height: rem-calc(32);
+				vertical-align: bottom;
+				&.active {
+					background-color: scale-color($primary-red, $lightness: 20%);
+ 				}
+			}
 			&.ban-post {
 				display: block;
 				text-align: center;
