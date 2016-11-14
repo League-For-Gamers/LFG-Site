@@ -49,7 +49,7 @@
             </div>
           <% end -%>
 
-          <% cache [post.id, post.updated_at, "post-body", "metacard"] do -%>
+          <% cache [post.id, post.updated_at, "post-body", "metacard", post.extra_data_date] do -%>
             <% unless post.extra_data.empty? -%>
               <a href="<%= post.extra_data["original_url"] %>" target="_blank"><div class="metadata-card">
                 <% if post.extra_data.has_key? "image" -%>

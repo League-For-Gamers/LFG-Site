@@ -51,6 +51,7 @@ class GetOpengraphTagsJob < ActiveJob::Base
       end
     end
     post.extra_data = result
+    post.extra_data_date = DateTime.now
     post.enable_save_callbacks = false
     post.save
     result
