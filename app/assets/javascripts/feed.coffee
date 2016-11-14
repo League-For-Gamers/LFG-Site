@@ -39,7 +39,7 @@ update_comment_count = (postid) ->
   counter.attr('class', classes.join(' '))
   counter.text(count)
 
-reset_orbit_height_for_comments = (postid) ->
+reset_orbit_height   = (postid) ->
   post_div = Foundation.utils.S("#post-#{postid}")
   container = post_div.parent().parent()
   if container.attr('class').search('orbit-slides-container') > -1
@@ -52,7 +52,7 @@ toggle_comments = (post, post_id, user_id) ->
       post.removeClass("hidden-comments")
       comments.slideDown ->
         comments.removeClass("hidden")
-        reset_orbit_height_for_comments(post_id)
+        reset_orbit_height(post_id)
       if comments.find('.comment-contents').attr('class').search('unloaded') > -1
         $.ajax
           url: "/feed/user/#{user_id}/#{post_id}/replies"
@@ -66,13 +66,13 @@ toggle_comments = (post, post_id, user_id) ->
               loading_ring.remove()
             $.when(container.html(data)).then () ->
               set_actions_for_comments(post_id)
-              reset_orbit_height_for_comments(post_id)
+              reset_orbit_height(post_id)
               return resolve(true)
     else
       comments.slideUp ->
         comments.addClass("hidden")
         post.addClass("hidden-comments")
-        reset_orbit_height_for_comments(post_id)
+        reset_orbit_height(post_id)
         return resolve(false)
 
 wire_up_comments_for_new_posts = (post_id) ->
@@ -116,7 +116,7 @@ wire_up_comments_for_new_posts = (post_id) ->
           alert(jqXHR.responseJSON.errors.join("\n"))
         complete: ->
           sending = false
-          reset_orbit_height_for_comments(post_id)
+          reset_orbit_height(post_id)
 
 set_actions_for_comments = (postid) ->
   # Gods I need to clean this.
@@ -134,7 +134,7 @@ set_actions_for_comments = (postid) ->
         body = comment_div.find(".body")
         body.addClass("hidden")
         body.after("<form class='edit-form'><input type='text' name='body' value='#{data.body}'></form>")
-        reset_orbit_height_for_comments(postid)
+        reset_orbit_height(postid)
         Foundation.utils.S("#comment-#{id} .body-container .edit-form").on 'submit', (e) ->
           e.preventDefault()
           form = Foundation.utils.S(this)
@@ -150,7 +150,7 @@ set_actions_for_comments = (postid) ->
               body.text(data.body)
               body.removeClass('hidden')
               t.parent().removeClass('hidden')
-              reset_orbit_height_for_comments(postid)
+              reset_orbit_height(postid)
             error: (jqXHR) ->
                alert(jqXHR.responseJSON.errors.join("\n"))
 
@@ -173,7 +173,7 @@ set_actions_for_comments = (postid) ->
             comment_div.slideUp ->
               comment_div.remove()
               update_comment_count(post_id)
-              reset_orbit_height_for_comments(postid)
+              reset_orbit_height(postid)
           error: (data) ->
             alert("An error occured deleting your comment: #{data.statusText}")
 
@@ -344,33 +344,56 @@ $ ->
             xhr.setRequestHeader('X-CSRF-Token', Foundation.utils.S('meta[name="csrf-token"]').attr('content'))
           success: (data) ->
             # what a mess...
-            sticked = false 
+            # TODO: Copy comments section with post as well.
+            # Loop through every post of that id on the page (there should be either 1 or 2)
+            # after successfully toggling on the serverside if the post is:
+            # Pinned:
+              # Find the pinned post in the stickied list and remove it
+              # And all it's elements in the orbit container
+              # As well as re-numbering the remanining elements in the orbit
+            # Unpinned:
+              # Copy the post to the front of the orbit container and add an orbit-nav button for it
+              # Ensure the copied post has the appropriate "stick" class on it
+              # Ensure the post is cloned so that any events are still valid on it
+              # Renumber the elements in the orbit container
+              # Reset the height for orbit to ensure it's matched with the new post
+              # Reset foundation orbit to ensure it catches up
+
+            sticked = false
             for post in $(".streamPost[data-id='#{id}']")
               do ->
                 post = $(post)
                 post.find('.pin-post').toggleClass("active")
                 if post.hasClass("stick")
                   sticked = true
+                  # Remove the pinned post and renumber the orbit elements
                   post.parent().remove()
                   i = 0
                   for elm in $(".orbit-slides-container").children()
                     do ->
                       $(elm).attr("data-orbit-slide", "stickied-#{i}")
                       i++
+                  # Remove the last orbit-nav button
                   $("#stickied-button-#{i}").remove()
-                  reset_orbit_height_for_comments($('.orbit-slides-container').children().first().children().first().data('id'))
+                  # Reset orbit height and foundation
+                  reset_orbit_height($('.orbit-slides-container').children().first().children().first().data('id'))
                   $(document).foundation('orbit', 'reflow');
                 else if sticked != true
+                  # Create a li container for the post  in the orbit container
                   $('.orbit-slides-container').prepend('<li></li>')
-                  post.clone(true, true).appendTo($('.orbit-slides-container').children().first())
+                  # Clone the post and add the stick class to it, and append to the new li
+                  post.clone(true, true).toggleClass("stick").appendTo($('.orbit-slides-container').children().first())
+                  # Add a new orbit nav button
                   nav_size = $('.orbit-nav').children().size()
                   $('.orbit-nav').append("<a data-orbit-link='stickied-#{nav_size}' id='stickied-button-#{nav_size}'></a>")
+                  # Renumber the slides
                   i = 0
                   for elm in $(".orbit-slides-container").children()
                     do ->
                       $(elm).attr("data-orbit-slide", "stickied-#{i}")
                       i++
-                  reset_orbit_height_for_comments($('.orbit-slides-container').children().first().children().first().data('id'))
+                  # Reset height and reset foundation
+                  reset_orbit_height($('.orbit-slides-container').children().first().children().first().data('id'))
                   $(document).foundation('orbit', 'reflow');
           error: (data) ->
             alert("An error occured pinning the comment: #{data.statusText}")
