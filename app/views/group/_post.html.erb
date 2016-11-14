@@ -1,84 +1,84 @@
-<% cache [post.id, post.updated_at] do -%>
-  <div class="streamPost text-card hidden-comments <%= "stick" if defined? stick %>" id="post-<%= post.id %>" data-id="<%= post.id %>">
-    <div class="large-2 small-3 columns user" data-id="<%= user.username %>">
-      <a href="<%= "/user/#{user.username}" %>">
-        <% cache [user.id, user.updated_at, "avatar", "med"] do -%>
-          <%= image_tag(user.avatar(:med), class: "avatar") %>
-        <% end -%>
-      </a>
-      <%# I'm sorry for this. I tried to spread it out against multiple lines but it doesnt work. %>
-      <% cache [post.id, post.updated_at, "controls", @current_user, @membership] do -%>
-        <% if universal_permission_check ["can_edit_all_users_posts", "can_delete_all_users_posts"] or (post.user == @current_user and GroupMembership.has_permission?(["can_edit_own_posts", "can_delete_own_posts"], @permissions)) -%>
-          <div class="user-controls">
-            <% if GroupMembership.has_global_permission? "can_edit_own_posts", @permissions, @current_user-%>
-              <div class="edit-controls">
-                <a class="submit-post"></a>
-                <a class="cancel-post"></a>
-              </div>
-            <% end -%>
-            <div class="default-controls">
-              <% if GroupMembership.has_global_permission? "can_edit_own_posts", @permissions, @current_user -%>
-                <a class="edit-post"></a>
-              <% end -%>
-              <% if GroupMembership.has_global_permission? "can_delete_own_posts", @permissions, @current_user -%>
-                <a class="delete-post"></a>
-              <% end -%>
-              <% if GroupMembership.has_global_permission? "can_create_official_posts", @permissions, @current_user -%>
-                <a class="pin-post <%= "active" if post.official %>"></a>
-              <% end -%>
+<div class="streamPost text-card hidden-comments <%= "stick" if defined? stick %>" id="post-<%= post.id %>" data-id="<%= post.id %>">
+  <div class="large-2 small-3 columns user" data-id="<%= user.username %>">
+    <a href="<%= "/user/#{user.username}" %>">
+      <% cache [user.id, user.updated_at, "avatar", "med"] do -%>
+        <%= image_tag(user.avatar(:med), class: "avatar") %>
+      <% end -%>
+    </a>
+    <%# I'm sorry for this. I tried to spread it out against multiple lines but it doesnt work. %>
+    <% cache [post.id, post.updated_at, "controls", @current_user, @membership] do -%>
+      <% if universal_permission_check ["can_edit_all_users_posts", "can_delete_all_users_posts"] or (post.user == @current_user and GroupMembership.has_permission?(["can_edit_own_posts", "can_delete_own_posts"], @permissions)) -%>
+        <div class="user-controls">
+          <% if GroupMembership.has_global_permission? "can_edit_own_posts", @permissions, @current_user-%>
+            <div class="edit-controls">
+              <a class="submit-post"></a>
+              <a class="cancel-post"></a>
             </div>
+          <% end -%>
+          <div class="default-controls">
+            <% if GroupMembership.has_global_permission? "can_edit_own_posts", @permissions, @current_user -%>
+              <a class="edit-post"></a>
+            <% end -%>
+            <% if GroupMembership.has_global_permission? "can_delete_own_posts", @permissions, @current_user -%>
+              <a class="delete-post"></a>
+            <% end -%>
+            <% if GroupMembership.has_global_permission? "can_create_official_posts", @permissions, @current_user -%>
+              <a class="pin-post <%= "active" if post.official %>"></a>
+            <% end -%>
+          </div>
+        </div>
+      <% end -%>
+    <% end -%>
+</div>
+  <div class="large-10 small-9 columns body">
+    <span class="title"><%= link_to display_name(user), "/user/#{user.username}" -%>
+    <% cache [post.id, post.updated_at, "post-body", @current_user, "follow"] do -%>
+      <% if !!@current_user and !@current_user.follow? user and @current_user != user -%>
+        <a class="follow-user" href="/user/<%= user.username -%>/follow" title="Follow" data-tooltip></a>
+      <% end -%></span>
+    <% end -%>
+    <div class="main-section">
+      <% cache [post.id, post.updated_at, "post-body"] do -%>
+        <p class="content <%= @lang %>"><%= replace_urls post.body -%></p>
+        <% unless post.bans.empty? -%>
+          <div class="bans">
+            <% post.bans.each do |ban| -%>
+              <p><%= ban_string(ban) %></p>
+            <% end -%>
           </div>
         <% end -%>
       <% end -%>
-    </div>
-    <% cache [post.id, post.updated_at, "post-body"] do -%>
-      <div class="large-10 small-9 columns body">
-        <span class="title"><%= link_to display_name(user), "/user/#{user.username}" -%>
-        <% cache [post.id, post.updated_at, "post-body", @current_user, "follow"] do -%>
-          <% if !!@current_user and !@current_user.follow? user and @current_user != user -%>
-            <a class="follow-user" href="/user/<%= user.username -%>/follow" title="Follow" data-tooltip></a>
-          <% end -%></span>
-        <% end -%>
-        <div class="main-section">
-          <p class="content <%= @lang %>"><%= replace_urls post.body -%></p>
-          <% unless post.bans.empty? -%>
-            <div class="bans">
-              <% post.bans.each do |ban| -%>
-                <p><%= ban_string(ban) %></p>
-              <% end -%>
-            </div>
-          <% end -%>
 
-          <% cache [post.id, post.updated_at, "post-body", "metacard", post.extra_data_date] do -%>
-            <% unless post.extra_data.empty? -%>
-              <a href="<%= post.extra_data["original_url"] %>" target="_blank"><div class="metadata-card">
-                <% if post.extra_data.has_key? "image" -%>
-                  <div class="image-container"><img class="image" src="<%= post.extra_data["image"] %>"></div>
-                <% end -%>
-                <div class="summary <%= "with-image" if post.extra_data.has_key? "image" %>">
-                  <span class="title"><%= post.extra_data["title"] %></span>
-                  <p><%= post.extra_data["description"] %></p>
-                  <span class="sitename"><%= post.extra_data["site_name"] %></span>
-                </div>
-              </div></a>
+      <% cache [post.id, post.updated_at, "post-body", "metacard", post.extra_data_date] do -%>
+        <% unless post.extra_data.empty? -%>
+          <a href="<%= post.extra_data["original_url"] %>" target="_blank"><div class="metadata-card">
+            <% if post.extra_data.has_key? "image" -%>
+              <div class="image-container"><img class="image" src="<%= post.extra_data["image"] %>"></div>
             <% end -%>
-          <% end -%>
-        </div>
-        <%= group_post_time_ago(post, group) -%>
-        <span class="comment-count <%= "active" if post.children_count > 0 %>"><%= post.children_count %></span>
-      </div>
-    <% end -%>
-  </div>
-  <div class="small-11 comments text-card hidden" id="comments-<%= post.id %>" data-id="<%= post.id %>">
-    <% cache [post.id, post.updated_at, "comment", @current_user, @membership] do -%>
-      <% if !!@current_user and GroupMembership.has_permission? "can_create_post", @permissions -%>
-        <%= form_tag "/group/#{group.slug}/posts/#{post.id}/comment", method: :post, class: "new-comment" do %>
-          <% text_field_tag :body, '', placeholder: 'Write a comment...', autocomplete: 'off' %>
+            <div class="summary <%= "with-image" if post.extra_data.has_key? "image" %>">
+              <span class="title"><%= post.extra_data["title"] %></span>
+              <p><%= post.extra_data["description"] %></p>
+              <span class="sitename"><%= post.extra_data["site_name"] %></span>
+            </div>
+          </div></a>
         <% end -%>
       <% end -%>
-    <% end -%>
-    <div class="comment-contents unloaded">
     </div>
-    <div class="loading-ring small"><div></div></div>
+    <% cache [post.id, post.updated_at, "post-body", "time-ago"] do -%>
+      <%= group_post_time_ago(post, group) -%>
+      <span class="comment-count <%= "active" if post.children_count > 0 %>"><%= post.children_count %></span>
+    <% end -%>
   </div>
-<% end -%>
+</div>
+<div class="small-11 comments text-card hidden" id="comments-<%= post.id %>" data-id="<%= post.id %>">
+  <% cache [post.id, post.updated_at, "comment", @current_user, @membership] do -%>
+    <% if !!@current_user and GroupMembership.has_permission? "can_create_post", @permissions -%>
+      <%= form_tag "/group/#{group.slug}/posts/#{post.id}/comment", method: :post, class: "new-comment" do %>
+        <% text_field_tag :body, '', placeholder: 'Write a comment...', autocomplete: 'off' %>
+      <% end -%>
+    <% end -%>
+  <% end -%>
+  <div class="comment-contents unloaded">
+  </div>
+  <div class="loading-ring small"><div></div></div>
+</div>

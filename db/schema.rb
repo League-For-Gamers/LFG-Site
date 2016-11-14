@@ -38,16 +38,14 @@ ActiveRecord::Schema.define(version: 20161114165221) do
 
   create_table "chats", force: :cascade do |t|
     t.string   "key"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
-    t.integer  "public_key_id"
-    t.integer  "version",       default: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "chats_users", id: false, force: :cascade do |t|
-    t.integer  "chat_id",                     null: false
-    t.integer  "user_id",                     null: false
-    t.datetime "last_read", default: "now()"
+    t.integer  "chat_id",                                   null: false
+    t.integer  "user_id",                                   null: false
+    t.datetime "last_read", default: '2016-06-16 07:59:58'
   end
 
   add_index "chats_users", ["user_id", "chat_id"], name: "index_chats_users_on_user_id_and_chat_id", unique: true, using: :btree
@@ -113,20 +111,6 @@ ActiveRecord::Schema.define(version: 20161114165221) do
 
   add_index "groups", ["slug"], name: "index_groups_on_slug", using: :btree
 
-  create_table "keys", force: :cascade do |t|
-    t.integer  "key_type"
-    t.integer  "user_id"
-    t.integer  "group_id"
-    t.integer  "parent_id"
-    t.string   "body"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "keys", ["group_id"], name: "index_keys_on_group_id", using: :btree
-  add_index "keys", ["parent_id"], name: "index_keys_on_parent_id", using: :btree
-  add_index "keys", ["user_id"], name: "index_keys_on_user_id", using: :btree
-
   create_table "notifications", force: :cascade do |t|
     t.integer  "variant",                    null: false
     t.hstore   "data",       default: {},    null: false
@@ -162,7 +146,6 @@ ActiveRecord::Schema.define(version: 20161114165221) do
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
     t.integer  "group_id"
-    t.text     "signed"
     t.integer  "parent_id"
     t.integer  "children_count",  default: 0,  null: false
     t.hstore   "extra_data",      default: {}
@@ -177,9 +160,8 @@ ActiveRecord::Schema.define(version: 20161114165221) do
     t.integer  "chat_id"
     t.binary   "body"
     t.binary   "iv"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-    t.integer  "version",    default: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_index "private_messages", ["chat_id"], name: "index_private_messages_on_chat_id", using: :btree
@@ -216,8 +198,8 @@ ActiveRecord::Schema.define(version: 20161114165221) do
     t.string   "password_digest"
     t.string   "display_name"
     t.text     "bio"
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.binary   "email"
     t.binary   "email_iv"
     t.string   "avatar_file_name"
@@ -225,18 +207,15 @@ ActiveRecord::Schema.define(version: 20161114165221) do
     t.integer  "avatar_file_size"
     t.datetime "avatar_updated_at"
     t.string   "hashed_email"
-    t.hstore   "social",              default: {},    null: false
+    t.hstore   "social",              default: {}, null: false
     t.text     "skill_notes"
     t.integer  "skill_status"
-    t.hstore   "hidden",              default: {},    null: false
+    t.hstore   "hidden",              default: {}, null: false
     t.integer  "role_id"
     t.string   "verification_digest"
     t.datetime "verification_active"
     t.string   "enc_key"
     t.integer  "unread_count",        default: 0
-    t.integer  "private_key_id"
-    t.integer  "public_key_id"
-    t.boolean  "keypair_final",       default: false
   end
 
   add_index "users", ["role_id"], name: "index_users_on_role_id", using: :btree
@@ -248,8 +227,6 @@ ActiveRecord::Schema.define(version: 20161114165221) do
   add_foreign_key "follows", "users", column: "following_id"
   add_foreign_key "group_memberships", "groups"
   add_foreign_key "group_memberships", "users"
-  add_foreign_key "keys", "groups"
-  add_foreign_key "keys", "users"
   add_foreign_key "notifications", "groups"
   add_foreign_key "notifications", "posts"
   add_foreign_key "notifications", "users"
