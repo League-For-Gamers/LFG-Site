@@ -31,38 +31,43 @@
         <% end -%>
       <% end -%>
     </div>
-    <div class="large-10 small-9 columns body">
-      <span class="title"><%= link_to display_name(user), "/user/#{user.username}" -%>
-      <% if !!@current_user and !@current_user.follow? user and @current_user != user -%>
-        <a class="follow-user" href="/user/<%= user.username -%>/follow" title="Follow" data-tooltip></a>
-      <% end -%></span>
-      <div class="main-section">
-        <p class="content <%= @lang %>"><%= replace_urls post.body -%></p>
-        <% unless post.bans.empty? -%>
-          <div class="bans">
-            <% post.bans.each do |ban| -%>
-              <p><%= ban_string(ban) %></p>
-            <% end -%>
-          </div>
+    <% cache [post.id, post.updated_at, "post-body"] do -%>
+      <div class="large-10 small-9 columns body">
+        <span class="title"><%= link_to display_name(user), "/user/#{user.username}" -%>
+        <% cache [post.id, post.updated_at, "post-body", @current_user, "follow"] do -%>
+          <% if !!@current_user and !@current_user.follow? user and @current_user != user -%>
+            <a class="follow-user" href="/user/<%= user.username -%>/follow" title="Follow" data-tooltip></a>
+          <% end -%></span>
         <% end -%>
-
-        <% unless post.extra_data.empty? -%>
-          <a href="<%= post.extra_data["original_url"] %>" target="_blank"><div class="metadata-card">
-            <% if post.extra_data.has_key? "image" -%>
-              <div class="image-container"><img class="image" src="<%= post.extra_data["image"] %>"></div>
-            <% end -%>
-            <div class="summary <%= "with-image" if post.extra_data.has_key? "image" %>">
-              <span class="title"><%= post.extra_data["title"] %></span>
-              <p><%= post.extra_data["description"] %></p>
-              <span class="sitename"><%= post.extra_data["site_name"] %></span>
+        <div class="main-section">
+          <p class="content <%= @lang %>"><%= replace_urls post.body -%></p>
+          <% unless post.bans.empty? -%>
+            <div class="bans">
+              <% post.bans.each do |ban| -%>
+                <p><%= ban_string(ban) %></p>
+              <% end -%>
             </div>
-          </div></a>
-        <% end -%>
-      </div>
+          <% end -%>
 
-      <%= group_post_time_ago(post, group) -%>
-      <span class="comment-count <%= "active" if post.children_count > 0 %>"><%= post.children_count %></span>
-    </div>
+          <% cache [post.id, post.updated_at, "post-body", "metacard"] do -%>
+            <% unless post.extra_data.empty? -%>
+              <a href="<%= post.extra_data["original_url"] %>" target="_blank"><div class="metadata-card">
+                <% if post.extra_data.has_key? "image" -%>
+                  <div class="image-container"><img class="image" src="<%= post.extra_data["image"] %>"></div>
+                <% end -%>
+                <div class="summary <%= "with-image" if post.extra_data.has_key? "image" %>">
+                  <span class="title"><%= post.extra_data["title"] %></span>
+                  <p><%= post.extra_data["description"] %></p>
+                  <span class="sitename"><%= post.extra_data["site_name"] %></span>
+                </div>
+              </div></a>
+            <% end -%>
+          <% end -%>
+        </div>
+        <%= group_post_time_ago(post, group) -%>
+        <span class="comment-count <%= "active" if post.children_count > 0 %>"><%= post.children_count %></span>
+      </div>
+    <% end -%>
   </div>
   <div class="small-11 comments text-card hidden" id="comments-<%= post.id %>" data-id="<%= post.id %>">
     <% cache [post.id, post.updated_at, "comment", @current_user, @membership] do -%>
