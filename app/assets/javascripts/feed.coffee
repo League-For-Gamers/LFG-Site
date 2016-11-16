@@ -329,6 +329,34 @@ $ ->
           error: (data) ->
             alert("An error occured deleting your post: #{data.statusText}")
 
+    Foundation.utils.S(".metadata-card[data-video] .image-container *").click (e) ->
+      e.preventDefault()
+      t = Foundation.utils.S(this)
+      container = t.parent().parent()
+      video = container.data("video")
+      mime = container.data("mime")
+      container.find('.image-container').addClass('hidden')
+      container.prepend('<div class="video-container"></div>')
+      # For youtube, autoplay.
+      # Don't show controls, and loop for imgur gfy's and gfycat liks
+      if video.match(/^https?:\/\/(\w+\.)?imgur.com\/(\w*\d\w*)+(\.[a-z0-9]{3,4})?$/i) or video.match(/^https?:\/\/(\w+\.)?gfycat.com\/([\w-]*)(\.[a-z0-9]{3,4})?/i)
+        controls = ""
+        loopc = "loop"
+      else
+        controls = "controls"
+        loopc = ""
+      if video.match(/^(https?\:\/\/)?(www\.)?youtube\.com\/embed\/(.+)$/i)
+        video = "#{video}?autoplay=1"
+      switch mime.toLowerCase()
+        when "video"
+          container.find('.video-container').prepend("<video src='#{video}' autoplay #{controls} #{loopc}></video>")
+        # Should we have one for audio?
+        else
+          # Calculate height to 16:9 formula: Round(Width / (16 / 9))
+          width = container.width()
+          height = Math.round(width / (16 / 9))
+          container.find('.video-container').prepend("<iframe src='#{video}' height='#{height}' frameborder='0'>")
+
     if window.location.pathname.match(/^\/group\/([\w\d]*)$/)
       Foundation.utils.S('.streamPost .default-controls .pin-post').click ->
         t = Foundation.utils.S(this)
@@ -360,40 +388,40 @@ $ ->
               # Reset foundation orbit to ensure it catches up
 
             sticked = false
-            for post in $(".streamPost[data-id='#{id}']")
+            for post in Foundation.utils.S(".streamPost[data-id='#{id}']")
               do ->
-                post = $(post)
+                post = Foundation.utils.S(post)
                 post.find('.pin-post').toggleClass("active")
                 if post.hasClass("stick")
                   sticked = true
                   # Remove the pinned post and renumber the orbit elements
                   post.parent().remove()
                   i = 0
-                  for elm in $(".orbit-slides-container").children()
+                  for elm in Foundation.utils.S(".orbit-slides-container").children()
                     do ->
-                      $(elm).attr("data-orbit-slide", "stickied-#{i}")
+                      Foundation.utils.S(elm).attr("data-orbit-slide", "stickied-#{i}")
                       i++
                   # Remove the last orbit-nav button
-                  $("#stickied-button-#{i}").remove()
+                  Foundation.utils.S("#stickied-button-#{i}").remove()
                   # Reset orbit height and foundation
-                  reset_orbit_height($('.orbit-slides-container').children().first().children().first().data('id'))
+                  reset_orbit_height(Foundation.utils.S('.orbit-slides-container').children().first().children().first().data('id'))
                   $(document).foundation('orbit', 'reflow');
                 else if sticked != true
                   # Create a li container for the post  in the orbit container
-                  $('.orbit-slides-container').prepend('<li></li>')
+                  Foundation.utils.S('.orbit-slides-container').prepend('<li></li>')
                   # Clone the post and add the stick class to it, and append to the new li
-                  post.clone(true, true).toggleClass("stick").appendTo($('.orbit-slides-container').children().first())
+                  post.clone(true, true).toggleClass("stick").appendTo(Foundation.utils.S('.orbit-slides-container').children().first())
                   # Add a new orbit nav button
-                  nav_size = $('.orbit-nav').children().size()
-                  $('.orbit-nav').append("<a data-orbit-link='stickied-#{nav_size}' id='stickied-button-#{nav_size}'></a>")
+                  nav_size = Foundation.utils.S('.orbit-nav').children().size()
+                  Foundation.utils.S('.orbit-nav').append("<a data-orbit-link='stickied-#{nav_size}' id='stickied-button-#{nav_size}'></a>")
                   # Renumber the slides
                   i = 0
-                  for elm in $(".orbit-slides-container").children()
+                  for elm in Foundation.utils.S(".orbit-slides-container").children()
                     do ->
-                      $(elm).attr("data-orbit-slide", "stickied-#{i}")
+                      Foundation.utils.S(elm).attr("data-orbit-slide", "stickied-#{i}")
                       i++
                   # Reset height and reset foundation
-                  reset_orbit_height($('.orbit-slides-container').children().first().children().first().data('id'))
+                  reset_orbit_height(Foundation.utils.S('.orbit-slides-container').children().first().children().first().data('id'))
                   $(document).foundation('orbit', 'reflow');
           error: (data) ->
             alert("An error occured pinning the comment: #{data.statusText}")

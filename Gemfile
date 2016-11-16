@@ -12,12 +12,13 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'bcrypt', '~> 3.1.7'
 
 ## Aftermarket rails
-gem 'pg', '0.18.4'
+gem 'pg', '0.19'
 gem 'pg_search'
 gem 'fog', '~> 1.33', require: 'fog/aws'
 gem 'asset_sync'
 gem 'redis-rails'
 gem 'rails_autolink'
+gem 'mime-types'
 
 # For env[] management
 gem 'figaro'

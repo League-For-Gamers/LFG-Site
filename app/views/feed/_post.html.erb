@@ -49,18 +49,7 @@
       <% end -%>
 
       <% cache [post.id, post.updated_at, "post-body", "metacard", post.extra_data_date] do -%>
-        <% unless post.extra_data.empty? -%>
-          <a href="<%= post.extra_data["original_url"] %>" target="_blank"><div class="metadata-card">
-            <% if post.extra_data.has_key? "image" -%>
-              <div class="image-container"><img class="image" src="<%= post.extra_data["image"] %>"></div>
-            <% end -%>
-            <div class="summary <%= "with-image" if post.extra_data.has_key? "image" %>">
-              <span class="title"><%= post.extra_data["title"] %></span>
-              <p><%= post.extra_data["description"] %></p>
-              <span class="sitename"><%= post.extra_data["site_name"] %></span>
-            </div>
-          </div></a>
-        <% end -%>
+        <%= render partial: "shared/metacard", locals: {post: post} %>
       <% end -%>
     </div>
     <% cache [post.id, post.updated_at, "post-body", "time-ago"] do -%>

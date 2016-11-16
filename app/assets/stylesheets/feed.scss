@@ -182,6 +182,20 @@
 					.image {
 						width: 100%;
 					}
+					.play-button {
+						position: absolute;
+						font-size: rem-calc(92);
+						line-height: rem-calc(92);
+						margin: rem-calc(-100) 0 0 rem-calc(-46);
+						top: 50%;
+						left: 50%;
+						z-index: 5;
+					}
+				}
+				.video-container {
+					iframe, video {
+						width: 100%;
+					}
 				}
 				.summary {
 					color: $primary-text;
