@@ -1,6 +1,6 @@
 APP_CONFIG = YAML.load_file("config/application.yml")
 # config valid only for current version of Capistrano
-lock '3.5.0'
+lock '3.10.1'
 
 set :application, 'LeagueForGamers'
 set :repo_url, APP_CONFIG['GIT_REPO'] # Keeping the current git repo hidden for when we launch on github
@@ -12,9 +12,6 @@ set :use_sudo, true
 
 # Default deploy_to directory is /var/www/my_app_name
 set :deploy_to, '/var/www/lfg'
-
-# Default value for :scm is :git
-set :scm, :git
 
 # Default value for :format is :pretty
 set :format, :pretty
@@ -40,10 +37,10 @@ set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/sessions', 'tmp/socke
 set :ssh_options, { keys: [APP_CONFIG['SSH_KEY_DIR']] }
 
 # Puma configuration
-set :puma_threads, [0, 4]
-set :puma_workers, 4
-set :puma_init_active_record, true
-set :puma_preload_app, true
+# set :puma_threads, [0, 4]
+# set :puma_workers, 4
+# set :puma_init_active_record, true
+# set :puma_preload_app, true
 
 namespace :deploy do
 

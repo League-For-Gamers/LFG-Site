@@ -17,6 +17,7 @@ ASSET_HOST: 'cdn.address.goeshere'
 production: 
   REDIS_CACHE_ADDRESS: 'redis://:password@hostname:6379/0/cache'
   REDIS_SESSION_ADDRESS: 'redis://:password@hostname:6379/1/sessions'
+  REDIS_CABLE_ADDRESS: 'redis//:password@hostname:6379/2/cables'
   SMTP_ADDRESS:  'smtp-host.address-goes.here'
   SMTP_PORT:     '587'
   SMTP_USERNAME: 'smtp_username'
