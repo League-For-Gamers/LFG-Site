@@ -1,4 +1,4 @@
-class GetOpengraphTagsJob < ActiveJob::Base
+class GetOpengraphTagsJob < ApplicationJob
   queue_as :low_priority
 
   def perform(post)

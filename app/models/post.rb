@@ -1,8 +1,8 @@
-class Post < ActiveRecord::Base
+class Post < ApplicationRecord
   include Postable
   belongs_to :user
-  belongs_to :group
-  belongs_to :parent, class_name: 'Post', foreign_key: :parent_id, counter_cache: :children_count
+  belongs_to :group, required: false
+  belongs_to :parent, class_name: 'Post', foreign_key: :parent_id, counter_cache: :children_count, required: false
   has_many :children, class_name: 'Post', foreign_key: :parent_id, dependent: :destroy
 
   attr_accessor :enable_save_callbacks

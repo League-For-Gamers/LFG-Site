@@ -244,6 +244,7 @@
 				text-transform: uppercase;
 				font-weight: 500;
 				margin-top: rem-calc(5);
+				width: 99.5%;
 				.note {
 					font-size: 10pt;
 				}
@@ -337,6 +338,7 @@
 		.favourite-games {
 			max-height: rem-calc(545);
 			overflow-y: scroll;
+			width: 99.5%
 		}
 		.new-item-button {
 			display: block;

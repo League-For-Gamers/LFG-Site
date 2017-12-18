@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :tag do
     sequence(:name) { |n| "VidyaGame_#{n}" }
     user

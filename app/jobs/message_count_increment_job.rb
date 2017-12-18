@@ -1,4 +1,4 @@
-class MessageCountIncrementJob < ActiveJob::Base
+class MessageCountIncrementJob < ApplicationJob
   queue_as :default
 
   def perform(message)

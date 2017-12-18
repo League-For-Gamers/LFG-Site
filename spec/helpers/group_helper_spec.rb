@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe GroupHelper, type: :helper do
-  let(:bobby) { FactoryGirl.create(:user) }
-  let(:group) { FactoryGirl.create(:group) }
-  let(:membership) { FactoryGirl.create(:group_membership, user: bobby, group: group) }
+  let(:bobby) { FactoryBot.create(:user) }
+  let(:group) { FactoryBot.create(:group) }
+  let(:membership) { FactoryBot.create(:group_membership, user: bobby, group: group) }
   describe '#post_time_ago' do
-    let(:post) {FactoryGirl.create(:post, user: bobby, group: group)}
+    let(:post) {FactoryBot.create(:post, user: bobby, group: group)}
     context 'when post has not been updated' do
       it 'should return a string that does not reflect an edited post' do
         expect(helper.group_post_time_ago(post, group).downcase).to_not include("edited")

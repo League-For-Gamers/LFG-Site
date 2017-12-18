@@ -1,4 +1,4 @@
-class AddLastReadToChatsUsers < ActiveRecord::Migration
+class AddLastReadToChatsUsers < ActiveRecord::Migration[4.2]
   def change
     add_column :chats_users, :last_read, :datetime
     add_column :users, :unread_count, :integer, default: 0

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Game, :type => :model do
-  let(:game) {FactoryGirl.create(:game)}
+  let(:game) {FactoryBot.create(:game)}
 
   context 'when entering zalgo in a game' do
     it 'is removed from name' do

@@ -14,7 +14,8 @@
 # Ignore all logfiles and tempfiles.
 /log/*
 !/log/.keep
-/tmp
+/tmp/*
+!/tmp/.keep
 # Ignore application configuration
 /config/application.yml
 /config/application.*.yml
@@ -22,8 +23,7 @@
 /config/database.*.yml
 /config/newrelic.yml
 /config/s3cfg_file
-/public/users
-/public/games
+/public/storage
 
 /bench
 /coverage

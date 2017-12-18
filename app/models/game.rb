@@ -1,4 +1,4 @@
-class Game < ActiveRecord::Base
+class Game < ApplicationRecord
   include Postable
 
   has_and_belongs_to_many :users
@@ -7,7 +7,6 @@ class Game < ActiveRecord::Base
                      attachment_size: { less_than: 512.kilobytes }
 
   has_attached_file :boxart,
-                    path: "games/boxart/:style/:id.:extension",
                     styles: {
                       small: '120x170^',
                       med:   '166x235>',

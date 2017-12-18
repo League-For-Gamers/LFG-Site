@@ -1,4 +1,4 @@
-class MarkNotificationsAsReadJob < ActiveJob::Base
+class MarkNotificationsAsReadJob < ApplicationJob
   queue_as :default
 
   def perform(notifications)

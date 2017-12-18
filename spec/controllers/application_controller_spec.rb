@@ -3,11 +3,11 @@ require 'rails_helper'
 RSpec.describe ApplicationController, :type => :controller do
   controller do
     def index
-      render nothing: true
+      render body: nil
     end
   end
-  let(:bobby) { FactoryGirl.create(:user) }
-  let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
+  let(:bobby) { FactoryBot.create(:user) }
+  let(:admin_bobby) { FactoryBot.create(:administrator_user)}
   describe "user login helpers" do
     context "with user logged in" do
       before do
@@ -57,24 +57,11 @@ RSpec.describe ApplicationController, :type => :controller do
         controller.send(:login_user, bobby)
         expect(controller.send(:logged_in?)).to eq(true)
       end
-      it 'remember_user successfully returns a HMAC cookie for login' do
-        controller.send(:remember_user, bobby, request)
-        expect(cookies[:remember]).to_not be_nil
-      end
 
       context 'login_from_token' do
         it 'does nothing if there is no login cookie' do
           controller.send(:login_from_token)
           expect(session[:user]).to be_nil
-        end
-
-        it 'will log in the user with a valid cookie' do
-          controller.send(:remember_user, bobby, request)
-          expect(cookies[:remember]).to_not be_nil
-          get :index
-          expect(session[:user]).to_not be_nil
-          expect(session[:user]).to eq(bobby.id)
-          expect(response).to redirect_to(root_url + "anonymous")
         end
 
         it 'will reject and delete an invalid cookie' do

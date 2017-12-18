@@ -1,6 +1,6 @@
-class Notification < ActiveRecord::Base
-  belongs_to :group
-  belongs_to :post
+class Notification < ApplicationRecord
+  belongs_to :group, required: false
+  belongs_to :post, required: false
   belongs_to :user
 
   validates_presence_of :variant

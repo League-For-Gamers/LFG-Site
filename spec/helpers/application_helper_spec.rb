@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe ApplicationHelper, :type => :helper do
-  let(:bobby) { FactoryGirl.create(:user) }
-  let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
+  let(:bobby) { FactoryBot.create(:user) }
+  let(:admin_bobby) { FactoryBot.create(:administrator_user)}
   describe '#logged_in?' do
     it 'returns true when logged in' do
       session[:user] = bobby.id
@@ -45,7 +45,7 @@ RSpec.describe ApplicationHelper, :type => :helper do
 
     it 'should escape HTML hidden in URLs' do
       body = 'http://i.imgur.com/<script>alert("wee-woo");</script>'
-      expect(helper.replace_urls(body)).to include("&lt;script&gt;alert(\"wee-woo\");&lt;/script&gt;")
+      expect(helper.replace_urls(body)).to include("&lt;script&gt;alert(&quot;wee-woo&quot;);&lt;/script&gt;")
     end
 
     it 'should escape raw HTML' do
@@ -55,8 +55,8 @@ RSpec.describe ApplicationHelper, :type => :helper do
   end
 
   describe '#ban_string' do
-    let(:group) { FactoryGirl.create(:group)}
-    let(:membership) { FactoryGirl.create(:group_membership, user: bobby, group: group) }
+    let(:group) { FactoryBot.create(:group)}
+    let(:membership) { FactoryBot.create(:group_membership, user: bobby, group: group) }
     it 'should return a string containing information about the ban' do
       # Test bans
       membership.ban("dick", 1.week.from_now, admin_bobby)

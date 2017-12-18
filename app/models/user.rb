@@ -1,4 +1,4 @@
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   include Postable
   include PgSearch
   multisearchable against: [:username, :display_name]
@@ -10,7 +10,6 @@ class User < ActiveRecord::Base
                   paperclip_optimizer: {
                     optipng: { level: 6 }
                   },
-                  path: "users/avatars/:style/:id.:extension",
                   styles: {
                     thumb: { geometry: '64x64>' },
                     med:   { geometry: '150x150#' },
@@ -19,7 +18,7 @@ class User < ActiveRecord::Base
 
   attr_accessor :old_password, :email_confirm, :skip_old_password
   has_and_belongs_to_many :games
-  belongs_to :role
+  belongs_to :role, required: false
   has_many :skills, -> { order 'confidence DESC' }, dependent: :destroy
   has_many :tags, dependent: :destroy
   has_many :posts, -> { order 'created_at ASC' }, dependent: :destroy
@@ -72,7 +71,7 @@ class User < ActiveRecord::Base
   def encrypt_email
     crypt = OpenSSL::Cipher::AES256.new(:CBC)
     crypt.encrypt
-    crypt.key = Digest::SHA2.hexdigest(ENV['EMAIL_KEY'] + self.enc_key)
+    crypt.key = Digest::SHA2.hexdigest(ENV['EMAIL_KEY'] + self.enc_key)[0..31]
     iv = self.email_iv || crypt.random_iv
     crypt.iv = iv
     self.email_iv = iv
@@ -83,7 +82,7 @@ class User < ActiveRecord::Base
     begin
       crypt = OpenSSL::Cipher::AES256.new(:CBC)
       crypt.decrypt
-      crypt.key = Digest::SHA2.hexdigest(ENV['EMAIL_KEY'] + self.enc_key)
+      crypt.key = Digest::SHA2.hexdigest(ENV['EMAIL_KEY'] + self.enc_key)[0..31]
       crypt.iv = self.email_iv
       crypt.update(self.email) + crypt.final
     rescue # I should have specific cases here but it'll be a lot...

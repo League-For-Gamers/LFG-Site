@@ -1,4 +1,4 @@
-class CreatePermissionJoinTable < ActiveRecord::Migration
+class CreatePermissionJoinTable < ActiveRecord::Migration[4.2]
   def change
     create_join_table :permissions, :roles do |t|
       # t.index [:permission_id, :role_id]

@@ -1,4 +1,4 @@
-class Group < ActiveRecord::Base
+class Group < ApplicationRecord
   include PgSearch
   pg_search_scope :search_by_title, against: :title
 
@@ -15,7 +15,6 @@ class Group < ActiveRecord::Base
                     jpegoptim: { max_quality: 95 }
                   },
                   default_url: "/group/banner/:style/missing.png",
-                  path: "/group/banner/:style/:id.:extension",
                   styles: {
                     thumb: { geometry: '356x200#' },
                     large: { geometry: '1500x400#' }
@@ -36,7 +35,7 @@ class Group < ActiveRecord::Base
   validate :validates_reserved_names
 
   before_validation do
-    self.slug = title.parameterize('_') unless title.blank?
+    self.slug = title.parameterize(separator: '_') unless title.blank?
   end
 
   private

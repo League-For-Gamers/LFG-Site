@@ -1,4 +1,4 @@
-class RecreateNotificationsTable < ActiveRecord::Migration
+class RecreateNotificationsTable < ActiveRecord::Migration[4.2]
   def change
     create_table :notifications do |t|
       t.integer :variant, null: false

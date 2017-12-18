@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe Group, type: :model do
-  let(:group) { FactoryGirl.create(:group) }
-  let(:bobby) { FactoryGirl.create(:user) }
+  let(:group) { FactoryBot.create(:group) }
+  let(:bobby) { FactoryBot.create(:user) }
   before do
-    FactoryGirl.create(:group_membership, user: bobby, group: group)
+    FactoryBot.create(:group_membership, user: bobby, group: group)
   end
   it "has a valid factory" do
     expect(group).to be_valid

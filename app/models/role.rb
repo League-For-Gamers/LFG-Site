@@ -1,4 +1,4 @@
-class Role < ActiveRecord::Base
+class Role < ApplicationRecord
   validates :name, presence: true
 
   PLIST = [ "can_create_official_posts", # 0

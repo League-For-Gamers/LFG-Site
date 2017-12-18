@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :user do
     username "bobby_tables"
     password "bobby tables's very secure password"
@@ -8,7 +8,7 @@ FactoryGirl.define do
     email_confirm "bobby@tables-family.com"
 
     after(:create) do |user|
-      user.tags << FactoryGirl.create(:tag, user: user)
+      user.tags << FactoryBot.create(:tag, user: user)
     end
 
     factory :user_with_skill do
@@ -19,7 +19,7 @@ FactoryGirl.define do
 
     factory :user_with_game do
       after(:create) do |user|
-        user.games << FactoryGirl.create(:game)
+        user.games << FactoryBot.create(:game)
       end
     end
 

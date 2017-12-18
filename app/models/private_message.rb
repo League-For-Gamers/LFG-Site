@@ -1,4 +1,4 @@
-class PrivateMessage < ActiveRecord::Base
+class PrivateMessage < ApplicationRecord
   belongs_to :user
   belongs_to :chat, touch: true
 
@@ -18,7 +18,7 @@ class PrivateMessage < ActiveRecord::Base
   def encrypt_body
     crypt = OpenSSL::Cipher::AES256.new(:CBC)
     crypt.encrypt
-    crypt.key = Digest::SHA2.hexdigest(ENV['MESSAGE_KEY'] + self.user.enc_key + self.chat.key)
+    crypt.key = Digest::SHA2.hexdigest(ENV['MESSAGE_KEY'] + self.user.enc_key + self.chat.key)[0..31]
     iv = self.iv || crypt.random_iv
     crypt.iv = iv
     self.iv = iv
@@ -29,7 +29,7 @@ class PrivateMessage < ActiveRecord::Base
     begin
       crypt = OpenSSL::Cipher::AES256.new(:CBC)
       crypt.decrypt
-      crypt.key = Digest::SHA2.hexdigest(ENV['MESSAGE_KEY'] + self.user.enc_key + self.chat.key)
+      crypt.key = Digest::SHA2.hexdigest(ENV['MESSAGE_KEY'] + self.user.enc_key + self.chat.key)[0..31]
       crypt.iv = self.iv
       crypt.update(self.body) + crypt.final
     rescue # I should have specific cases here but it'll be a lot...

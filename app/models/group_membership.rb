@@ -1,4 +1,4 @@
-class GroupMembership < ActiveRecord::Base
+class GroupMembership < ApplicationRecord
   belongs_to :group, counter_cache: :membership_count
   belongs_to :user
 

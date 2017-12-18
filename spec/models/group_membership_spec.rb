@@ -1,13 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe GroupMembership, type: :model do
-  let(:bobby) { FactoryGirl.create(:user) }
-  let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
-  let(:group) { FactoryGirl.create(:group)}
-  let(:membership) { FactoryGirl.create(:group_membership, user: bobby, group: group) }
+  let(:bobby) { FactoryBot.create(:user) }
+  let(:admin_bobby) { FactoryBot.create(:administrator_user)}
+  let(:group) { FactoryBot.create(:group)}
+  let(:membership) { FactoryBot.create(:group_membership, user: bobby, group: group) }
 
   describe '#ban' do
-    let(:post) { FactoryGirl.create(:post, user: bobby, group: group) }
+    let(:post) { FactoryBot.create(:post, user: bobby, group: group) }
     it 'should ban the user' do
       membership.ban("dick", 1.week.from_now, admin_bobby, post)
       expect(group.group_memberships.find_by(user: bobby).role).to eq("banned")
@@ -27,7 +27,7 @@ RSpec.describe GroupMembership, type: :model do
   end
 
   describe '#unban' do
-    let(:post) { FactoryGirl.create(:post, user: bobby, group: group) }
+    let(:post) { FactoryBot.create(:post, user: bobby, group: group) }
     it 'should unban the user' do
       membership.ban("dick", 1.week.from_now, admin_bobby, post)
       expect(group.group_memberships.find_by(user: bobby).role).to eq("banned")

@@ -1,4 +1,4 @@
-class Chat < ActiveRecord::Base
+class Chat < ApplicationRecord
   has_and_belongs_to_many :users
   has_many :private_messages, -> { order 'id DESC'}, dependent: :destroy
 

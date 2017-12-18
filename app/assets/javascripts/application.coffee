@@ -2,6 +2,7 @@
 #= require jquery
 #= require jquery.turbolinks
 #= require jquery_ujs
+# require rails-ujs
 #= require jquery-placeholder
 #= require jquery.timeago
 

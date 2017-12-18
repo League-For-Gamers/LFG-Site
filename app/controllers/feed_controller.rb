@@ -78,7 +78,7 @@ class FeedController < ApplicationController
       end
     end
     if posts.empty?
-      render nothing: true
+      render body: nil
     else
       posts = posts.reverse if params[:direction] == "newer"
       render json: {latest_id: @posts.first.id, posts: posts}

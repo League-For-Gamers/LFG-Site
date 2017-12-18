@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe User, :type => :model do
-  let(:bobby) { FactoryGirl.create(:user) }
-  let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
+  let(:bobby) { FactoryBot.create(:user) }
+  let(:admin_bobby) { FactoryBot.create(:administrator_user)}
   it "has a valid factory" do
     expect(bobby).to be_valid
   end
@@ -15,14 +15,14 @@ RSpec.describe User, :type => :model do
   end
 
   context 'when it has a skill' do
-    let(:bobby) { FactoryGirl.create(:user_with_skill)}
+    let(:bobby) { FactoryBot.create(:user_with_skill)}
     it "has a coding skill" do
       expect(bobby.skills.length).to be > 0    
     end
   end
 
   context 'when it has a game' do
-    let(:bobby) { FactoryGirl.create(:user_with_game)}
+    let(:bobby) { FactoryBot.create(:user_with_game)}
     it "has a coding skill" do
       expect(bobby.games.length).to be > 0    
     end
@@ -48,7 +48,7 @@ RSpec.describe User, :type => :model do
   context 'when its password is nil' do
     subject { bobby }
     before { bobby.password = nil }
-    let(:bobby) { FactoryGirl.build(:user, password: nil) }
+    let(:bobby) { FactoryBot.build(:user, password: nil) }
     it "is not valid" do
       expect(bobby).to_not be_valid
     end
@@ -56,7 +56,7 @@ RSpec.describe User, :type => :model do
 
   context 'when entering an email' do
     let(:email) { "test@email.com" }
-    let(:bobby) { FactoryGirl.create(:user, email: email, email_confirm: email) }
+    let(:bobby) { FactoryBot.create(:user, email: email, email_confirm: email) }
     it 'is encrypted' do
       expect(bobby.email).to_not be email
     end
@@ -67,7 +67,7 @@ RSpec.describe User, :type => :model do
       expect(bobby.decrypted_email).to eq(email)
     end
     it 'cannot have a duplicate' do
-      new_user = FactoryGirl.build(:user, username: "NotBobby", display_name: "Not Bobby", email: bobby.decrypted_email, email_confirm: email)
+      new_user = FactoryBot.build(:user, username: "NotBobby", display_name: "Not Bobby", email: bobby.decrypted_email, email_confirm: email)
       expect(new_user).to_not be_valid
     end
   end
@@ -89,8 +89,8 @@ RSpec.describe User, :type => :model do
   end
 
   describe '#can_modify_post?' do
-    let(:bobby) { FactoryGirl.create(:user) }
-    let(:admin_bobby) { FactoryGirl.create(:administrator_user) }
+    let(:bobby) { FactoryBot.create(:user) }
+    let(:admin_bobby) { FactoryBot.create(:administrator_user) }
 
     it 'should allow for an unbanned user to edit their own post' do
       expect(bobby.can_modify_post?(bobby)).to be(true)
@@ -111,8 +111,8 @@ RSpec.describe User, :type => :model do
   end
 
   describe '#has_global_permission?' do
-    let(:bobby) { FactoryGirl.create(:user) }
-    let(:admin_bobby) { FactoryGirl.create(:administrator_user) }
+    let(:bobby) { FactoryBot.create(:user) }
+    let(:admin_bobby) { FactoryBot.create(:administrator_user) }
 
     context 'when passing an array of permissions' do
       it 'should return true when a user has either a local or global permission given' do
@@ -146,7 +146,7 @@ RSpec.describe User, :type => :model do
   end
 
   describe '#has_permission?' do
-    let(:bobby) { FactoryGirl.create(:user) }
+    let(:bobby) { FactoryBot.create(:user) }
 
     context 'when passing a single permission' do
       it 'should return true for a user that has the permission' do
@@ -195,7 +195,7 @@ RSpec.describe User, :type => :model do
   end
 
   describe '#follow' do
-    let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
+    let(:admin_bobby) { FactoryBot.create(:administrator_user)}
     it 'should follow another user' do
       bobby.follow(admin_bobby)
       expect(User.find(bobby.id).follows.map(&:following)).to include(admin_bobby)
@@ -215,7 +215,7 @@ RSpec.describe User, :type => :model do
   end
 
   describe '#ban' do
-    let(:post) { FactoryGirl.create(:post, user: bobby) }
+    let(:post) { FactoryBot.create(:post, user: bobby) }
     it 'should ban the user' do
       bobby.ban("dick", 1.week.from_now, admin_bobby, post)
       expect(User.find(bobby.id).role.name).to eq("banned")

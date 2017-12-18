@@ -1,8 +1,8 @@
 require 'rails_helper'
 RSpec.describe FeedHelper, type: :helper do
   describe '#post_time_ago' do
-    let(:bobby) { FactoryGirl.create(:user) }
-    let(:post) {FactoryGirl.create(:post, user: bobby)}
+    let(:bobby) { FactoryBot.create(:user) }
+    let(:post) {FactoryBot.create(:post, user: bobby)}
     context 'when post has not been updated' do
       it 'should return a string that does not reflect an edited post' do
         expect(helper.post_time_ago(post).downcase).to_not include("edited")

@@ -1,4 +1,4 @@
-class MessageCountResolveJob < ActiveJob::Base
+class MessageCountResolveJob < ApplicationJob
   queue_as :low_priority
 
   def perform(chat, user, timestamp)

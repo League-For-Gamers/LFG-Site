@@ -1,15 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Post, type: :model do
-  let(:post) { FactoryGirl.create(:post) }
-  let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
+  let(:post) { FactoryBot.create(:post) }
+  let(:admin_bobby) { FactoryBot.create(:administrator_user)}
   it "has a valid factory" do
     expect(post).to be_valid
   end
   it "fails to validate on a post with a body larger than 500 characters" do
     body = ""
     300.times { body << "test test "}
-    post = FactoryGirl.build(:post, body: body)
+    post = FactoryBot.build(:post, body: body)
     expect(post).to_not be_valid
   end
 
@@ -36,17 +36,17 @@ RSpec.describe Post, type: :model do
   describe "limits on the size of posts" do
 
     it "should accept a post with exactly 512 characters" do
-      post = FactoryGirl.build(:post, body: "a"*512)
+      post = FactoryBot.build(:post, body: "a"*512)
       expect(post).to be_valid
     end
 
     it "should accept a post with exactly 511 characters" do
-      post = FactoryGirl.build(:post, body: "a"*511)
+      post = FactoryBot.build(:post, body: "a"*511)
       expect(post).to be_valid
     end
 
     it "should NOT accept a post with exactly 513 characters" do
-      post = FactoryGirl.build(:post, body: "a"*513)
+      post = FactoryBot.build(:post, body: "a"*513)
       expect(post).to_not be_valid
     end
 

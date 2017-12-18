@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe MarkNotificationsAsReadJob, type: :job do
   include ActiveJob::TestHelper
-  let(:bobby) { FactoryGirl.create(:user)}
-  let(:admin_bobby) { FactoryGirl.create(:administrator_user)}
+  let(:bobby) { FactoryBot.create(:user)}
+  let(:admin_bobby) { FactoryBot.create(:administrator_user)}
 
   it 'should mark notifications as read' do
     n1 = Notification.create(user: bobby, variant: Notification.variants["mention"])

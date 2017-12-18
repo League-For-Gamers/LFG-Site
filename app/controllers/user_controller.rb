@@ -1,7 +1,7 @@
 class UserController < ApplicationController
   before_action :set_user, only: [:show, :direct_message, :follow]
-  skip_before_filter :set_current_user, only: [:my_account, :update, :direct_message]
-  before_filter :set_current_user_with_includes, only: [:my_account, :update, :direct_message], if: :logged_in?
+  skip_before_action :set_current_user, only: [:my_account, :update, :direct_message]
+  before_action :set_current_user_with_includes, only: [:my_account, :update, :direct_message], if: :logged_in?
   before_action :required_log_in, only: [:my_account, :search, :direct_message, :logout]
   before_action :required_logged_out, only: [:forgot_password, :forgot_password_check, :signup, :login]
 
@@ -107,7 +107,7 @@ class UserController < ApplicationController
   # PATCH /account
   def update
     # Okay this is a wee bit dirty
-    user_params = user_params()
+    user_params = user_params().to_h
     game_params = user_params["games"]
     user_params["display_name"] = nil if user_params["display_name"].blank?
     user_params.delete("games")
@@ -116,7 +116,7 @@ class UserController < ApplicationController
 
     # Blank skills should be destroyed.
     unless user_params["skills_attributes"].blank?
-      user_params['skills_attributes'].map { |x| x[1] }.each do |skill|
+      user_params['skills_attributes'].to_h.map { |x| x[1] }.each do |skill|
         skill["_destroy"] = '1' if skill[:category].empty?
       end
     end
@@ -124,7 +124,7 @@ class UserController < ApplicationController
     @current_user.assign_attributes(user_params)
     # Fill out the game list of the user
     unless game_params.nil?
-      games = game_params.map { |x| x[1]["name"].strip }.uniq(&:downcase).reject(&:empty?) # I would work on the hash directly but empty strings cause havoc
+      games = game_params.to_h.map { |x| x[1]["name"].strip }.uniq(&:downcase).reject(&:empty?) # I would work on the hash directly but empty strings cause havoc
       @current_user.games = games.map { |x| Game.where("lower(name) = ?", x.downcase).first || Game.create(name: x) }
     end
     respond_to do |format|
@@ -169,7 +169,7 @@ class UserController < ApplicationController
     unless search_params["query"].blank? and search_params["filter"].blank?
       @query = search_params["query"]
       @filter = search_params["filter"]
-      @query_string = search_params.map{|x|"#{x[0]}=#{x[1]}"}.join("&")
+      @query_string = search_params.to_h.map{|x|"#{x[0]}=#{x[1]}"}.join("&")
 
       unless @query.blank?
         search = PgSearch.multisearch(@query).with_pg_search_rank

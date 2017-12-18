@@ -56,7 +56,7 @@ class MessagesController < ApplicationController
   def create_chat
     # Eck... not proud of this
     flash[:warning] = "You do not have permission to send messages" and redirect_to root_url and return unless @current_user.has_permission? "can_send_private_messages"
-    message_params = params.require(:private_message).permit(:body, {user: :id})
+    message_params = params.require(:private_message).permit(:body, {user: :id}).to_h
     @users = User.find(message_params["user"].map { |x| x[1]["id"] })
     @users << @current_user
 

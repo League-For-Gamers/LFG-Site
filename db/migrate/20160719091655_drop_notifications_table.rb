@@ -1,4 +1,4 @@
-class DropNotificationsTable < ActiveRecord::Migration
+class DropNotificationsTable < ActiveRecord::Migration[4.2]
   def change
     drop_table :notifications
   end

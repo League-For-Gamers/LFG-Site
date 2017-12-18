@@ -2,8 +2,8 @@ require 'rails_helper'
 require 'rake'
 
 RSpec.describe "permission_migrate", type: :rake do
-  let(:bobby) { FactoryGirl.create(:user) }
-  let(:wingar) { FactoryGirl.create(:user, username: "wingar", display_name: "dick", email: "dicks@dicks.dicks", email_confirm: "dicks@dicks.dicks") }
+  let(:bobby) { FactoryBot.create(:user) }
+  let(:wingar) { FactoryBot.create(:user, username: "wingar", display_name: "dick", email: "dicks@dicks.dicks", email_confirm: "dicks@dicks.dicks") }
   describe "#set_default_user_role" do
     before do
       Rake::Task.define_task(:environment)
